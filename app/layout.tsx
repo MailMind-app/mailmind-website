@@ -1,45 +1,59 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import './globals.css'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import Link from "next/link";
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'MailMind - AI-powered Email Automation',
-  description: 'AI-powered email automation platform voor MKB. Volledige controle, transparante beslissingen, enterprise-grade beveiliging.',
-  generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
-}
+  title: "MailMind - AI Email Assistent voor MKB",
+  description: "Automatiseer je email met AI",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="nl">
-      <body className="font-sans antialiased">
+      <body className={inter.className}>
+        <nav className="border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16 items-center">
+              <div className="flex items-center">
+                <Link href="/" className="text-xl font-bold">
+                  MailMind
+                </Link>
+              </div>
+              <div className="flex items-center gap-6">
+                <Link href="/" className="text-gray-700 hover:text-gray-900">
+                  Home
+                </Link>
+                <Link href="/pricing" className="text-gray-700 hover:text-gray-900">
+                  Prijzen
+                </Link>
+                <Link href="/demo" className="text-gray-700 hover:text-gray-900">
+                  Demo
+                </Link>
+                <Link
+                  href="https://dashboard.mailmind.nl/accounts/login"
+                  className="text-gray-700 hover:text-gray-900"
+                >
+                  Inloggen
+                </Link>
+                <Link
+                  href="https://dashboard.mailmind.nl"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Naar dashboard
+                </Link>
+              </div>
+            </div>
+          </div>
+        </nav>
         {children}
-        <Analytics />
       </body>
     </html>
-  )
+  );
 }

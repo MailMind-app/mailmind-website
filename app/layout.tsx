@@ -1,13 +1,41 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "MailMind - AI Email Assistent voor MKB",
-  description: "Automatiseer je email met AI",
+  title: {
+    default: "MailMind — AI-powered email automation for SMBs",
+    template: "%s | MailMind",
+  },
+  description:
+    "MailMind is an autonomous AI email operator for SMBs. No chatbot, no autoresponder — a decision engine that classifies, decides, and acts with full transparency.",
+  metadataBase: new URL("https://mailmind.nl"),
+  openGraph: {
+    type: "website",
+    locale: "nl_NL",
+    url: "https://mailmind.nl",
+    siteName: "MailMind",
+    title: "MailMind — AI-powered email automation for SMBs",
+    description:
+      "Autonomous AI email operator for Dutch SMBs. Full control, zero chaos.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MailMind — AI-powered email automation",
+    description: "Autonomous AI email operator for Dutch SMBs.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -16,43 +44,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="nl">
-      <body className={inter.className}>
-        <nav className="border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16 items-center">
-              <div className="flex items-center">
-                <Link href="/" className="text-xl font-bold">
-                  MailMind
-                </Link>
-              </div>
-              <div className="flex items-center gap-6">
-                <Link href="/" className="text-gray-700 hover:text-gray-900">
-                  Home
-                </Link>
-                <Link href="/pricing" className="text-gray-700 hover:text-gray-900">
-                  Prijzen
-                </Link>
-                <Link href="/demo" className="text-gray-700 hover:text-gray-900">
-                  Demo
-                </Link>
-                <Link
-                  href="https://dashboard.mailmind.nl/accounts/login"
-                  className="text-gray-700 hover:text-gray-900"
-                >
-                  Inloggen
-                </Link>
-                <Link
-                  href="https://dashboard.mailmind.nl"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Naar dashboard
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        {children}
+    <html lang="nl" className={inter.variable}>
+      <body className="min-h-screen bg-background text-foreground">
+        <Navigation />
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );

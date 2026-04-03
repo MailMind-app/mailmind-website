@@ -1,241 +1,269 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { FiMail, FiUsers, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { CheckCircle2, Monitor, Users, Zap, ShieldCheck, ArrowRight } from "lucide-react"
+
+const demoIncludes = [
+  {
+    icon: Monitor,
+    title: "Live product walkthrough",
+    description: "See MailMind classify and route real emails in real time.",
+  },
+  {
+    icon: Zap,
+    title: "Your use cases, not ours",
+    description: "We demo with scenarios relevant to your business type.",
+  },
+  {
+    icon: Users,
+    title: "Q&A with the team",
+    description: "Ask anything — architecture, pricing, compliance, integrations.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Security & compliance review",
+    description: "We walk through AVG compliance, data handling, and audit logs.",
+  },
+]
+
+const trustBadges = [
+  { label: "No obligation" },
+  { label: "No sales pressure" },
+  { label: "Real software" },
+]
 
 export default function DemoPage() {
-  const [formData, setFormData] = useState({
-    bedrijfsnaam: '',
-    email: '',
-    volume: '',
-    bericht: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [form, setForm] = useState({
+    company: "",
+    email: "",
+    volume: "",
+    message: "",
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
+    e.preventDefault()
+    setSubmitting(true)
+    setError("")
 
     try {
-      const response = await fetch('/api/demo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch("/api/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bedrijfsnaam: form.company,
+          email: form.email,
+          volume: form.volume,
+          bericht: form.message,
+        }),
+      })
 
-      if (!response.ok) {
-        throw new Error('Er ging iets mis bij het versturen');
-      }
-
-      setIsSuccess(true);
-      setFormData({
-        bedrijfsnaam: '',
-        email: '',
-        volume: '',
-        bericht: ''
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Er ging iets mis');
+      if (!res.ok) throw new Error("Something went wrong")
+      setSuccess(true)
+    } catch {
+      setError("Something went wrong. Please try again or email us at rens@mailmind.nl")
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false)
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="mb-6 flex justify-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <FiCheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Bedankt!
-          </h2>
-          <p className="text-gray-600 mb-8">
-            We nemen binnen 1 werkdag contact op.
-          </p>
-          <button
-            onClick={() => setIsSuccess(false)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Nog een demo aanvragen
-          </button>
-        </div>
-      </div>
-    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <FiMail className="w-8 h-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">MailMind</span>
-          </div>
-          <a
-            href="/"
-            className="text-gray-600 hover:text-gray-900 transition-colors"
+    <div className="bg-[#0a0f1e] min-h-screen pt-16">
+      {/* Background glow */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#2563eb]/6 rounded-full blur-[100px]" />
+      </div>
+
+      <section className="relative max-w-7xl mx-auto px-6 py-24">
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
+          {/* ── Left ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
-            Terug naar home
-          </a>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-              Vraag een <span className="text-blue-600">gratis demo</span> aan
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Ontdek hoe MailMind uw e-mailworkflow automatiseert. Vul het formulier in en we plannen een persoonlijke demo.
+            <p className="text-sm font-medium text-[#2563eb] mb-3 uppercase tracking-widest">
+              Demo
             </p>
-          </div>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-5">
+              Request a MailMind demo
+            </h1>
+            <p className="text-lg text-[#64748b] mb-10 leading-relaxed">
+              See how MailMind handles your actual email workflow — live, with real
+              scenarios from your industry.
+            </p>
 
-          {/* Features */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white rounded-xl shadow-md p-6 text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiMail className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Slimme e-mailverwerking</h3>
-              <p className="text-gray-600 text-sm">AI leest, categoriseert en beantwoordt uw e-mails automatisch.</p>
+            <div className="space-y-6 mb-10">
+              {demoIncludes.map((item) => (
+                <div key={item.title} className="flex items-start gap-4">
+                  <div className="p-2.5 rounded-xl bg-[#2563eb]/10 border border-[#2563eb]/20 shrink-0">
+                    <item.icon className="w-5 h-5 text-[#2563eb]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white mb-1">{item.title}</p>
+                    <p className="text-sm text-[#64748b]">{item.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="bg-white rounded-xl shadow-md p-6 text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiUsers className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Gebouwd voor MKB</h3>
-              <p className="text-gray-600 text-sm">Speciaal ontworpen voor kleine en middelgrote bedrijven.</p>
-            </div>
-            <div className="bg-white rounded-xl shadow-md p-6 text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiTrendingUp className="w-6 h-6 text-green-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Meetbare resultaten</h3>
-              <p className="text-gray-600 text-sm">Bespaar tijd en verhoog de klanttevredenheid direct.</p>
-            </div>
-          </div>
 
-          {/* Form */}
-          <div className="max-w-lg mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Plan uw demo</h2>
-
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label htmlFor="bedrijfsnaam" className="block text-sm font-medium text-gray-700 mb-1">
-                    Bedrijfsnaam
-                  </label>
-                  <input
-                    type="text"
-                    id="bedrijfsnaam"
-                    name="bedrijfsnaam"
-                    required
-                    value={formData.bedrijfsnaam}
-                    onChange={handleChange}
-                    placeholder="Uw bedrijfsnaam"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Zakelijk e-mailadres
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="naam@bedrijf.nl"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="volume" className="block text-sm font-medium text-gray-700 mb-1">
-                    Geschat aantal e-mails per maand
-                  </label>
-                  <select
-                    id="volume"
-                    name="volume"
-                    value={formData.volume}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all bg-white"
-                  >
-                    <option value="">Selecteer...</option>
-                    <option value="under-500">Minder dan 500</option>
-                    <option value="500-1000">500 - 1.000</option>
-                    <option value="1000-5000">1.000 - 5.000</option>
-                    <option value="5000-10000">5.000 - 10.000</option>
-                    <option value="over-10000">Meer dan 10.000</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="bericht" className="block text-sm font-medium text-gray-700 mb-1">
-                    Optioneel bericht
-                  </label>
-                  <textarea
-                    id="bericht"
-                    name="bericht"
-                    rows={4}
-                    value={formData.bericht}
-                    onChange={handleChange}
-                    placeholder="Vertel ons over uw specifieke behoeften..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            <div className="flex flex-wrap gap-3">
+              {trustBadges.map((badge) => (
+                <div
+                  key={badge.label}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/3"
                 >
-                  {isSubmitting ? 'Verzenden...' : 'Demo aanvragen'}
-                </button>
-
-                <p className="text-center text-sm text-gray-500">
-                  Geen spam. Geen verkooptrucs. Gewoon een duidelijke demo.
-                </p>
-              </form>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-xs font-medium text-[#94a3b8]">{badge.label}</span>
+                </div>
+              ))}
             </div>
-          </div>
+          </motion.div>
+
+          {/* ── Right — form ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="rounded-2xl border border-white/8 bg-[#0d1426]/80 backdrop-blur-xl p-8">
+              {success ? (
+                <div className="text-center py-8">
+                  <div className="inline-flex p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-5">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-3">Request received</h2>
+                  <p className="text-[#64748b] mb-6">
+                    We&apos;ll be in touch within 1 business day to schedule your demo.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSuccess(false)
+                      setForm({ company: "", email: "", volume: "", message: "" })
+                    }}
+                    className="text-sm text-[#2563eb] hover:text-[#93c5fd] transition-colors"
+                  >
+                    Submit another request
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-xl font-semibold text-white mb-6">Your details</h2>
+
+                  {error && (
+                    <div className="mb-5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                      {error}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                      <label
+                        htmlFor="company"
+                        className="block text-sm font-medium text-[#94a3b8] mb-1.5"
+                      >
+                        Company name <span className="text-[#2563eb]">*</span>
+                      </label>
+                      <input
+                        id="company"
+                        name="company"
+                        type="text"
+                        required
+                        value={form.company}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-[#334155] text-sm focus:outline-none focus:border-[#2563eb]/50 focus:ring-1 focus:ring-[#2563eb]/30 transition-all"
+                        placeholder="Your company name"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-[#94a3b8] mb-1.5"
+                      >
+                        Business email <span className="text-[#2563eb]">*</span>
+                      </label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-[#334155] text-sm focus:outline-none focus:border-[#2563eb]/50 focus:ring-1 focus:ring-[#2563eb]/30 transition-all"
+                        placeholder="you@company.nl"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="volume"
+                        className="block text-sm font-medium text-[#94a3b8] mb-1.5"
+                      >
+                        Estimated emails/month
+                      </label>
+                      <select
+                        id="volume"
+                        name="volume"
+                        value={form.volume}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-xl bg-[#0d1426] border border-white/10 text-white text-sm focus:outline-none focus:border-[#2563eb]/50 focus:ring-1 focus:ring-[#2563eb]/30 transition-all appearance-none"
+                      >
+                        <option value="" className="text-[#334155]">Select range...</option>
+                        <option value="under-500">Less than 500</option>
+                        <option value="500-1000">500 – 1,000</option>
+                        <option value="1000-5000">1,000 – 5,000</option>
+                        <option value="5000-10000">5,000 – 10,000</option>
+                        <option value="over-10000">More than 10,000</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="message"
+                        className="block text-sm font-medium text-[#94a3b8] mb-1.5"
+                      >
+                        Optional message
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows={4}
+                        value={form.message}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-[#334155] text-sm focus:outline-none focus:border-[#2563eb]/50 focus:ring-1 focus:ring-[#2563eb]/30 transition-all resize-none"
+                        placeholder="Tell us about your specific needs, industry, or questions..."
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-[#2563eb] hover:bg-[#1d4ed8] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
+                    >
+                      {submitting ? "Sending..." : "Request demo"}
+                      {!submitting && <ArrowRight className="w-4 h-4" />}
+                    </button>
+
+                    <p className="text-center text-xs text-[#334155]">
+                      No spam. No sales tricks. Just a clear demo.
+                    </p>
+                  </form>
+                </>
+              )}
+            </div>
+          </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t bg-white/60 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} MailMind. Alle rechten voorbehouden.
-        </div>
-      </footer>
     </div>
-  );
+  )
 }

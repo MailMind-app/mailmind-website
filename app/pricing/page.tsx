@@ -1,224 +1,247 @@
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Check } from "lucide-react"
+"use client"
+
+import type { Metadata } from "next"
+import { motion } from "framer-motion"
 import Link from "next/link"
+import { Check, ArrowRight, ShieldCheck, Zap, Users } from "lucide-react"
 
 const tiers = [
   {
-    name: 'Starter',
-    id: 'tier-starter',
-    href: '/contact',
-    priceMonthly: '€199',
-    description: 'Perfect voor kleine bedrijven die willen starten met AI email automatisering.',
+    name: "Starter",
+    price: "€99",
+    period: "/mo",
+    description: "For small businesses starting with AI email automation.",
+    emails: "500 emails/month",
+    highlight: false,
+    cta: "Get started",
+    ctaHref: "/demo",
     features: [
-      '500 AI verwerkingen per maand',
-      'Tot 2 gebruikers',
-      'Email classificatie & prioritering',
-      'Basis automatische antwoorden',
-      'Email ondersteuning',
-      'Menselijke controle als standaard',
+      "500 AI-processed emails/month",
+      "Up to 2 users",
+      "Email classification & prioritization",
+      "Basic automated routing",
+      "Human-in-the-loop approval",
+      "Decision audit log",
+      "Email support",
     ],
-    mostPopular: false,
   },
   {
-    name: 'Professional',
-    id: 'tier-professional',
-    href: '/contact',
-    priceMonthly: '€499',
-    description: 'Voor groeiende bedrijven die volledige controle willen over hun email workflow.',
+    name: "Professional",
+    price: "€199",
+    period: "/mo",
+    description: "For growing businesses that need full workflow control.",
+    emails: "1,000 emails/month",
+    highlight: true,
+    cta: "Get started",
+    ctaHref: "/demo",
     features: [
-      '2.500 AI verwerkingen per maand',
-      'Tot 10 gebruikers',
-      'Alles van Starter, plus:',
-      'Geavanceerde automatiseringsregels',
-      'Custom AI training op jouw data',
-      'Prioriteit email & chat support',
-      'API toegang',
-      'Team samenwerkingstools',
+      "1,000 AI-processed emails/month",
+      "Up to 10 users",
+      "Everything in Starter, plus:",
+      "Advanced automation rules",
+      "Custom AI training on your data",
+      "Priority support (email & chat)",
+      "API access",
+      "Team collaboration tools",
+      "Webhook integrations",
     ],
-    mostPopular: true,
   },
   {
-    name: 'Enterprise',
-    id: 'tier-enterprise',
-    href: '/contact',
-    priceMonthly: 'Op maat',
-    description: 'Voor grote organisaties met specifieke eisen en compliance behoeften.',
+    name: "Enterprise",
+    price: "Custom",
+    period: "",
+    description: "For organizations with compliance and scale requirements.",
+    emails: "Unlimited",
+    highlight: false,
+    cta: "Contact us",
+    ctaHref: "/demo",
     features: [
-      'Onbeperkte AI verwerkingen',
-      'Onbeperkt aantal gebruikers',
-      'Alles van Professional, plus:',
-      'Dedicated account manager',
-      'Custom integraties',
-      'SLA garanties',
-      'On-premise deployment optie',
-      'Geavanceerde security & compliance',
-      'Custom AI model training',
-      'Telefonische 24/7 support',
+      "Unlimited AI processing",
+      "Unlimited users",
+      "Everything in Professional, plus:",
+      "Dedicated account manager",
+      "Custom integrations",
+      "SLA guarantees",
+      "On-premise deployment option",
+      "Advanced security & compliance",
+      "Custom AI model training",
+      "24/7 phone support",
     ],
-    mostPopular: false,
   },
 ]
 
-const faqs = [
-  {
-    question: 'Wat zijn AI verwerkingen?',
-    answer:
-      'Een AI verwerking is elke actie waarbij MailMind een email analyseert, classificeert, prioriteert of een conceptantwoord genereert. Een gemiddeld MKB bedrijf gebruikt ongeveer 300-800 verwerkingen per maand.',
-  },
-  {
-    question: 'Kan ik later upgraden of downgraden?',
-    answer:
-      'Ja, je kunt op elk moment upgraden of downgraden. Bij een upgrade betaal je direct het verschil. Bij een downgrade gaat de wijziging in bij de volgende factureringsperiode.',
-  },
-  {
-    question: 'Wat gebeurt er als ik mijn limiet overschrijd?',
-    answer:
-      'Je ontvangt een notificatie wanneer je 80% van je limiet bereikt. Als je de limiet overschrijdt, kun je kiezen voor een upgrade of extra verwerkingen bijkopen. MailMind blijft werken, maar nieuwe verwerkingen worden gepauzeerd tot je actie onderneemt.',
-  },
-  {
-    question: 'Hoe zit het met data privacy?',
-    answer:
-      'MailMind is volledig AVG-compliant en host alle data binnen de EU. Jouw emails worden versleuteld opgeslagen en worden nooit gebruikt om andere AI modellen te trainen. Je behoudt volledige controle over je data.',
-  },
-  {
-    question: 'Is er een gratis proefperiode?',
-    answer:
-      'Ja, we bieden een 14-daagse gratis proefperiode voor het Professional plan. Geen creditcard vereist. Je kunt ook altijd een persoonlijke demo aanvragen.',
-  },
+const trust = [
+  { icon: ShieldCheck, label: "No lock-in contracts" },
+  { icon: Zap, label: "Transparent AI decisions" },
+  { icon: Users, label: "Human-in-the-loop by default" },
 ]
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+}
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
 }
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[#0a1628]">
-      <Navigation />
-
-      <main className="pt-16">
-        {/* Hero Section */}
-        <section className="py-20">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 text-balance">
-              Eenvoudige, <span className="text-primary">transparante</span> prijzen
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Kies het plan dat past bij jouw bedrijf. Geen verborgen kosten, geen verrassingen. Altijd met volledige AI-transparantie en menselijke controle.
+    <div className="bg-[#0a0f1e] min-h-screen">
+      {/* ── Hero ── */}
+      <section className="pt-32 pb-16 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="text-sm font-medium text-[#2563eb] mb-3 uppercase tracking-widest">
+              Pricing
             </p>
-          </div>
-        </section>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-5">
+              Simple, transparent pricing.{" "}
+              <span className="text-[#94a3b8]">Built for control.</span>
+            </h1>
+            <p className="text-lg text-[#64748b] max-w-xl mx-auto">
+              No hidden fees, no surprises. Cancel anytime. Every plan includes
+              full AI transparency and human oversight.
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
-        {/* Pricing Cards */}
-        <section className="pb-20">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="grid md:grid-cols-3 gap-6">
-              {tiers.map((tier) => (
-                <div
-                  key={tier.id}
-                  className={classNames(
-                    tier.mostPopular
-                      ? "border-primary shadow-lg shadow-primary/20"
-                      : "border-border",
-                    "relative bg-card border rounded-xl p-8 flex flex-col"
-                  )}
-                >
-                  {tier.mostPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-primary text-white text-xs font-medium px-3 py-1 rounded-full">
-                        Populairst
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-semibold text-white mb-4">{tier.name}</h3>
-                    {tier.priceMonthly === 'Op maat' ? (
-                      <div className="mb-4">
-                        <span className="text-2xl font-bold text-white">Op maat</span>
-                      </div>
-                    ) : (
-                      <div className="mb-4">
-                        <span className="text-4xl font-bold text-white">{tier.priceMonthly}</span>
-                        <span className="text-muted-foreground ml-2">/ maand</span>
-                      </div>
-                    )}
-                    <p className="text-sm text-muted-foreground">{tier.description}</p>
+      {/* ── Pricing cards ── */}
+      <section className="pb-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="grid md:grid-cols-3 gap-6 items-start"
+          >
+            {tiers.map((tier) => (
+              <motion.div
+                key={tier.name}
+                variants={cardVariant}
+                className={`relative rounded-2xl border p-8 flex flex-col hover:-translate-y-1 transition-transform duration-300 ${
+                  tier.highlight
+                    ? "border-[#2563eb]/50 bg-[#0d1426] shadow-xl shadow-blue-500/10"
+                    : "border-white/8 bg-[#0d1426]/60"
+                }`}
+              >
+                {tier.highlight && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <span className="bg-[#2563eb] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg shadow-blue-500/30">
+                      Most popular
+                    </span>
                   </div>
+                )}
 
-                  <ul className="space-y-3 mb-8 flex-grow">
-                    {tier.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button
-                    asChild
-                    className={classNames(
-                      tier.mostPopular
-                        ? "bg-primary hover:bg-primary/90 text-white"
-                        : "bg-secondary hover:bg-secondary/80 text-white",
-                      "w-full"
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-white mb-2">{tier.name}</h3>
+                  <div className="flex items-baseline gap-1 mb-3">
+                    <span className="text-4xl font-bold text-white">{tier.price}</span>
+                    {tier.period && (
+                      <span className="text-[#64748b] text-sm">{tier.period}</span>
                     )}
-                  >
-                    <Link href={tier.href}>
-                      {tier.priceMonthly === 'Op maat' ? 'Neem contact op' : 'Start gratis proefperiode'}
-                    </Link>
-                  </Button>
+                  </div>
+                  <p className="text-sm text-[#64748b] mb-2">{tier.description}</p>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/8">
+                    <Zap className="w-3 h-3 text-[#2563eb]" />
+                    <span className="text-xs text-[#94a3b8]">{tier.emails}</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* Trust Badges */}
-        <section className="py-12 border-t border-border">
-          <div className="max-w-4xl mx-auto px-6">
-            <div className="flex flex-wrap justify-center gap-8 md:gap-16">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Check className="h-5 w-5" />
-                <span className="text-sm">Geen lock-in contracten</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Check className="h-5 w-5" />
-                <span className="text-sm">Transparante AI beslissingen</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Check className="h-5 w-5" />
-                <span className="text-sm">Menselijke controle als standaard</span>
-              </div>
-            </div>
-          </div>
-        </section>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {tier.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <Check className="w-4 h-4 text-[#2563eb] shrink-0 mt-0.5" />
+                      <span className="text-sm text-[#94a3b8]">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-        {/* FAQ Section */}
-        <section className="py-20 border-t border-border">
-          <div className="max-w-3xl mx-auto px-6">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">
-              Veelgestelde vragen
-            </h2>
-            <dl className="space-y-8">
-              {faqs.map((faq) => (
-                <div key={faq.question}>
-                  <dt className="text-lg font-semibold text-white mb-2">
-                    {faq.question}
-                  </dt>
-                  <dd className="text-muted-foreground leading-relaxed">
-                    {faq.answer}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
-      </main>
+                <Link
+                  href={tier.ctaHref}
+                  className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    tier.highlight
+                      ? "bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-lg shadow-blue-500/25"
+                      : "border border-white/12 bg-white/5 hover:bg-white/8 text-white"
+                  }`}
+                >
+                  {tier.cta}
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
 
-      <Footer />
+      {/* ── Trust bar ── */}
+      <section className="border-t border-white/8 py-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-10">
+            {trust.map((item) => (
+              <div key={item.label} className="flex items-center gap-2.5">
+                <item.icon className="w-5 h-5 text-[#2563eb]" />
+                <span className="text-sm text-[#64748b]">{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="py-24 px-6 border-t border-white/8">
+        <div className="max-w-3xl mx-auto">
+          <motion.h2
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl font-bold text-white text-center mb-12"
+          >
+            Frequently asked questions
+          </motion.h2>
+
+          <dl className="space-y-8">
+            {[
+              {
+                q: "What counts as an AI-processed email?",
+                a: "Every email MailMind reads, classifies, routes, or acts on counts as one processing unit. A typical Dutch SMB uses 300–800 per month.",
+              },
+              {
+                q: "Can I upgrade or downgrade later?",
+                a: "Yes. Upgrades take effect immediately (prorated). Downgrades apply at the next billing cycle.",
+              },
+              {
+                q: "What happens if I exceed my limit?",
+                a: "You'll get a notification at 80%. If you hit the limit, processing pauses until you upgrade or the cycle resets — MailMind never acts silently.",
+              },
+              {
+                q: "How does data privacy work?",
+                a: "MailMind is AVG-compliant and stores all data in the EU. Your emails are never used to train shared AI models. You retain full ownership.",
+              },
+              {
+                q: "Is there a free trial?",
+                a: "We offer a personalized demo instead of a generic trial. Book one and we'll show MailMind working on your real email scenarios.",
+              },
+            ].map((faq) => (
+              <div key={faq.q} className="border-b border-white/5 pb-8">
+                <dt className="text-base font-semibold text-white mb-2">{faq.q}</dt>
+                <dd className="text-sm text-[#64748b] leading-relaxed">{faq.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
     </div>
   )
 }

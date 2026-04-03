@@ -121,14 +121,14 @@ export default function HomePage() {
   return (
     <div className="bg-[#0a0f1e]">
       {/* ── Hero ── */}
-      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-24 pb-24 overflow-hidden">
         {/* Background radial glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-[#2563eb]/8 rounded-full blur-[120px]" />
           <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#2563eb]/5 rounded-full blur-[80px]" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-16 items-center w-full">
+        <div className="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-[1fr_1.5fr] gap-8 items-start w-full">
           {/* Left */}
           <div>
             <motion.div

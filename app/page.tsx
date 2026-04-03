@@ -39,16 +39,22 @@ const cardVariant = {
 // ─── Dashboard screenshot ─────────────────────────────────────────────────────
 function DashboardMockup() {
   return (
-    <div className="relative w-full max-w-[560px] mx-auto">
-      {/* Glow */}
-      <div className="absolute inset-0 bg-[#2563eb]/10 blur-3xl rounded-3xl scale-105 pointer-events-none" />
-      {/* Screenshot */}
+    <div className="relative w-full">
+      {/* Glow behind image */}
+      <div className="absolute -inset-4 bg-[#2563eb]/10 blur-3xl rounded-3xl pointer-events-none" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/dashboard-screenshot.png"
         alt="MailMind dashboard"
-        className="relative w-full rounded-2xl border border-white/10 shadow-2xl shadow-black/60"
-        style={{ display: "block" }}
+        style={{
+          display: "block",
+          width: "100%",
+          maxWidth: "680px",
+          borderRadius: "12px",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
+          position: "relative",
+        }}
       />
     </div>
   )
@@ -288,13 +294,13 @@ export default function HomePage() {
           <div className="absolute bottom-0 right-1/4 w-[600px] h-[400px] rounded-full"
             style={{ background: "radial-gradient(ellipse at center, rgba(37,99,235,0.05) 0%, transparent 70%)" }} />
         </div>
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
             variants={fadeUp}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
             <p className="text-sm font-medium text-[#2563eb] mb-3 uppercase tracking-widest">
               How it works
@@ -304,30 +310,29 @@ export default function HomePage() {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {steps.map((step, i) => (
               <motion.div
                 key={step.number}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
-                className="relative"
+                className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 flex flex-col gap-6"
               >
-                {i < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-white/10 to-transparent -translate-x-8 z-0" />
-                )}
-                <div className="relative z-10 bg-[#080c18]">
-                  <div className="flex items-center gap-4 mb-5">
-                    <span className="text-4xl font-bold text-[#1e2d4a] tabular-nums">
-                      {step.number}
-                    </span>
-                    <div className="p-2.5 rounded-xl bg-[#0d1830] border border-[#2563eb]/20">
-                      <step.icon className="w-5 h-5 text-[#2563eb]" />
-                    </div>
+                {/* Number + icon row */}
+                <div className="flex items-center justify-between">
+                  <span className="text-6xl font-bold text-[#2563eb]/25 tabular-nums leading-none select-none">
+                    {step.number}
+                  </span>
+                  <div className="p-3 rounded-xl bg-[#2563eb]/10 border border-[#2563eb]/20">
+                    <step.icon className="w-7 h-7 text-[#2563eb]" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-3">{step.title}</h3>
-                  <p className="text-[#64748b] text-sm leading-relaxed">{step.description}</p>
+                </div>
+                {/* Text */}
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-3">{step.title}</h3>
+                  <p className="text-base text-slate-400 leading-relaxed">{step.description}</p>
                 </div>
               </motion.div>
             ))}

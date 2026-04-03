@@ -49,7 +49,7 @@ function DashboardMockup() {
         style={{
           display: "block",
           width: "100%",
-          maxWidth: "680px",
+          maxWidth: "900px",
           borderRadius: "12px",
           border: "1px solid rgba(255,255,255,0.15)",
           boxShadow: "0 25px 60px rgba(0,0,0,0.5)",

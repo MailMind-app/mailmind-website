@@ -128,7 +128,7 @@ export default function HomePage() {
           <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#2563eb]/5 rounded-full blur-[80px]" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-[1fr_1.5fr] gap-8 items-start w-full">
+        <div className="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-[1fr_1.8fr] gap-4 items-center w-full">
           {/* Left */}
           <div>
             <motion.div
@@ -207,6 +207,7 @@ export default function HomePage() {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="relative lg:translate-x-8 xl:translate-x-16"
           >
             <motion.div
               animate={{ y: [0, -10, 0] }}

@@ -37,17 +37,17 @@ export function Navigation() {
           : "bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+        <Link href="/" className="flex items-center gap-3 shrink-0">
           <Image
             src="/mailmind_logo.png"
             alt="MailMind"
-            width={36}
-            height={36}
-            className="w-9 h-9 object-contain"
+            width={40}
+            height={40}
+            className="w-10 h-10 object-contain"
           />
-          <span className="text-[20px] font-semibold text-white tracking-tight">
+          <span className="text-xl font-bold text-white tracking-tight">
             MailMind
           </span>
         </Link>

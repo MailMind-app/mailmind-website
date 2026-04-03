@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   Mail,
   Zap,
-  Eye,
 } from "lucide-react"
 
 // ─── Animation variants ──────────────────────────────────────────────────────
@@ -37,101 +36,20 @@ const cardVariant = {
   },
 }
 
-// ─── Dashboard mockup ─────────────────────────────────────────────────────────
-const emails = [
-  {
-    from: "finance@supplier.nl",
-    subject: "Invoice #2847 — payment due",
-    tag: "Invoice",
-    tagColor: "bg-blue-500/20 text-blue-400",
-    action: "Queued for approval",
-    dot: "bg-blue-500",
-  },
-  {
-    from: "support@client.nl",
-    subject: "Urgent: login issue since yesterday",
-    tag: "Support",
-    tagColor: "bg-amber-500/20 text-amber-400",
-    action: "Routed to support",
-    dot: "bg-amber-500",
-  },
-  {
-    from: "newsletter@saas.io",
-    subject: "New features in June 2024",
-    tag: "Newsletter",
-    tagColor: "bg-slate-500/20 text-slate-400",
-    action: "Archived",
-    dot: "bg-slate-500",
-  },
-  {
-    from: "ceo@partner.nl",
-    subject: "Re: Partnership proposal Q3",
-    tag: "Business",
-    tagColor: "bg-emerald-500/20 text-emerald-400",
-    action: "Flagged for review",
-    dot: "bg-emerald-500",
-  },
-]
-
+// ─── Dashboard screenshot ─────────────────────────────────────────────────────
 function DashboardMockup() {
   return (
-    <div className="relative w-full max-w-[520px] mx-auto">
+    <div className="relative w-full max-w-[560px] mx-auto">
+      {/* Glow */}
       <div className="absolute inset-0 bg-[#2563eb]/10 blur-3xl rounded-3xl scale-105 pointer-events-none" />
-      <div className="relative rounded-2xl border border-white/10 bg-[#0d1426]/80 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/60">
-        {/* Header bar */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/8 bg-white/3">
-          <div className="w-3 h-3 rounded-full bg-red-500/60" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-          <div className="w-3 h-3 rounded-full bg-green-500/60" />
-          <div className="ml-3 flex items-center gap-2">
-            <Mail className="w-4 h-4 text-[#2563eb]" />
-            <span className="text-xs font-medium text-white/60">MailMind — Inbox</span>
-          </div>
-          <div className="ml-auto flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-emerald-400 font-medium">AI Active</span>
-          </div>
-        </div>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-px bg-white/5">
-          {[
-            { label: "Processed today", value: "47" },
-            { label: "Auto-resolved", value: "38" },
-            { label: "Awaiting review", value: "9" },
-          ].map((stat) => (
-            <div key={stat.label} className="bg-[#0d1426] px-4 py-3">
-              <p className="text-[11px] text-[#475569]">{stat.label}</p>
-              <p className="text-xl font-semibold text-white mt-0.5">{stat.value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Email list */}
-        <div className="divide-y divide-white/5">
-          {emails.map((email, i) => (
-            <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-white/3 transition-colors">
-              <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${email.dot}`} />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[11px] text-[#475569] truncate">{email.from}</span>
-                  <span className={`shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-full ${email.tagColor}`}>
-                    {email.tag}
-                  </span>
-                </div>
-                <p className="text-xs font-medium text-white/80 truncate">{email.subject}</p>
-                <p className="text-[11px] text-[#475569] mt-0.5">{email.action}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="px-4 py-3 border-t border-white/5 flex items-center justify-between">
-          <span className="text-[11px] text-[#475569]">All actions logged &amp; auditable</span>
-          <span className="text-[11px] text-[#2563eb] font-medium">View full log →</span>
-        </div>
-      </div>
+      {/* Screenshot */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/dashboard-screenshot.png"
+        alt="MailMind dashboard"
+        className="relative w-full rounded-2xl border border-white/10 shadow-2xl shadow-black/60"
+        style={{ display: "block" }}
+      />
     </div>
   )
 }
@@ -249,15 +167,12 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.5 }}
               className="flex flex-wrap gap-3"
             >
-              <a
-                href="https://dashboard.mailmind.nl"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/security"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50"
               >
-                Log in to dashboard
-                <ArrowRight className="w-4 h-4" />
-              </a>
+                See how it works →
+              </Link>
               <Link
                 href="/demo"
                 className="inline-flex items-center gap-2 px-6 py-3 border border-white/12 bg-white/5 hover:bg-white/8 text-white font-medium rounded-xl transition-all duration-200"
@@ -300,14 +215,14 @@ export default function HomePage() {
       {/* ── Social proof bar ── */}
       <section className="border-y border-white/8 bg-white/2">
         <div className="max-w-7xl mx-auto px-6 py-5">
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-3">
-            <p className="text-sm font-medium text-[#475569]">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+            <p className="text-sm font-medium text-[#64748b]">
               Trusted by Dutch SMB businesses
             </p>
             <div className="w-px h-4 bg-white/10 hidden sm:block" />
-            {["Finance", "Logistics", "Professional Services", "E-commerce", "Consultancy"].map(
+            {["Sportscholen", "Detailhandel", "Zakelijke dienstverlening", "Logistiek", "Horeca", "Zorg"].map(
               (sector) => (
-                <span key={sector} className="text-sm text-[#334155]">
+                <span key={sector} className="text-sm text-[#94a3b8]">
                   {sector}
                 </span>
               )
@@ -317,7 +232,12 @@ export default function HomePage() {
       </section>
 
       {/* ── Features ── */}
-      <section className="py-28 px-6">
+      <section className="relative py-28 px-6 overflow-hidden">
+        {/* Subtle radial accent */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full"
+            style={{ background: "radial-gradient(ellipse at center, rgba(37,99,235,0.04) 0%, transparent 70%)" }} />
+        </div>
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
@@ -362,7 +282,12 @@ export default function HomePage() {
       </section>
 
       {/* ── How it works ── */}
-      <section className="py-28 px-6 bg-[#080c18]">
+      <section className="relative py-28 px-6 bg-[#080c18] overflow-hidden">
+        {/* Subtle radial accent */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute bottom-0 right-1/4 w-[600px] h-[400px] rounded-full"
+            style={{ background: "radial-gradient(ellipse at center, rgba(37,99,235,0.05) 0%, transparent 70%)" }} />
+        </div>
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
@@ -392,12 +317,12 @@ export default function HomePage() {
                 {i < steps.length - 1 && (
                   <div className="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-white/10 to-transparent -translate-x-8 z-0" />
                 )}
-                <div className="relative z-10">
+                <div className="relative z-10 bg-[#080c18]">
                   <div className="flex items-center gap-4 mb-5">
                     <span className="text-4xl font-bold text-[#1e2d4a] tabular-nums">
                       {step.number}
                     </span>
-                    <div className="p-2.5 rounded-xl bg-[#2563eb]/10 border border-[#2563eb]/20">
+                    <div className="p-2.5 rounded-xl bg-[#0d1830] border border-[#2563eb]/20">
                       <step.icon className="w-5 h-5 text-[#2563eb]" />
                     </div>
                   </div>
@@ -420,14 +345,14 @@ export default function HomePage() {
             variants={fadeUp}
           >
             <div className="inline-flex p-3 rounded-2xl bg-[#2563eb]/10 border border-[#2563eb]/20 mb-6">
-              <Eye className="w-7 h-7 text-[#2563eb]" />
+              <Zap className="w-7 h-7 text-[#2563eb]" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-5">
-              See MailMind in action
+              Ready to take control of your inbox?
             </h2>
             <p className="text-[#64748b] text-lg mb-8 max-w-xl mx-auto">
-              Book a live demo and see how MailMind handles your actual email scenarios — no
-              slides, no sales pitch.
+              Join Dutch businesses that trust MailMind to handle their email — safely,
+              transparently, and automatically.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link

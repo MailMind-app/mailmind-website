@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/pricing", label: "Pricing" },
   { href: "/demo", label: "Demo" },
+  { href: "/security", label: "Security" },
 ]
 
 export function Navigation() {
@@ -42,11 +43,11 @@ export function Navigation() {
           <Image
             src="/mailmind_logo.png"
             alt="MailMind"
-            width={32}
-            height={32}
-            className="w-8 h-8 object-contain"
+            width={36}
+            height={36}
+            className="w-9 h-9 object-contain"
           />
-          <span className="text-[17px] font-semibold text-white tracking-tight">
+          <span className="text-[20px] font-semibold text-white tracking-tight">
             MailMind
           </span>
         </Link>

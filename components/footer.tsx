@@ -22,18 +22,18 @@ export function Footer() {
                 MailMind
               </span>
             </Link>
-            <p className="text-sm text-[#64748b] leading-relaxed max-w-xs">
+            <p className="text-sm text-[#94a3b8] leading-relaxed max-w-xs">
               Autonomous AI email operator for Dutch SMBs. Full control, zero
               chaos.
             </p>
-            <p className="text-xs text-[#475569] mt-4">
+            <p className="text-xs text-[#64748b] mt-4">
               AVG-compliant &middot; Data stored in the EU &middot; No training on your data
             </p>
           </div>
 
           {/* Product */}
           <div>
-            <p className="text-xs font-semibold text-[#475569] uppercase tracking-widest mb-4">
+            <p className="text-xs font-semibold text-[#64748b] uppercase tracking-widest mb-4">
               Product
             </p>
             <ul className="space-y-3">
@@ -46,7 +46,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[#64748b] hover:text-white transition-colors"
+                    className="text-sm text-[#e2e8f0] hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -57,7 +57,7 @@ export function Footer() {
 
           {/* Account */}
           <div>
-            <p className="text-xs font-semibold text-[#475569] uppercase tracking-widest mb-4">
+            <p className="text-xs font-semibold text-[#64748b] uppercase tracking-widest mb-4">
               Account
             </p>
             <ul className="space-y-3">
@@ -75,14 +75,14 @@ export function Footer() {
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-[#64748b] hover:text-white transition-colors"
+                      className="text-sm text-[#e2e8f0] hover:text-white transition-colors"
                     >
                       {link.label}
                     </a>
                   ) : (
                     <Link
                       href={link.href}
-                      className="text-sm text-[#64748b] hover:text-white transition-colors"
+                      className="text-sm text-[#e2e8f0] hover:text-white transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -94,10 +94,10 @@ export function Footer() {
         </div>
 
         <div className="border-t border-white/8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-[#475569]">
+          <p className="text-sm text-[#94a3b8]">
             &copy; {year} MailMind. All rights reserved.
           </p>
-          <p className="text-xs text-[#334155]">
+          <p className="text-xs text-[#64748b]">
             Built for organizations that require control and accountability.
           </p>
         </div>

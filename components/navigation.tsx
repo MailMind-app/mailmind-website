@@ -43,11 +43,11 @@ export function Navigation() {
           <Image
             src="/mailmind_logo.png"
             alt="MailMind"
-            width={40}
-            height={40}
-            className="w-10 h-10 object-contain"
+            width={48}
+            height={48}
+            className="w-12 h-12 object-contain"
           />
-          <span className="text-xl font-bold text-white tracking-tight">
+          <span className="text-2xl font-bold text-white tracking-tight">
             MailMind
           </span>
         </Link>

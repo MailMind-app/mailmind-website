@@ -630,9 +630,7 @@ const CATEGORIES = [
     return;
   }
 
-  const categorieen = Array.from(
-    document.querySelectorAll('#cat-grid .cat-item.selected')
-  ).map(el => el.textContent.trim());
+  const categorieen = Object.keys(handlingChoices);
 
   const tovSelected = document.querySelector('#tov-opts .opt.selected');
   const rtSelected  = document.querySelector('#rt-opts .opt.selected');

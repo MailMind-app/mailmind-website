@@ -460,6 +460,13 @@
     background: currentColor;
     flex-shrink: 0;
   }
+
+  @media (max-width: 480px) {
+    .handling-row { padding: 8px 10px; gap: 8px; }
+    .handling-name { font-size: 12px; }
+    .handling-btn { padding: 4px 8px; font-size: 11px; gap: 4px; }
+    .dot-sm { width: 5px; height: 5px; }
+  }
 </style>
 </head>
 <body>
@@ -524,7 +531,7 @@
 
       <div class="question">
         <div class="q-label"><span class="q-num">5</span>Schrijf één zin zoals jij zelf een klant zou antwoorden.</div>
-        <div class="q-hint">Bijv: "Hey! Onze openingstijden zijn maandag t/m vrijdag van 7:00 tot 22:00." — Dit gebruiken wij om de AI in te stellen.</div>
+        <div class="q-hint">Bijv: "Hey! Onze openingstijden zijn maandag t/m vrijdag van 7:00 tot 22:00." — Dit gebruiken wij om MailMind in te stellen.</div>
         <textarea class="q-input" id="q5" rows="2" placeholder="Bijv. &quot;Hey! Onze openingstijden zijn maandag t/m vrijdag van 7:00 tot 22:00. Tot snel!&quot;"></textarea>
       </div>
     </div>
@@ -545,7 +552,13 @@
 
     
 
-  <div class="success" id="success">
+  
+    <div class="submit-wrap">
+      <div class="submit-note">Door dit formulier in te sturen geef je <strong>MailMind</strong> toestemming om toegang te vragen tot het opgegeven emailadres voor de pilot. Wij nemen binnen 24 uur contact op via <strong>rens@mailmind.nl</strong>.</div>
+      <button class="btn-submit" onclick="submitForm()">Verstuur naar MailMind</button>
+    </div>
+
+<div class="success" id="success">
     <div class="success-icon">✓</div>
     <h2>Ontvangen — bedankt!</h2>
     <p>Wij hebben je instellingen ontvangen en nemen binnen 24 uur contact op via rens@mailmind.nl om alles te bevestigen en een startdatum te plannen.</p>

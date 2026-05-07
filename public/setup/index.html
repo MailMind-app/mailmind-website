@@ -482,7 +482,7 @@
     </div>
   </div>
 
-  <div class="intro">
+  <div class="intro" id="intro">
     <div class="intro-title">Welkom bij MailMind.</div>
     <div class="intro-sub">Vul dit formulier in zodat wij MailMind perfect kunnen instellen voor jouw bedrijf. Het kost je ongeveer 5 minuten. Na ontvangst nemen wij contact op om een startdatum te bevestigen.</div>
   </div>
@@ -669,6 +669,7 @@ const CATEGORIES = [
     });
     const json = await res.json();
     if (json.success) {
+      document.getElementById('intro').style.display = 'none';
       document.getElementById('form-wrap').style.display = 'none';
       document.getElementById('success').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });

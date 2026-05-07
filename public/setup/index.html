@@ -633,21 +633,18 @@ const CATEGORIES = [
   const categorieen = Object.keys(handlingChoices);
 
   const tovSelected = document.querySelector('#tov-opts .opt.selected');
-  const rtSelected  = document.querySelector('#rt-opts .opt.selected');
-  const notifSelected = document.querySelector('#notif-opts .opt.selected');
+
 
   const payload = {
     bedrijfsnaam:     bedrijf,
-    emailadres:       q1,
-    categorieen:      categorieen,
-    andere_categorie: document.getElementById('q2-other').value.trim() || '—',
-    nooit_beantwoorden: document.getElementById('q3').value.trim() || '—',
-    tone_of_voice:    tovSelected ? tovSelected.textContent.trim() : '—',
-    voorbeeldzin:     document.getElementById('q5').value.trim() || '—',
-    contact_naam:     document.getElementById('q6-naam').value.trim() || '—',
-    contact_tel:      document.getElementById('q6-tel').value.trim() || '—',
-    reactietijd:      rtSelected ? rtSelected.textContent.trim() : '—',
-    notificaties:     notifSelected ? notifSelected.textContent.trim() : '—',
+    emailadres:           q1,
+    categorieen:          categorieen,
+    handling_per_categorie: handlingChoices,
+    afsluiting:           document.getElementById('q3') ? document.getElementById('q3').value.trim() : '—',
+    tone_of_voice:        tovSelected ? tovSelected.textContent.trim() : '—',
+    voorbeeldzin:         document.getElementById('q5') ? document.getElementById('q5').value.trim() : '—',
+    contact_naam:         document.getElementById('q6-naam') ? document.getElementById('q6-naam').value.trim() : '—',
+    contact_tel:          document.getElementById('q6-tel') ? document.getElementById('q6-tel').value.trim() : '—',
   };
 
   const btn = document.querySelector('.btn-submit');

@@ -403,6 +403,63 @@
     color: #38BDF8;
     text-decoration: none;
   }
+
+  .handling-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 10px 14px;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .handling-name {
+    font-size: 13.5px;
+    color: #e2e8f0;
+    flex: 1;
+  }
+  .handling-options {
+    display: flex;
+    gap: 6px;
+  }
+  .handling-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: Inter, sans-serif;
+    font-weight: 500;
+    transition: all 0.15s;
+    background: rgba(255,255,255,0.06);
+    color: #94a3b8;
+  }
+  .handling-btn:hover {
+    border-color: rgba(255,255,255,0.3);
+    color: #e2e8f0;
+  }
+  .handling-btn.active-green {
+    background: rgba(34,197,94,0.15);
+    border-color: #22c55e;
+    color: #22c55e;
+  }
+  .handling-btn.active-red {
+    background: rgba(239,68,68,0.15);
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+  .dot-sm {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -440,26 +497,15 @@
       </div>
 
       <div class="question">
-        <div class="q-label"><span class="q-num">2</span>Welke soorten emails komen het meest binnen?</div>
-        <div class="q-hint">Selecteer alles wat van toepassing is. Je kunt meerdere opties kiezen.</div>
-        <div class="cat-grid" style="margin-top: 8px;" id="cat-grid">
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Openingstijden</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Abonnementsvragen</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Lesroosters</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Nieuwe leden</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Klachten</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Betalingsvragen</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Proefles aanvragen</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Opzeggingen</div>
-          <div class="cat-item" onclick="toggleCat(this)"><div class="cat-check"></div>Andere</div>
-        </div>
-        <input type="text" class="q-input" id="q2-other" placeholder="Andere categorie toevoegen..." style="margin-top: 10px;">
+        <div class="q-label"><span class="q-num">2</span>Wat mag MailMind doen met elk type email?</div>
+        <div class="q-hint">Kies per categorie of MailMind automatisch antwoordt, of de email naar jou doorstuurt.</div>
+        <div id="handling-rows" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
 
       <div class="question">
-        <div class="q-label"><span class="q-num">3</span>Welke emails mag MailMind NOOIT zelfstandig beantwoorden?</div>
-        <div class="q-hint">Bijv. klachten, juridische vragen, persoonlijke situaties. Wij zorgen dat deze altijd bij jou terechtkomen.</div>
-        <textarea class="q-input" id="q3" rows="3" placeholder="Bijv: klachten over medewerkers, betalingsgeschillen, medische vragen..."></textarea>
+        <div class="q-label"><span class="q-num">3</span>Hoe sluit jouw bedrijf emails af?</div>
+        <div class="q-hint">MailMind gebruikt deze afsluiting in elke mail die hij verstuurt.</div>
+        <textarea class="q-input" id="q3" rows="3" placeholder="Bijv. Met vriendelijke groet,&#10;&#10;[Naam bedrijf]"></textarea>
       </div>
     </div>
 
@@ -479,7 +525,7 @@
       <div class="question">
         <div class="q-label"><span class="q-num">5</span>Schrijf één zin zoals jij zelf een klant zou antwoorden.</div>
         <div class="q-hint">Bijv: "Hey! Onze openingstijden zijn maandag t/m vrijdag van 7:00 tot 22:00." — Dit gebruiken wij om de AI in te stellen.</div>
-        <textarea class="q-input" id="q5" rows="2" placeholder="Schrijf hier een voorbeeldzin..."></textarea>
+        <textarea class="q-input" id="q5" rows="2" placeholder="Bijv. &quot;Hey! Onze openingstijden zijn maandag t/m vrijdag van 7:00 tot 22:00. Tot snel!&quot;"></textarea>
       </div>
     </div>
 
@@ -493,36 +539,11 @@
         <input type="tel" class="q-input" id="q6-tel" placeholder="Telefoonnummer">
       </div>
 
-      <div class="question">
-        <div class="q-label"><span class="q-num">7</span>Hoe snel moeten emails normaal gesproken beantwoord worden?</div>
-        <div class="options" style="margin-top: 8px;" id="rt-opts">
-          <div class="opt" onclick="selectOpt(this, 'rt-opts')"><div class="opt-dot"></div>Binnen 1 uur</div>
-          <div class="opt" onclick="selectOpt(this, 'rt-opts')"><div class="opt-dot"></div>Binnen 4 uur</div>
-          <div class="opt" onclick="selectOpt(this, 'rt-opts')"><div class="opt-dot"></div>Zelfde dag</div>
-          <div class="opt" onclick="selectOpt(this, 'rt-opts')"><div class="opt-dot"></div>Binnen 24 uur</div>
-        </div>
+      
       </div>
     </div>
 
-    <div class="section">
-      <div class="section-label">Notificaties</div>
-
-      <div class="question">
-        <div class="q-label"><span class="q-num">8</span>Hoe wil je op de hoogte gehouden worden van emails die wachten op jouw beoordeling?</div>
-        <div class="options" style="margin-top: 8px;" id="notif-opts">
-          <div class="opt" onclick="selectOpt(this, 'notif-opts')"><div class="opt-dot"></div>Direct bij elke mail</div>
-          <div class="opt" onclick="selectOpt(this, 'notif-opts')"><div class="opt-dot"></div>Samenvatting elk uur</div>
-          <div class="opt" onclick="selectOpt(this, 'notif-opts')"><div class="opt-dot"></div>Dagelijks overzicht</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="submit-wrap">
-      <div class="submit-note">Door dit formulier in te sturen geef je <strong>MailMind</strong> toestemming om toegang te vragen tot het opgegeven emailadres voor de pilot. Wij nemen binnen 24 uur contact op via <strong>rens@mailmind.nl</strong>.</div>
-      <button class="btn-submit" onclick="submitForm()">Verstuur naar MailMind</button>
-    </div>
-
-  </div>
+    
 
   <div class="success" id="success">
     <div class="success-icon">✓</div>
@@ -548,7 +569,41 @@ function selectOpt(el, groupId) {
   el.classList.add('selected');
 }
 
-async function submitForm() {
+const CATEGORIES = [
+    'Openingstijden', 'Abonnementsvragen', 'Lesroosters', 'Nieuwe leden',
+    'Proefles aanvragen', 'Betalingsvragen', 'Opzeggingen', 'Klachten', 'Overige vragen'
+  ];
+
+  var handlingChoices = {};
+
+  function buildHandlingRows() {
+    var container = document.getElementById('handling-rows');
+    if (!container) return;
+    container.innerHTML = '';
+    CATEGORIES.forEach(function(cat) {
+      var row = document.createElement('div');
+      row.className = 'handling-row';
+      row.innerHTML = '<span class="handling-name">' + cat + '</span>' +
+        '<div class="handling-options">' +
+        '<button type="button" class="handling-btn" data-cat="' + cat + '" data-val="auto"><span class="dot-sm"></span> Automatisch</button>' +
+        '<button type="button" class="handling-btn" data-cat="' + cat + '" data-val="fallback"><span class="dot-sm"></span> Doorsturen</button>' +
+        '</div>';
+      container.appendChild(row);
+    });
+    container.querySelectorAll('.handling-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var siblings = container.querySelectorAll('[data-cat="' + btn.dataset.cat + '"]');
+        siblings.forEach(function(s) { s.classList.remove('active-green', 'active-red'); });
+        if (btn.dataset.val === 'auto') btn.classList.add('active-green');
+        if (btn.dataset.val === 'fallback') btn.classList.add('active-red');
+        handlingChoices[btn.dataset.cat] = btn.dataset.val;
+      });
+    });
+  }
+
+  buildHandlingRows();
+
+  async function submitForm() {
   const bedrijf = document.getElementById('bedrijfsnaam').value.trim();
   if (!bedrijf) {
     document.getElementById('bedrijfsnaam').focus();

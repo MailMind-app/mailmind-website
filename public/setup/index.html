@@ -487,7 +487,7 @@
     <div class="intro-sub">Vul dit formulier in zodat wij MailMind perfect kunnen instellen voor jouw bedrijf. Het kost je ongeveer 5 minuten. Na ontvangst nemen wij contact op om een startdatum te bevestigen.</div>
   </div>
 
-  <div id="form-wrap">
+  <div id="form-wrap" style="display:block">
 
     <div id="form-content">
 
@@ -577,6 +577,11 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('form-wrap').style.display = 'block';
+  document.getElementById('success').style.display = 'none';
+});
+
 function toggleCat(el) {
   el.classList.toggle('selected');
 }

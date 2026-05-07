@@ -664,7 +664,7 @@ const CATEGORIES = [
     });
     const json = await res.json();
     if (json.success) {
-      document.getElementById('form-content').style.display = 'none';
+      document.getElementById('form-wrap').style.display = 'none';
       document.getElementById('success').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {

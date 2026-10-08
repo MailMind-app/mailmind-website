@@ -23,7 +23,7 @@ Key facts:
 
 ## Pages
 
-- [Home](https://mailmind.nl/): Overview of MailMind, features and how it works.
+- [Home](https://mailmind.nl/): Overview of MailMind, features and how it works. Also available as Markdown: request it with the header `Accept: text/markdown`.
 - [Pricing](https://mailmind.nl/pricing): Starter, Professional and Enterprise plans, plus FAQ.
 - [Security](https://mailmind.nl/security): Human-in-the-loop controls, AI transparency and data protection.
 - [Request a demo](https://mailmind.nl/demo): Book a personal demo with scenarios from your own business.

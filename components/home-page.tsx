@@ -191,9 +191,9 @@ export function HomePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              className="flex items-center gap-6 mt-8"
+              className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8"
             >
-              {["AVG compliant", "No data training", "EU-hosted"].map((item) => (
+              {["AVG compliant", "No data training", "Data stored in the EU"].map((item) => (
                 <div key={item} className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span className="text-sm text-[#64748b]">{item}</span>

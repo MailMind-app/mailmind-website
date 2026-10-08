@@ -163,7 +163,7 @@ export default function PricingPage() {
               },
               {
                 q: "How does data privacy work?",
-                a: "MailMind is AVG-compliant and stores all data in the EU. Your emails are never used to train shared AI models. You retain full ownership.",
+                a: "MailMind is AVG-compliant. Your email data is stored in the EU (Hetzner, Helsinki). For classification and draft replies, email content is processed via the OpenAI API, outside the EU. Your email data is not used to train AI models, and you retain full ownership. See our privacy policy for all subprocessors.",
               },
               {
                 q: "Is there a free trial?",

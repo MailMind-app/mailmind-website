@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t border-white/8 bg-[#080c18]">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-4">
@@ -42,6 +42,29 @@ export function Footer() {
                 { href: "/pricing", label: "Pricing" },
                 { href: "/demo", label: "Request demo" },
                 { href: "/security", label: "Security" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-[#e2e8f0] hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <p className="text-xs font-semibold text-[#64748b] uppercase tracking-widest mb-4">
+              Company
+            </p>
+            <ul className="space-y-3">
+              {[
+                { href: "/about", label: "About" },
+                { href: "/contact", label: "Contact" },
+                { href: "/privacy", label: "Privacy" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

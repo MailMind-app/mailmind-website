@@ -14,6 +14,9 @@ export const publicRoutes = [
   { path: "/pricing", lastModified: "2026-04-03", priority: 0.9 },
   { path: "/security", lastModified: "2026-04-03", priority: 0.8 },
   { path: "/demo", lastModified: "2026-04-03", priority: 0.9 },
+  { path: "/about", lastModified: "2026-10-08", priority: 0.7 },
+  { path: "/contact", lastModified: "2026-10-08", priority: 0.7 },
+  { path: "/privacy", lastModified: "2026-10-08", priority: 0.5 },
   { path: "/login", lastModified: "2026-04-03", priority: 0.3 },
 ] as const
 

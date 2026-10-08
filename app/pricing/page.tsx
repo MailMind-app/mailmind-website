@@ -4,71 +4,7 @@ import type { Metadata } from "next"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Check, ArrowRight, ShieldCheck, Zap, Users } from "lucide-react"
-
-const tiers = [
-  {
-    name: "Starter",
-    price: "€99",
-    period: "/mo",
-    description: "For small businesses starting with AI email automation.",
-    emails: "500 emails/month",
-    highlight: false,
-    cta: "Get started",
-    ctaHref: "/demo",
-    features: [
-      "500 AI-processed emails/month",
-      "1 mailbox",
-      "AI categorisation",
-      "Fallback routing",
-      "Training mode",
-      "Dashboard & logs",
-      "Human-in-the-loop approval",
-      "Email support",
-    ],
-  },
-  {
-    name: "Professional",
-    price: "€199",
-    period: "/mo",
-    description: "For growing businesses that need full workflow control.",
-    emails: "1,000 emails/month",
-    highlight: true,
-    cta: "Get started",
-    ctaHref: "/demo",
-    features: [
-      "1,000 AI-processed emails/month",
-      "3 mailboxes",
-      "Everything in Starter, plus:",
-      "Advanced training controls",
-      "Custom AI training on your data",
-      "Priority support",
-      "Export functionality",
-      "Statistics & trends",
-      "Webhook integrations",
-    ],
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    period: "",
-    description: "For organizations with compliance and scale requirements.",
-    emails: "Unlimited",
-    highlight: false,
-    cta: "Contact us",
-    ctaHref: "/demo",
-    features: [
-      "Unlimited AI processing",
-      "Unlimited mailboxes",
-      "Everything in Professional, plus:",
-      "Dedicated onboarding",
-      "Custom integrations",
-      "Compliance & GDPR reporting",
-      "Personal account management",
-      "Custom AI model training",
-      "24/7 phone support",
-    ],
-  },
-]
+import { tiers } from "@/lib/pricing"
 
 const trust = [
   { icon: ShieldCheck, label: "No lock-in contracts" },

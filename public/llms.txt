@@ -1,0 +1,37 @@
+# MailMind
+
+> MailMind is an AI email operator for Dutch small and medium-sized businesses (SMBs), starting with gyms and fitness clubs. It classifies incoming business email and prepares draft replies; a person reviews and approves every reply before it is sent.
+
+MailMind is not a chatbot or an autoresponder. It is a decision engine that classifies, decides and acts on business email with full transparency: every AI decision is logged and visible in the MailMind dashboard.
+
+Key facts:
+
+- Email data is stored in the EU (Hetzner, Helsinki, Finland). The MailMind dashboard runs on the same infrastructure.
+- AI processing of email content (classification and draft replies) runs through the OpenAI API, outside the EU.
+- Email data is not used to train AI models.
+- The marketing website is hosted on Vercel.
+- Pricing: Starter €99/month (500 AI-processed emails), Professional €199/month (1,000 AI-processed emails), Enterprise on request.
+- Contact: rens@mailmind.nl
+
+## When to use MailMind
+
+- A Dutch SMB inbox receives a steady stream of recurring questions and the team wants to spend less time answering them by hand.
+- A gym or fitness club gets daily email about memberships, class schedules, opening hours and new sign-ups.
+- Incoming email needs to be classified and routed automatically, with a fallback to a person for anything unclear.
+- The business wants AI-drafted replies, but with human review: nothing is sent without explicit approval.
+- The organization needs to see why the AI made each decision (decision log) and wants its email data stored in the EU.
+
+## Pages
+
+- [Home](https://mailmind.nl/): Overview of MailMind, features and how it works. Also available as Markdown: request it with the header `Accept: text/markdown`.
+- [Pricing](https://mailmind.nl/pricing): Starter, Professional and Enterprise plans, plus FAQ.
+- [Security](https://mailmind.nl/security): Human-in-the-loop controls, AI transparency and data protection.
+- [Request a demo](https://mailmind.nl/demo): Book a personal demo with scenarios from your own business.
+- [About](https://mailmind.nl/about): What MailMind does, who it is for and how we work.
+- [Contact](https://mailmind.nl/contact): Email address and demo link.
+- [Privacy policy](https://mailmind.nl/privacy): Data storage, AI processing and the full list of subprocessors.
+
+## Optional
+
+- [Log in](https://mailmind.nl/login): Customer login for the MailMind dashboard.
+- [Sitemap](https://mailmind.nl/sitemap.xml): All public pages.

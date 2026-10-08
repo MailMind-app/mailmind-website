@@ -3,6 +3,12 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -10,20 +16,19 @@ const inter = Inter({
   display: "swap",
 });
 
+// Canonical URLs are set per page via pageMetadata(); the root only holds defaults.
 export const metadata: Metadata = {
   title: {
-    default: "MailMind — AI-powered email automation for SMBs",
+    default: DEFAULT_TITLE,
     template: "%s | MailMind",
   },
-  description:
-    "MailMind is an autonomous AI email operator for SMBs. No chatbot, no autoresponder — a decision engine that classifies, decides, and acts with full transparency.",
-  metadataBase: new URL("https://mailmind.nl"),
+  description: DEFAULT_DESCRIPTION,
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
-    locale: "nl_NL",
-    url: "https://mailmind.nl",
-    siteName: "MailMind",
-    title: "MailMind — AI-powered email automation for SMBs",
+    locale: "en_US",
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
     description:
       "Autonomous AI email operator for Dutch SMBs. Full control, zero chaos.",
   },
@@ -44,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="nl" className={inter.variable}>
+    <html lang="en" className={inter.variable}>
       <body className="min-h-screen bg-background text-foreground">
         <Navigation />
         <main>{children}</main>

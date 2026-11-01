@@ -18,18 +18,18 @@ export function Recognition() {
         <div data-reveal className="panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-5 py-3.5 text-sm">
             <span className="font-medium text-fg">Inbox</span>
-            <span className="text-subtle">{recognition.mails.length} nieuw</span>
+            <span className="text-subtle">Nieuw</span>
           </div>
           <ul className="divide-y divide-line">
             {recognition.mails.map((mail) => (
-              <li key={mail.subject} className="grid gap-3 px-5 py-4 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-6">
+              <li key={mail.subject} className={`${mail.desktopOnly ? "hidden sm:grid" : "grid"} gap-2.5 px-4 py-3.5 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-6 sm:px-5 sm:py-4`}>
                 <div className="min-w-0">
                   <div className="flex items-baseline justify-between gap-3 text-sm">
                     <span className="font-medium text-muted">{mail.from}</span>
                     <span className="shrink-0 text-xs text-subtle sm:hidden">{mail.time}</span>
                   </div>
                   <p className="mt-0.5 font-medium text-fg">{mail.subject}</p>
-                  <p className="mt-0.5 truncate text-sm text-subtle">{mail.preview}</p>
+                  <p className="mt-0.5 hidden truncate text-sm text-subtle sm:block">{mail.preview}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                   <Badge tone="accent">{mail.category}</Badge>

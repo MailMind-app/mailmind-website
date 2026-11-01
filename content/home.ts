@@ -1,27 +1,30 @@
-// Teksten van de homepage (en gedeelde secties). *Woorden tussen sterretjes*
-// worden serif-cursief. [[functie-id]] wordt de titel van die functie uit
-// content/features.ts, met automatisch een "Binnenkort"-badge waar nodig.
+// Teksten van de homepage. *Woorden tussen sterretjes* worden serif-cursief.
+// [[functie-id]] wordt de titel van die functie uit content/features.ts, met
+// automatisch een "Binnenkort"-badge waar nodig.
 
 export const hero = {
   eyebrow: "AI-e-mailassistent voor sportscholen",
   title: "Je inbox gesorteerd. Je antwoorden klaar. *Jij beslist.*",
   subtitle:
-    "MailMind sorteert de mail van je sportschool, stuurt door naar de juiste collega en schrijft conceptantwoorden. Niets gaat de deur uit zonder jouw klik.",
+    "MailMind sorteert de mail van je sportschool, stuurt door naar de juiste collega en schrijft conceptantwoorden. Er gaat geen antwoord de deur uit zonder jouw klik.",
   primaryCta: { label: "Demo aanvragen", href: "/demo" },
   secondaryCta: { label: "Zo werkt het", href: "#zo-werkt-het" },
   notes: ["Werkt met je eigen mailbox", "Opslag in de EU"],
+  // Verzonnen voorbeeld; geen bestaande sportschool, naam, lestijd of prijs.
   demo: {
     mailbox: "info@jouwsportschool.nl",
-    from: "Sanne",
-    initials: "S",
-    time: "09:12",
-    subject: "Kan ik zaterdag een proefles doen?",
-    preview: "Hoi! Ik wil graag een keer meetrainen. Kan dat zaterdag?",
+    mode: "Semi-Live",
+    from: "Lotte",
+    initials: "L",
+    time: "08:41",
+    subject: "Proefles zaterdag?",
+    preview: "Hoi! Ik wil graag een keer meedoen met een groepsles. Kan dat zaterdag?",
     category: "Proefles",
+    receipt: "Ontvangstbevestiging verstuurd",
     source: "Rooster · kennisbank",
     draft:
-      "Hoi Sanne, leuk dat je wilt komen! Zaterdag om 10:00 is er een proefles. Je bent welkom, kom je tien minuten eerder?",
-    approved: "Goedgekeurd door jou",
+      "Hoi Lotte, leuk dat je wilt komen proeftrainen! Zaterdagochtend zijn er twee groepslessen waar je bij kunt aansluiten. Laat je weten welke je kiest? Dan zetten we je erbij.",
+    approved: "Goedgekeurd · antwoord verstuurd",
   },
 }
 
@@ -33,19 +36,21 @@ export type InboxMail = {
   category: string
   action: string
   toHuman: boolean
+  /** Alleen tonen vanaf tabletbreedte, om de pagina op mobiel kort te houden. */
+  desktopOnly?: boolean
 }
 
 export const recognition = {
   eyebrow: "Herkenning",
   title: "Klinkt dit *bekend?*",
   intro:
-    "Ledenvragen, roosters, een opzegging, een factuur en een bericht van de bond. Allemaal in dezelfde inbox, allemaal tussen het werk door. MailMind deelt ze in en zet klaar wat klaar kan.",
+    "Ledenvragen, roosters, een opzegging, een factuur en een bericht van de bond. Allemaal tussen het werk door. MailMind deelt ze in en zet klaar wat klaar kan.",
   mails: [
     {
-      from: "Sanne",
+      from: "Lotte",
       subject: "Proefles zaterdag?",
       preview: "Hoi! Kan ik zaterdag een keer meetrainen?",
-      time: "09:12",
+      time: "08:41",
       category: "Proefles",
       action: "Concept klaar",
       toHuman: false,
@@ -54,7 +59,7 @@ export const recognition = {
       from: "Mark",
       subject: "Rooster in de kerstvakantie",
       preview: "Gaan de groepslessen gewoon door tussen kerst en oud en nieuw?",
-      time: "08:47",
+      time: "08:12",
       category: "Rooster",
       action: "Concept klaar",
       toHuman: false,
@@ -63,7 +68,7 @@ export const recognition = {
       from: "Fatima",
       subject: "Opzegging lidmaatschap",
       preview: "Ik wil graag mijn abonnement opzeggen per 1 januari.",
-      time: "08:30",
+      time: "07:58",
       category: "Opzegging",
       action: "Naar een mens",
       toHuman: true,
@@ -76,6 +81,7 @@ export const recognition = {
       category: "Zakelijk",
       action: "Naar een mens",
       toHuman: true,
+      desktopOnly: true,
     },
     {
       from: "Sportbond",
@@ -106,62 +112,7 @@ export const steps = {
       text: "Elk concept beoordeel je: goedkeuren, verbeteren of afwijzen. MailMind leert van die keuzes.",
     },
   ],
-}
-
-export const modesSection = {
-  eyebrow: "Drie modi",
-  title: "Jij bepaalt *hoeveel* MailMind doet.",
-  intro:
-    "Je begint in Training. In Training en Semi-Live gaat er niets de deur uit zonder klik van een mens.",
-}
-
-export const comparison = {
-  eyebrow: "Vergelijking",
-  title: "Geen autoresponder. *Geen chatbot.*",
-  intro: "Een autoresponder stuurt iedereen hetzelfde bericht. Een chatbot praat met bezoekers op je website. MailMind werkt in je mailbox en jij houdt het laatste woord.",
-  columns: ["MailMind", "Autoresponder", "Chatbot"],
-  rows: [
-    {
-      label: "Werkt in je bestaande mailbox",
-      values: ["Ja, via IMAP", "Ja", "Nee, apart kanaal op je website"],
-    },
-    {
-      label: "Antwoord past bij de vraag",
-      values: ["Concept uit je kennisbank", "Altijd hetzelfde bericht", "Binnen het chatgesprek"],
-    },
-    {
-      label: "Een mens keurt goed vóór verzending",
-      values: ["Altijd, in Training en Semi-Live", "Nee, gaat direct", "Nee, antwoordt direct"],
-    },
-    {
-      label: "Opzeggingen, betalingen en klachten",
-      values: ["Altijd naar een mens", "Krijgen hetzelfde bericht", "Afhankelijk van de instellingen"],
-    },
-    {
-      label: "Doorsturen naar de juiste collega",
-      values: ["Na één klik van de manager", "Nee", "Nee"],
-    },
-    {
-      label: "Uitleg bij elke beslissing",
-      values: ["Beslislog per mail", "Niet van toepassing", "Afhankelijk van de leverancier"],
-    },
-  ],
-}
-
-export const alwaysHuman = {
-  eyebrow: "Grenzen",
-  title: "Wat *altijd* naar een mens gaat.",
-  intro:
-    "Sommige mail vraagt om een mens. Daar maakt MailMind geen uitzondering op, ook niet als het druk is.",
-  items: [
-    { title: "Opzeggingen", text: "Een lid dat wil stoppen, spreek je zelf." },
-    { title: "Betalingen", text: "Alles over geld, incasso en facturen." },
-    { title: "Klachten", text: "Een klacht verdient een persoonlijk antwoord." },
-    {
-      title: "Geen antwoord in de kennisbank",
-      text: "Staat het er niet in, dan maakt MailMind geen concept en gaat de mail naar een mens.",
-    },
-  ],
+  link: { label: "Meer over de werking", href: "/hoe-het-werkt" },
 }
 
 export const dashboardShowcase = {
@@ -172,19 +123,56 @@ export const dashboardShowcase = {
   highlights: ["beslislog", "categorieen", "beoordelen"],
 }
 
-export const securitySummary = {
-  eyebrow: "Veiligheid",
-  title: "Duidelijk over *je data.*",
-  points: [
-    { title: "Een mens beslist", text: "Elk concept wordt door een mens beoordeeld voordat er iets verstuurd wordt." },
-    { title: "Beslislog per mail", text: "Je ziet bij elke mail waarom MailMind iets besloot." },
-    { title: "Opslag in de EU", text: "Dashboard en database draaien bij Hetzner in Helsinki." },
-    {
-      title: "AI via de OpenAI API",
-      text: "Mailinhoud gaat voor indeling en concepten via de OpenAI API, buiten de EU. API-data wordt niet gebruikt voor training.",
-    },
+export const control = {
+  eyebrow: "Controle",
+  title: "Altijd een *mens* aan het roer.",
+  intro:
+    "MailMind doet het voorwerk. Er gaat geen antwoord de deur uit zonder jouw klik. In Semi-Live krijgt de klant direct een ontvangstbevestiging.",
+  alwaysHumanTitle: "Gaat altijd naar een mens",
+  alwaysHuman: [
+    { title: "Opzeggingen", text: "Een lid dat wil stoppen, spreek je zelf." },
+    { title: "Betalingen", text: "Alles over geld, incasso en facturen." },
+    { title: "Klachten", text: "Een klacht verdient een persoonlijk antwoord." },
+    { title: "Geen antwoord in de kennisbank", text: "Dan maakt MailMind geen concept." },
   ],
-  link: { label: "Meer over veiligheid en privacy", href: "/veiligheid" },
+  modesTitle: "Drie modi",
+  modesLink: { label: "Meer over de modi", href: "/hoe-het-werkt#modi" },
+  security:
+    "Opslag in de EU, bij Hetzner in Helsinki. AI-verwerking via de OpenAI API; API-data wordt niet gebruikt voor training.",
+  securityLink: { label: "Meer over veiligheid", href: "/veiligheid" },
+}
+
+export type ComparisonColumn = {
+  name: string
+  ours: boolean
+  points: string[]
+}
+
+export const comparison = {
+  eyebrow: "Vergelijking",
+  title: "Geen autoresponder. *Geen chatbot.*",
+  columns: [
+    {
+      name: "Autoresponder",
+      ours: false,
+      points: ["Stuurt altijd dezelfde tekst, ongeacht de vraag", "Sorteert niet en stuurt niet door"],
+    },
+    {
+      name: "Chatbot",
+      ours: false,
+      points: ["Staat op je website; het lid moet daar zelf naartoe", "Doet niets met je inbox"],
+    },
+    {
+      name: "MailMind",
+      ours: true,
+      points: [
+        "Leest de mail in je inbox",
+        "Sorteert en stuurt door naar de juiste collega",
+        "Schrijft een antwoord op maat",
+        "Een mens beslist",
+      ],
+    },
+  ] satisfies ComparisonColumn[],
 }
 
 export const pricingTeaser = {

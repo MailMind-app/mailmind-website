@@ -2,14 +2,19 @@ import { Check } from "lucide-react"
 import { SoonBadge } from "@/components/primitives/feature-title"
 import { SectionHeading } from "@/components/primitives/section-heading"
 import { getFeature, modes } from "@/content/features"
-import { modesSection } from "@/content/home"
+import { howItWorks } from "@/content/how-it-works"
 import { cn } from "@/lib/cn"
 
 export function Modes() {
   return (
-    <section className="section-y border-t border-line" aria-labelledby="modi-title">
+    <section id={howItWorks.modes.id} className="section-y border-t border-line" aria-labelledby="modi-title">
       <div className="container-site">
-        <SectionHeading id="modi-title" eyebrow={modesSection.eyebrow} title={modesSection.title} intro={modesSection.intro} />
+        <SectionHeading
+          id="modi-title"
+          eyebrow={howItWorks.modes.eyebrow}
+          title={howItWorks.modes.title}
+          intro={howItWorks.modes.intro}
+        />
         <ol className="mt-14 grid gap-4 md:grid-cols-3 md:gap-5">
           {modes.map((mode, i) => {
             const feature = mode.featureId ? getFeature(mode.featureId) : undefined

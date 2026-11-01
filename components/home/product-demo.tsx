@@ -9,7 +9,7 @@ export function ProductDemo() {
   return (
     <div
       role="img"
-      aria-label={`Voorbeeld: de mail "${d.subject}" krijgt het label ${d.category}, MailMind schrijft een concept en jij klikt op Goedkeuren.`}
+      aria-label={`Voorbeeld in ${d.mode}: de mail "${d.subject}" krijgt het label ${d.category} en de klant krijgt een ontvangstbevestiging. MailMind schrijft een concept; het antwoord gaat pas weg nadat jij op Goedkeuren klikt.`}
       className={styles.window}
     >
       <div aria-hidden="true">
@@ -20,7 +20,7 @@ export function ProductDemo() {
             <span />
           </span>
           <span className={styles.mailbox}>Inbox · {d.mailbox}</span>
-          <span>Semi-Live</span>
+          <span>{d.mode}</span>
         </div>
 
         <div className={styles.body}>
@@ -37,6 +37,10 @@ export function ProductDemo() {
                 <span className={styles.chip}>{d.category}</span>
                 <span className={cn(styles.chip, styles.chipMuted)}>NL</span>
               </div>
+              <p className={styles.receipt}>
+                <Check className="size-3.5" />
+                {d.receipt}
+              </p>
             </div>
           </div>
 

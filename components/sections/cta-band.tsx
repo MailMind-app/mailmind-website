@@ -4,11 +4,15 @@ import { Rich } from "@/components/primitives/rich-text"
 import { finalCta } from "@/content/home"
 import { site } from "@/content/site"
 
-export function CtaBand() {
+/** Closing call to action. `attached` places it directly under the previous section. */
+export function CtaBand({ attached = false }: { attached?: boolean }) {
   return (
-    <section className="section-y border-t border-line" aria-labelledby="cta-title">
+    <section
+      className={attached ? "pb-[var(--section-y)]" : "section-y border-t border-line"}
+      aria-labelledby="cta-title"
+    >
       <div className="container-site">
-        <div data-reveal className="relative overflow-hidden rounded-xl border border-line bg-panel px-6 py-16 text-center sm:px-12 sm:py-20">
+        <div data-reveal className="relative overflow-hidden rounded-xl border border-line bg-panel px-5 py-10 text-center sm:px-12 sm:py-20">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--accent-line)_1px,transparent_1.3px)] [background-size:16px_16px] opacity-40 [mask-image:radial-gradient(ellipse_60%_70%_at_50%_100%,black,transparent_70%)]"
@@ -17,7 +21,7 @@ export function CtaBand() {
             <Rich text={finalCta.title} />
           </h2>
           <p className="relative mx-auto mt-5 max-w-xl text-lg text-muted">{finalCta.text}</p>
-          <div className="relative mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+          <div className="relative mt-8 flex flex-wrap justify-center gap-3">
             <ButtonLink href={finalCta.primary.href} size="lg">
               {finalCta.primary.label}
               <ArrowRight className="size-4" aria-hidden="true" />

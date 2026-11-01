@@ -12,7 +12,7 @@ export const faq: FaqItem[] = [
   {
     question: "Verstuurt MailMind zelf mail?",
     answer:
-      "Nee. In de modi Training en Semi-Live gaat er niets de deur uit zonder klik van een mens. In de [[live-modus]] antwoordt MailMind per categorie zelf. Die zet je alleen aan voor mailtypes die aantoonbaar goed gaan, en er is een noodstop.",
+      "Er gaat geen antwoord de deur uit zonder jouw klik. In Training gaat er niets naar de klant: je team antwoordt zelf vanuit het eigen mailprogramma. In Semi-Live krijgt de klant direct een automatische ontvangstbevestiging en verstuurt MailMind het antwoord pas na de klik van een medewerker. In de [[live-modus]] verstuurt MailMind per categorie zelf, alleen voor mailtypes die aantoonbaar goed gaan, met noodstop.",
     pages: ["home", "sportscholen"],
   },
   {
@@ -36,12 +36,12 @@ export const faq: FaqItem[] = [
   {
     question: "Wat telt mee in mijn mailvolume?",
     answer: "Elke binnenkomende mail die MailMind verwerkt. Spam en bounces tellen niet mee.",
-    pages: ["home", "prijzen"],
+    pages: ["prijzen"],
   },
   {
     question: "Wat kost het opstarten?",
     answer: `Eenmalig ${formatEuro(setupFee.amountEur)} exclusief btw, voor het vullen van je kennisbank (rooster, prijzen, openingstijden) en het inrichten van categorieën en doorsturen. Voor de eerste 5 klanten vervallen de opstartkosten.`,
-    pages: ["home", "prijzen"],
+    pages: ["prijzen"],
   },
   {
     question: "Zit ik ergens aan vast?",

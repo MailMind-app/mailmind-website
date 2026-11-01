@@ -11,3 +11,6 @@ node_modules
 # Claude Code (local settings and worktrees)
 .claude/
 tsconfig.tsbuildinfo
+
+# Design review screenshots (local only)
+design-review/

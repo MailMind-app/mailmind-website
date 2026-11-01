@@ -123,7 +123,7 @@ export default function PrivacyPage() {
               <span className="text-white">The MailMind service.</span> For customers, MailMind
               processes the emails in the mailboxes they connect: it stores them in the EU,
               classifies them and prepares draft replies. Drafts are reviewed by a person
-              before anything is sent.
+              before a reply is sent. In Semi-Live mode, the customer receives an automatic confirmation of receipt.
             </p>
           </Section>
 

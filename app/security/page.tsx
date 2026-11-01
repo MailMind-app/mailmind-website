@@ -13,9 +13,10 @@ const sections = [
     border: "border-emerald-500/20",
     type: "check" as const,
     items: [
-      "AI drafts — you approve before anything sends",
+      "AI drafts — you approve before a reply is sent",
       "Every suggestion is editable before action",
-      "Nothing is sent without explicit approval",
+      "No reply is sent without explicit approval",
+      "In Semi-Live mode, the customer gets an automatic confirmation of receipt",
       "Learns from the replies you approve and correct",
       "Coming early 2027: Live mode — MailMind sends replies itself, per category you enable",
     ],
@@ -58,7 +59,7 @@ const sections = [
     border: "border-red-500/20",
     type: "cross" as const,
     items: [
-      "Send emails without your explicit approval",
+      "Send a reply without your explicit approval",
       "Guess when information is missing or ambiguous",
       "Replace human accountability or judgment",
       "Operate without logging or oversight",

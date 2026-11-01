@@ -12,12 +12,15 @@ const inter = Inter({
   display: "swap",
 })
 
+// Only the italic is used (emphasised words). Not preloaded: it is never the
+// LCP text, so it should not compete with the body font on slow connections.
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
-  style: ["normal", "italic"],
+  style: "italic",
   variable: "--font-instrument",
   display: "swap",
+  preload: false,
 })
 
 export const metadata: Metadata = {

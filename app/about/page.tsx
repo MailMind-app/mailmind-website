@@ -15,7 +15,7 @@ const principles = [
     icon: Eye,
     title: "People stay in control",
     description:
-      "MailMind drafts, you decide. Every suggested reply can be edited, and nothing is sent without explicit approval.",
+      "MailMind drafts, you decide. Every suggested reply can be edited, and no reply is sent without explicit approval. In Semi-Live mode, the customer gets an automatic confirmation of receipt.",
   },
   {
     icon: ListChecks,
@@ -54,7 +54,7 @@ export default function AboutPage() {
               <p>
                 MailMind is an AI email operator for business inboxes. It reads incoming email,
                 classifies each message, and prepares a draft reply. A person reviews and
-                approves the draft before anything is sent.
+                approves the draft before a reply is sent.
               </p>
               <p>
                 MailMind is not a chatbot or an autoresponder. It sorts email, routes it to the

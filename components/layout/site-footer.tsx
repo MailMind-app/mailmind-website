@@ -7,12 +7,12 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-line bg-panel">
-      <div className="container-site py-16">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
-          <div className="max-w-xs">
+      <div className="container-site py-12 sm:py-16">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[1.4fr_repeat(3,1fr)] md:gap-12">
+          <div className="col-span-2 max-w-xs md:col-span-1">
             <Logo />
             <p className="mt-4 text-sm leading-relaxed text-muted">{site.shortDescription}</p>
-            <p className="mt-4 text-sm leading-relaxed text-subtle">
+            <p className="mt-4 hidden text-sm leading-relaxed text-subtle sm:block">
               Opslag in de EU (Hetzner, Helsinki). AI-verwerking via de OpenAI API.
             </p>
           </div>
@@ -39,7 +39,7 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-line pt-8 text-sm text-subtle md:flex-row md:items-start md:justify-between">
+        <div className="mt-10 flex flex-col gap-4 border-t border-line pt-6 sm:mt-14 sm:pt-8 text-sm text-subtle md:flex-row md:items-start md:justify-between">
           <p>
             © {year} {site.name} ·{" "}
             <a href={`mailto:${site.email}`} className="hover:text-fg">

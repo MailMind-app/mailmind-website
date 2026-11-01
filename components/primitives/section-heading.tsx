@@ -35,7 +35,7 @@ export function SectionHeading({
       >
         <Rich text={title} />
       </Tag>
-      {intro && <p className="mt-5 text-lg leading-relaxed text-muted">{intro}</p>}
+      {intro && <p className="mt-4 text-[17px] leading-relaxed text-muted sm:mt-5 sm:text-lg">{intro}</p>}
     </div>
   )
 }

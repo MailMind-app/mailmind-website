@@ -98,6 +98,7 @@
 }
 
 .preview {
+  display: none;
   margin-top: 0.125rem;
   font-size: 0.8125rem;
   color: var(--muted);
@@ -127,6 +128,15 @@
   border-color: var(--line-strong);
   background: transparent;
   color: var(--muted);
+}
+
+.receipt {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--success);
 }
 
 .draft {
@@ -249,7 +259,8 @@
     animation: mailIn 14s infinite both;
   }
 
-  .chips {
+  .chips,
+  .receipt {
     animation: chipsIn 14s infinite both;
   }
 
@@ -279,6 +290,32 @@
 
   .status {
     animation: statusIn 14s infinite both;
+  }
+}
+
+@media (min-width: 640px) {
+  .preview {
+    display: block;
+  }
+}
+
+@media (max-width: 639px) {
+  .body {
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .mail,
+  .draft {
+    padding: 0.75rem;
+  }
+
+  .draftText {
+    font-size: 0.8125rem;
+  }
+
+  .actions {
+    margin-top: 0.625rem;
   }
 }
 

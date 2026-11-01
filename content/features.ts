@@ -158,6 +158,8 @@ export type Mode = {
   id: string
   name: string
   summary: string
+  /** Eén regel voor de compacte weergave op de homepage. */
+  short: string
   points: string[]
   featureId?: string
 }
@@ -167,26 +169,30 @@ export const modes: Mode[] = [
     id: "training",
     name: "Training",
     summary: "MailMind leert je bedrijf kennen.",
+    short: "MailMind maakt concepten, je team antwoordt zelf. Er gaat niets naar de klant.",
     points: [
-      "MailMind sorteert je mail en schrijft concepten",
-      "Jij keurt goed, verbetert of wijst af",
-      "Er gaat niets de deur uit zonder jouw klik",
+      "MailMind sorteert je mail en maakt concepten",
+      "Je team antwoordt zelf vanuit het eigen mailprogramma",
+      "Goedkeuren, verbeteren en afwijzen trainen MailMind",
+      "Er gaat niets naar de klant",
     ],
   },
   {
     id: "semi-live",
     name: "Semi-Live",
     summary: "MailMind draait mee in het dagelijkse werk.",
+    short: "De klant krijgt direct een ontvangstbevestiging. Het antwoord gaat pas na een klik.",
     points: [
-      "Concepten klaar zodra de mail binnenkomt",
-      "Doorsturen naar de juiste collega met één klik",
-      "Er gaat niets de deur uit zonder jouw klik",
+      "De klant krijgt direct automatisch een ontvangstbevestiging",
+      "MailMind verstuurt het antwoord pas na de klik van een medewerker",
+      "Er gaat geen antwoord de deur uit zonder jouw klik",
     ],
   },
   {
     id: "live",
     name: "Live",
     summary: "MailMind antwoordt zelf, alleen waar het aantoonbaar goed gaat.",
+    short: "Per categorie zelf versturen, alleen waar het aantoonbaar goed gaat. Met noodstop.",
     points: [
       "Per categorie aan te zetten",
       "Alleen voor mailtypes die aantoonbaar goed gaan",

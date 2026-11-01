@@ -1,21 +1,19 @@
 import { faqFor } from "@/content/faq"
-import { featureLabel, getFeature, modes, roadmap } from "@/content/features"
-import { alwaysHuman, comparison, finalCta, hero, recognition, securitySummary, steps } from "@/content/home"
+import { featureLabel, getFeature, modes, roadmap, type Mode } from "@/content/features"
+import { comparison, control, dashboardShowcase, finalCta, hero, recognition, steps } from "@/content/home"
 import { pricingSummary } from "@/content/pricing"
 import { routes, site } from "@/content/site"
 import { absoluteUrl } from "@/lib/site"
 import { toPlainText as p } from "@/lib/text"
 
 // Markdown versions served by proxy.ts to clients that send `Accept: text/markdown`.
-// Generated from the same content files as the HTML pages.
+// Generated from the same content files as the HTML pages, in the same order.
 
 const pageList = routes.map((route) => `- [${route.title}](${absoluteUrl(route.path)})`).join("\n")
 
-function modeLine(mode: (typeof modes)[number]) {
+function modeName(mode: Mode) {
   const feature = mode.featureId ? getFeature(mode.featureId) : undefined
-  const name =
-    feature?.status === "binnenkort" ? `${mode.name} (binnenkort${feature.when ? `, ${feature.when}` : ""})` : mode.name
-  return `- **${name}** — ${mode.summary} ${mode.points.join(". ")}.`
+  return feature?.status === "binnenkort" ? `${mode.name} (binnenkort${feature.when ? `, ${feature.when}` : ""})` : mode.name
 }
 
 export const homeMarkdown = `# ${p(hero.title)}
@@ -34,25 +32,34 @@ ${recognition.mails.map((m) => `- ${m.subject} → ${m.category}: ${m.action}`).
 
 ${steps.items.map((s, i) => `${i + 1}. **${s.title}** — ${s.text}`).join("\n")}
 
-## Drie modi
+[${steps.link.label}](${absoluteUrl(steps.link.href)})
 
-${modes.map(modeLine).join("\n")}
+## ${p(dashboardShowcase.title)}
+
+${dashboardShowcase.intro}
+
+${dashboardShowcase.highlights
+  .map((id) => getFeature(id))
+  .map((f) => `- **${featureLabel(f)}** — ${f.description}`)
+  .join("\n")}
+
+## ${p(control.title)}
+
+${control.intro}
+
+${control.alwaysHumanTitle}:
+
+${control.alwaysHuman.map((i) => `- **${i.title}** — ${i.text}`).join("\n")}
+
+${control.modesTitle}:
+
+${modes.map((m) => `- **${modeName(m)}** — ${m.short}`).join("\n")}
+
+${control.security} [${control.securityLink.label}](${absoluteUrl(control.securityLink.href)})
 
 ## ${p(comparison.title)}
 
-${comparison.intro}
-
-| | ${comparison.columns.join(" | ")} |
-| --- | ${comparison.columns.map(() => "---").join(" | ")} |
-${comparison.rows.map((r) => `| ${r.label} | ${r.values.join(" | ")} |`).join("\n")}
-
-## ${p(alwaysHuman.title)}
-
-${alwaysHuman.items.map((i) => `- **${i.title}** — ${i.text}`).join("\n")}
-
-## ${p(securitySummary.title)}
-
-${securitySummary.points.map((s) => `- **${s.title}** — ${s.text}`).join("\n")}
+${comparison.columns.map((c) => `- **${c.name}**: ${c.points.join("; ")}.`).join("\n")}
 
 ## Prijzen
 

@@ -51,7 +51,7 @@ export function MobileNav() {
         hidden={!open}
         className="fixed inset-x-0 top-[var(--header-h)] bottom-0 z-40 overflow-y-auto border-t border-line bg-bg"
       >
-        <nav aria-label="Hoofdmenu" className="container-site flex flex-col py-6">
+        <nav aria-label="Mobiel menu" className="container-site flex flex-col py-6">
           <ul className="flex flex-col">
             {mainNav.map((link) => {
               const active = pathname === link.href
@@ -73,7 +73,7 @@ export function MobileNav() {
             <Link href="/demo" onClick={() => setOpen(false)} className={buttonClasses("primary", "lg")}>
               Demo aanvragen
             </Link>
-            <a href={site.dashboardLoginUrl} className={buttonClasses("secondary", "lg")}>
+            <a href={site.dashboardLoginUrl} onClick={() => setOpen(false)} className={buttonClasses("secondary", "lg")}>
               Inloggen
             </a>
           </div>

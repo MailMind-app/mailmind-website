@@ -45,7 +45,6 @@ const sections = [
     items: [
       "Mailbox connection via IMAP",
       "No unauthorized use of your business data",
-      "Strict multi-tenant data separation",
       "Data stored in the EU (Hetzner, Helsinki)",
       "AI processing via the OpenAI API, outside the EU",
       "Built with GDPR in mind",

@@ -1,60 +1,71 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Navigation } from "@/components/navigation";
-import { Footer } from "@/components/footer";
-import {
-  DEFAULT_DESCRIPTION,
-  DEFAULT_TITLE,
-  SITE_NAME,
-  SITE_URL,
-} from "@/lib/site";
+import type { Metadata, Viewport } from "next"
+import { Inter, Instrument_Serif } from "next/font/google"
+import "./globals.css"
+import { SiteFooter } from "@/components/layout/site-footer"
+import { SiteHeader } from "@/components/layout/site-header"
+import { RevealObserver } from "@/components/primitives/reveal-observer"
+import { site } from "@/content/site"
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-});
+})
 
-// Canonical URLs are set per page via pageMetadata(); the root only holds defaults.
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
+  display: "swap",
+})
+
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: {
-    default: DEFAULT_TITLE,
-    template: "%s | MailMind",
+    default: site.title,
+    template: `%s | ${site.name}`,
   },
-  description: DEFAULT_DESCRIPTION,
-  metadataBase: new URL(SITE_URL),
+  description: site.description,
   openGraph: {
     type: "website",
-    locale: "en_US",
-    siteName: SITE_NAME,
-    title: DEFAULT_TITLE,
-    description:
-      "AI email operator for Dutch SMBs: sorts, routes and drafts replies. A person decides.",
+    locale: site.locale,
+    siteName: site.name,
+    title: site.title,
+    description: site.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "MailMind — AI-powered email automation",
-    description: "AI email operator for Dutch SMBs: sorts, routes and drafts replies. A person decides.",
+    title: site.title,
+    description: site.description,
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+  robots: { index: true, follow: true },
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: "#070b16",
+  colorScheme: "dark",
+}
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-background text-foreground">
-        <Navigation />
-        <main>{children}</main>
-        <Footer />
+    <html lang="nl" className={`${inter.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Marks that JS runs, so scroll reveals may start hidden. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
+      <body className="min-h-dvh">
+        <a
+          href="#inhoud"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
+        >
+          Naar de inhoud
+        </a>
+        <SiteHeader />
+        <main id="inhoud">{children}</main>
+        <SiteFooter />
+        <RevealObserver />
       </body>
     </html>
-  );
+  )
 }

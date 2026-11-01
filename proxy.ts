@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { homeMarkdown, notFoundMarkdown } from "@/lib/markdown"
-import { publicRoutes } from "@/lib/site"
+import { routes } from "@/content/site"
 
 // Content negotiation: clients that prefer `text/markdown` get a Markdown version
 // of the homepage, and a Markdown 404 for unknown pages. The matcher only runs this
@@ -8,7 +8,7 @@ import { publicRoutes } from "@/lib/site"
 // so regular HTML responses are untouched. (A `Vary: Accept` on the HTML response
 // is not possible here: Next.js overwrites Vary on prerendered pages.)
 
-const knownPaths = new Set<string>(publicRoutes.map((route) => route.path))
+const knownPaths = new Set<string>(routes.map((route) => route.path))
 
 // True when the Accept header ranks text/markdown at least as high as text/html.
 function prefersMarkdown(accept: string | null) {

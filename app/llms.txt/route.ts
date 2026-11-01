@@ -1,4 +1,10 @@
-# MailMind
+import { pricingSummary } from "@/lib/pricing"
+import { CONTACT_EMAIL } from "@/lib/site"
+
+// llms.txt, generated at build time so pricing always matches lib/pricing.ts.
+export const dynamic = "force-static"
+
+const body = `# MailMind
 
 > MailMind is an AI email operator for Dutch small and medium-sized businesses (SMBs), starting with gyms and fitness clubs. It classifies incoming business email and prepares draft replies; a person reviews and approves every reply before it is sent.
 
@@ -10,8 +16,8 @@ Key facts:
 - AI processing of email content (classification and draft replies) runs through the OpenAI API, outside the EU.
 - Email data is not used to train AI models.
 - The marketing website is hosted on Vercel.
-- Pricing: Starter €99/month (500 AI-processed emails), Professional €199/month (1,000 AI-processed emails), Enterprise on request.
-- Contact: rens@mailmind.nl
+- Pricing: ${pricingSummary}
+- Contact: ${CONTACT_EMAIL}
 
 ## When to use MailMind
 
@@ -23,8 +29,8 @@ Key facts:
 
 ## Pages
 
-- [Home](https://mailmind.nl/): Overview of MailMind, features and how it works. Also available as Markdown: request it with the header `Accept: text/markdown`.
-- [Pricing](https://mailmind.nl/pricing): Starter, Professional and Enterprise plans, plus FAQ.
+- [Home](https://mailmind.nl/): Overview of MailMind, features and how it works. Also available as Markdown: request it with the header \`Accept: text/markdown\`.
+- [Pricing](https://mailmind.nl/pricing): Starter, Professional and Custom plans, founding offer, setup fee and FAQ.
 - [Security](https://mailmind.nl/security): Human-in-the-loop controls, AI transparency and data protection.
 - [Request a demo](https://mailmind.nl/demo): Book a personal demo with scenarios from your own business.
 - [About](https://mailmind.nl/about): What MailMind does, who it is for and how we work.
@@ -35,3 +41,10 @@ Key facts:
 
 - [Log in](https://mailmind.nl/login): Customer login for the MailMind dashboard.
 - [Sitemap](https://mailmind.nl/sitemap.xml): All public pages.
+`
+
+export function GET() {
+  return new Response(body, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  })
+}

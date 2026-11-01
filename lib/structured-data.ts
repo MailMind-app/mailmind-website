@@ -47,6 +47,7 @@ export const homeJsonLd = {
                 price: tier.monthlyPriceEur,
                 priceCurrency: "EUR",
                 billingDuration: "P1M",
+                valueAddedTaxIncluded: false,
               },
             }
       ),

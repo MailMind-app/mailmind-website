@@ -3,7 +3,7 @@ import { pageMetadata } from "@/lib/site"
 export const metadata = pageMetadata({
   title: "Pricing",
   description:
-    "Simple, transparent pricing for MailMind: Starter €99/month, Professional €199/month, Enterprise on request. Every plan includes AI transparency and human oversight.",
+    "MailMind pricing, excluding VAT: Starter €149/month, Professional €249/month, Custom on request. Founding offer for the first 5 customers: €99/month.",
   path: "/pricing",
 })
 

@@ -3,8 +3,8 @@
 import type { Metadata } from "next"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { Check, ArrowRight, ShieldCheck, Zap, Users } from "lucide-react"
-import { tiers } from "@/lib/pricing"
+import { Check, ArrowRight, ShieldCheck, Zap, Users, Clock } from "lucide-react"
+import { foundingOffer, pricingNotes, setupFee, tiers } from "@/lib/pricing"
 
 const trust = [
   { icon: ShieldCheck, label: "No lock-in contracts" },
@@ -93,6 +93,17 @@ export default function PricingPage() {
                       <span className="text-sm text-[#94a3b8]">{feature}</span>
                     </li>
                   ))}
+                  {tier.comingSoon?.map((item) => (
+                    <li key={item.label} className="flex items-start gap-3">
+                      <Clock className="w-4 h-4 text-[#64748b] shrink-0 mt-0.5" />
+                      <span className="text-sm text-[#94a3b8]">
+                        {item.label}{" "}
+                        <span className="inline-block ml-1 px-2 py-0.5 rounded-full border border-[#2563eb]/30 bg-[#2563eb]/10 text-[11px] font-medium text-[#93c5fd]">
+                          {item.when}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
                 </ul>
 
                 <Link
@@ -109,6 +120,45 @@ export default function PricingPage() {
               </motion.div>
             ))}
           </motion.div>
+
+          {/* ── Founding offer + setup fee ── */}
+          <div className="grid md:grid-cols-3 gap-6 mt-6">
+            <div className="md:col-span-2 rounded-2xl border border-emerald-500/30 bg-[#0d1426] p-8">
+              <h2 className="text-lg font-semibold text-white mb-2">{foundingOffer.title}</h2>
+              <div className="flex items-baseline gap-1 mb-4">
+                <span className="text-4xl font-bold text-white">{foundingOffer.price}</span>
+                <span className="text-[#64748b] text-sm">{foundingOffer.period}</span>
+              </div>
+              <ul className="grid sm:grid-cols-2 gap-3 mb-6">
+                {foundingOffer.points.map((point) => (
+                  <li key={point} className="flex items-start gap-3">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span className="text-sm text-[#94a3b8]">{point}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/demo"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium bg-[#2563eb] hover:bg-[#1d4ed8] text-white transition-all duration-200"
+              >
+                Request demo
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-[#0d1426]/60 p-8">
+              <h2 className="text-lg font-semibold text-white mb-2">{setupFee.label}</h2>
+              <p className="text-4xl font-bold text-white mb-4">{setupFee.price}</p>
+              <p className="text-sm text-[#94a3b8]">{setupFee.description}</p>
+            </div>
+          </div>
+
+          <ul className="mt-8 space-y-1 text-center">
+            {pricingNotes.map((note) => (
+              <li key={note} className="text-sm text-[#94a3b8]">
+                {note}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -142,8 +192,12 @@ export default function PricingPage() {
           <dl className="space-y-8">
             {[
               {
-                q: "What counts as an AI-processed email?",
-                a: "Every email MailMind reads, classifies, routes, or acts on counts as one processing unit.",
+                q: "What counts towards my email volume?",
+                a: "Every incoming email MailMind processes counts as one email. Spam and bounces do not count.",
+              },
+              {
+                q: "What does the setup fee cover?",
+                a: `The one-time setup fee of ${setupFee.price} covers setting up your knowledge base (schedule, prices, opening hours) and configuring categories and forwarding for your business. It is waived for founding customers.`,
               },
               {
                 q: "How does data privacy work?",

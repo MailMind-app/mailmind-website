@@ -92,7 +92,7 @@ export function formatEuro(amount: number): string {
 }
 
 export function planPrice(plan: Plan): string {
-  return plan.monthlyPriceEur === null ? "Op maat" : formatEuro(plan.monthlyPriceEur)
+  return plan.monthlyPriceEur === null ? "Op aanvraag" : formatEuro(plan.monthlyPriceEur)
 }
 
 /** Eén regel voor llms.txt en de Markdown-versie. */

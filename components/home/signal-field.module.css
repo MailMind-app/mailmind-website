@@ -1,0 +1,57 @@
+.field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Faint dot grid, fading out towards the edges. */
+  background-image: radial-gradient(circle at center, rgb(138 180 255 / 0.16) 1px, transparent 1.3px);
+  background-size: 16px 16px;
+  background-position: center;
+  mask-image: radial-gradient(ellipse 70% 80% at 72% 50%, black 30%, transparent 80%);
+}
+
+.envelope {
+  position: absolute;
+  top: 50%;
+  left: 74%;
+  width: min(960px, 175vw);
+  height: auto;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+}
+
+.dot {
+  fill: var(--accent-text);
+  opacity: 0.32;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dot {
+    animation: travel 9s linear infinite;
+    animation-delay: var(--d);
+  }
+}
+
+/* A soft light travels along the envelope outline. */
+@keyframes travel {
+  0%,
+  100% {
+    opacity: 0.26;
+  }
+  6% {
+    opacity: 0.95;
+  }
+  16% {
+    opacity: 0.26;
+  }
+}
+
+@media (max-width: 1023px) {
+  .field {
+    mask-image: radial-gradient(ellipse 90% 50% at 50% 74%, black 25%, transparent 80%);
+  }
+
+  .envelope {
+    top: 75%;
+    left: 50%;
+  }
+}

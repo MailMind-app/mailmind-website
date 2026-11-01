@@ -1,5 +1,5 @@
 import { cn } from "@/lib/cn"
-import { Emph } from "./rich-text"
+import { Rich } from "./rich-text"
 
 export function SectionHeading({
   eyebrow,
@@ -33,7 +33,7 @@ export function SectionHeading({
             : "text-[2rem] leading-[1.1] sm:text-[2.75rem]",
         )}
       >
-        <Emph text={title} />
+        <Rich text={title} />
       </Tag>
       {intro && <p className="mt-5 text-lg leading-relaxed text-muted">{intro}</p>}
     </div>

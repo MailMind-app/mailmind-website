@@ -2,6 +2,7 @@ import { faqFor } from "@/content/faq"
 import { founding, plans } from "@/content/pricing"
 import { company, site } from "@/content/site"
 import { absoluteUrl } from "@/lib/site"
+import { toPlainText } from "@/lib/text"
 
 const ORGANIZATION_ID = `${site.url}/#organization`
 
@@ -83,7 +84,7 @@ export const homeJsonLd = {
       mainEntity: faqFor("home").map((item) => ({
         "@type": "Question",
         name: item.question,
-        acceptedAnswer: { "@type": "Answer", text: item.answer },
+        acceptedAnswer: { "@type": "Answer", text: toPlainText(item.answer) },
       })),
     },
   ],

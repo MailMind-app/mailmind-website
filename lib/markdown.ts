@@ -1,52 +1,92 @@
-import { CONTACT_EMAIL, absoluteUrl, publicRoutes } from "@/lib/site"
+import { faqFor } from "@/content/faq"
+import { featureLabel, getFeature, modes, roadmap } from "@/content/features"
+import { alwaysHuman, comparison, finalCta, hero, recognition, securitySummary, steps } from "@/content/home"
+import { pricingSummary } from "@/content/pricing"
+import { routes, site } from "@/content/site"
+import { absoluteUrl } from "@/lib/site"
+import { toPlainText as p } from "@/lib/text"
 
 // Markdown versions served by proxy.ts to clients that send `Accept: text/markdown`.
-// homeMarkdown mirrors components/home-page.tsx — keep the two in sync.
+// Generated from the same content files as the HTML pages.
 
-const pageList = publicRoutes
-  .map((route) => `- [${route.title}](${absoluteUrl(route.path)})`)
-  .join("\n")
+const pageList = routes.map((route) => `- [${route.title}](${absoluteUrl(route.path)})`).join("\n")
 
-export const homeMarkdown = `# MailMind — AI-powered email automation. Full control. Zero chaos.
+function modeLine(mode: (typeof modes)[number]) {
+  const feature = mode.featureId ? getFeature(mode.featureId) : undefined
+  const name =
+    feature?.status === "binnenkort" ? `${mode.name} (binnenkort${feature.when ? `, ${feature.when}` : ""})` : mode.name
+  return `- **${name}** — ${mode.summary} ${mode.points.join(". ")}.`
+}
 
-MailMind is not a chatbot or autoresponder. It sorts your email, routes it to the right colleague and drafts replies from your knowledge base — and a person decides on every reply.
+export const homeMarkdown = `# ${p(hero.title)}
 
-Built with GDPR in mind · No data training · Data stored in the EU
+${hero.subtitle}
 
-[See how it works](${absoluteUrl("/#how-it-works")}) · [Request demo](${absoluteUrl("/demo")})
+[${hero.primaryCta.label}](${absoluteUrl(hero.primaryCta.href)}) · [${hero.secondaryCta.label}](${absoluteUrl("/hoe-het-werkt")})
 
-## Why MailMind: not just AI, reliable operations
+## ${p(recognition.title)}
 
-Built for businesses that can't afford blind automation.
+${recognition.intro}
 
-- **Safe by Design** — Every AI decision is logged and auditable. A person reviews every draft — nothing is sent without a click from your team.
-- **Training & Control** — MailMind drafts replies from your knowledge base (schedule, prices, opening hours) and learns from the replies you approve, edit or reject.
-- **Built for Business** — Designed for Dutch SMBs — sorts customer questions and supplier email, and forwards each email to the right colleague. Cancellations, payments and complaints always go to a person.
+${recognition.mails.map((m) => `- ${m.subject} → ${m.category}: ${m.action}`).join("\n")}
 
-## How it works: from mailbox to approved replies in 3 steps
+## ${p(steps.title)}
 
-1. **Connect your mailbox** — Connect your business mailbox via IMAP. MailMind sorts incoming email into the categories you set up.
-2. **Set up your knowledge base** — Add your schedule, prices and opening hours, and choose who handles which category. MailMind learns from the replies you approve.
-3. **You decide** — MailMind sorts, routes and drafts replies. A person approves, edits or rejects every draft — nothing is sent without a click. Live mode (MailMind sends replies itself, per category you enable) is coming early 2027.
+${steps.items.map((s, i) => `${i + 1}. **${s.title}** — ${s.text}`).join("\n")}
 
-## Ready to take control of your inbox?
+## Drie modi
 
-- [Request a demo](${absoluteUrl("/demo")})
-- [View pricing](${absoluteUrl("/pricing")})
-- Contact: ${CONTACT_EMAIL}
+${modes.map(modeLine).join("\n")}
 
-## Pages
+## ${p(comparison.title)}
+
+${comparison.intro}
+
+| | ${comparison.columns.join(" | ")} |
+| --- | ${comparison.columns.map(() => "---").join(" | ")} |
+${comparison.rows.map((r) => `| ${r.label} | ${r.values.join(" | ")} |`).join("\n")}
+
+## ${p(alwaysHuman.title)}
+
+${alwaysHuman.items.map((i) => `- **${i.title}** — ${i.text}`).join("\n")}
+
+## ${p(securitySummary.title)}
+
+${securitySummary.points.map((s) => `- **${s.title}** — ${s.text}`).join("\n")}
+
+## Prijzen
+
+${pricingSummary()}
+
+## Binnenkort
+
+${roadmap.map((f) => `- ${featureLabel(f)}: ${f.description}`).join("\n")}
+
+## Veelgestelde vragen
+
+${faqFor("home")
+  .map((f) => `### ${f.question}\n\n${p(f.answer)}`)
+  .join("\n\n")}
+
+## ${p(finalCta.title)}
+
+${finalCta.text} We reageren ${site.demoResponseTime}.
+
+- [${finalCta.primary.label}](${absoluteUrl(finalCta.primary.href)})
+- Contact: ${site.email}
+
+## Pagina's
 
 ${pageList}
 `
 
-export const notFoundMarkdown = `# Page not found
+export const notFoundMarkdown = `# Pagina niet gevonden
 
-The page you requested does not exist on mailmind.nl.
+Deze pagina bestaat niet op mailmind.nl.
 
-## Pages
+## Pagina's
 
 ${pageList}
 
-Questions? Email ${CONTACT_EMAIL}.
+Vragen? Mail naar ${site.email}.
 `

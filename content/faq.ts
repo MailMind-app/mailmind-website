@@ -1,5 +1,6 @@
 import { formatEuro, setupFee } from "./pricing"
 
+// [[functie-id]] in een antwoord wordt de functietitel, met badge waar nodig.
 export type FaqItem = {
   question: string
   answer: string
@@ -11,7 +12,7 @@ export const faq: FaqItem[] = [
   {
     question: "Verstuurt MailMind zelf mail?",
     answer:
-      "Nee. In de modi Training en Semi-Live gaat er niets de deur uit zonder klik van een mens. De Live-modus, waarin MailMind per categorie zelf antwoordt, komt begin 2027. Die zet je alleen aan voor mailtypes die aantoonbaar goed gaan, en er is een noodstop.",
+      "Nee. In de modi Training en Semi-Live gaat er niets de deur uit zonder klik van een mens. In de [[live-modus]] antwoordt MailMind per categorie zelf. Die zet je alleen aan voor mailtypes die aantoonbaar goed gaan, en er is een noodstop.",
     pages: ["home", "sportscholen"],
   },
   {

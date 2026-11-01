@@ -161,12 +161,12 @@ export function HomePage() {
               transition={{ duration: 0.5, delay: 0.5 }}
               className="flex flex-wrap gap-3"
             >
-              <Link
-                href="/security"
+              <a
+                href="#how-it-works"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50"
               >
                 See how it works →
-              </Link>
+              </a>
               <Link
                 href="/demo"
                 className="inline-flex items-center gap-2 px-6 py-3 border border-white/12 bg-white/5 hover:bg-white/8 text-white font-medium rounded-xl transition-all duration-200"
@@ -258,7 +258,7 @@ export function HomePage() {
       </section>
 
       {/* ── How it works ── */}
-      <section className="relative py-28 px-6 bg-[#080c18] overflow-hidden">
+      <section id="how-it-works" className="relative py-28 px-6 bg-[#080c18] overflow-hidden scroll-mt-16">
         {/* Subtle radial accent */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute bottom-0 right-1/4 w-[600px] h-[400px] rounded-full"

@@ -6,6 +6,15 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/login",
+        destination: "https://dashboard.mailmind.nl/accounts/login/",
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig

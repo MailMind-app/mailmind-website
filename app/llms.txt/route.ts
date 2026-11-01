@@ -1,5 +1,5 @@
 import { pricingSummary } from "@/lib/pricing"
-import { CONTACT_EMAIL } from "@/lib/site"
+import { CONTACT_EMAIL, DASHBOARD_LOGIN_URL } from "@/lib/site"
 
 // llms.txt, generated at build time so pricing always matches lib/pricing.ts.
 export const dynamic = "force-static"
@@ -39,7 +39,7 @@ Key facts:
 
 ## Optional
 
-- [Log in](https://mailmind.nl/login): Customer login for the MailMind dashboard.
+- [Log in](${DASHBOARD_LOGIN_URL}): Customer login for the MailMind dashboard.
 - [Sitemap](https://mailmind.nl/sitemap.xml): All public pages.
 `
 

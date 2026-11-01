@@ -4,7 +4,8 @@
 
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/$/, "")
 const SITE = "https://mailmind.nl"
-const PAGES = ["/", "/pricing", "/security", "/demo", "/about", "/contact", "/privacy", "/login"]
+const PAGES = ["/", "/pricing", "/security", "/demo", "/about", "/contact", "/privacy"]
+const DASHBOARD_LOGIN = "https://dashboard.mailmind.nl/accounts/login/"
 const BROWSER_ACCEPT =
   "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
 
@@ -40,6 +41,15 @@ const visibleText = (html) =>
   const urls = body.match(/<url>/g)?.length ?? 0
   const lastmods = body.match(/<lastmod>\d{4}-\d{2}-\d{2}/g)?.length ?? 0
   check(urls > 0 && lastmods === urls, "every sitemap entry has lastModified", `${lastmods}/${urls}`)
+}
+
+// ── /login redirects to the dashboard ──
+{
+  const { status, headers } = await get("/login")
+  check(status === 308 || status === 301, "/login is a permanent redirect", `got ${status}`)
+  check(headers.get("location") === DASHBOARD_LOGIN, "/login redirects to the dashboard login", headers.get("location") ?? "")
+  const { body } = await get("/sitemap.xml")
+  check(!body.includes("/login"), "sitemap does not list /login")
 }
 
 // ── robots.txt ──

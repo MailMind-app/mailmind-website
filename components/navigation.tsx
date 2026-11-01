@@ -5,6 +5,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
+import { DASHBOARD_LOGIN_URL } from "@/lib/site"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -71,20 +72,18 @@ export function Navigation() {
 
         {/* Desktop actions */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-sm font-medium text-[#94a3b8] hover:text-white transition-colors"
+          <a
+            href={DASHBOARD_LOGIN_URL}
+            className="px-3 py-2 text-sm text-[#94a3b8] hover:text-white transition-colors"
           >
             Log in
-          </Link>
-          <a
-            href="https://dashboard.mailmind.nl"
-            target="_blank"
-            rel="noopener noreferrer"
+          </a>
+          <Link
+            href="/demo"
             className="px-4 py-2 text-sm font-medium text-white bg-[#2563eb] hover:bg-[#1d4ed8] rounded-lg transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
           >
-            Go to dashboard
-          </a>
+            Request demo
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -115,21 +114,19 @@ export function Navigation() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="px-4 py-2.5 text-sm font-medium text-[#94a3b8] hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            <a
+              href={DASHBOARD_LOGIN_URL}
+              className="px-4 py-2.5 text-sm text-[#94a3b8] hover:text-white transition-colors rounded-lg hover:bg-white/5"
             >
               Log in
-            </Link>
-            <a
-              href="https://dashboard.mailmind.nl"
-              target="_blank"
-              rel="noopener noreferrer"
+            </a>
+            <Link
+              href="/demo"
+              onClick={() => setMobileOpen(false)}
               className="mt-2 px-4 py-2.5 text-sm font-medium text-white bg-[#2563eb] hover:bg-[#1d4ed8] rounded-lg transition-colors text-center"
             >
-              Go to dashboard
-            </a>
+              Request demo
+            </Link>
           </div>
         </div>
       )}

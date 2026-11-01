@@ -85,7 +85,7 @@ export function Footer() {
             </p>
             <ul className="space-y-3">
               {[
-                { href: "/login", label: "Log in" },
+                { href: DASHBOARD_LOGIN_URL, label: "Log in", external: true },
                 {
                   href: "https://dashboard.mailmind.nl",
                   label: "Dashboard",

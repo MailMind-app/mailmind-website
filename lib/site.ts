@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 export const SITE_URL = "https://mailmind.nl"
 export const SITE_NAME = "MailMind"
 export const CONTACT_EMAIL = "rens@mailmind.nl"
+export const DASHBOARD_LOGIN_URL = "https://dashboard.mailmind.nl/accounts/login/"
 export const DEFAULT_TITLE = "MailMind — AI-powered email automation for SMBs"
 export const DEFAULT_DESCRIPTION =
   "MailMind is an AI email operator for Dutch SMBs. It sorts incoming email, routes it to the right colleague and drafts replies from your knowledge base — a person approves every reply before it is sent."
@@ -17,7 +18,6 @@ export const publicRoutes = [
   { path: "/about", title: "About", lastModified: "2026-10-08", priority: 0.7 },
   { path: "/contact", title: "Contact", lastModified: "2026-10-08", priority: 0.7 },
   { path: "/privacy", title: "Privacy policy", lastModified: "2026-10-08", priority: 0.5 },
-  { path: "/login", title: "Log in", lastModified: "2026-04-03", priority: 0.3 },
 ] as const
 
 export function absoluteUrl(path: string) {

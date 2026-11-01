@@ -13,7 +13,7 @@ MailMind is not a chatbot or autoresponder. It sorts your email, routes it to th
 
 Built with GDPR in mind · No data training · Data stored in the EU
 
-[See how it works](${absoluteUrl("/security")}) · [Request demo](${absoluteUrl("/demo")})
+[See how it works](${absoluteUrl("/#how-it-works")}) · [Request demo](${absoluteUrl("/demo")})
 
 ## Why MailMind: not just AI, reliable operations
 

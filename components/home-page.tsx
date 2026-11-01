@@ -45,7 +45,7 @@ function DashboardMockup() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/dashboard-screenshot.png"
-        alt="MailMind dashboard"
+        alt="Voorbeeld van het MailMind-dashboard met fictieve gegevens"
         style={{
           display: "block",
           width: "100%",

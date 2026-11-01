@@ -23,11 +23,11 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-[#94a3b8] leading-relaxed max-w-xs">
-              Autonomous AI email operator for Dutch SMBs. Full control, zero
-              chaos.
+              AI email operator for Dutch SMBs. MailMind drafts, a person
+              decides.
             </p>
             <p className="text-xs text-[#64748b] mt-4">
-              AVG-compliant &middot; Data stored in the EU &middot; No training on your data
+              Built with GDPR in mind &middot; Data stored in the EU &middot; No training on your data
             </p>
           </div>
 

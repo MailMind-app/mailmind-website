@@ -5,7 +5,7 @@ export const SITE_NAME = "MailMind"
 export const CONTACT_EMAIL = "rens@mailmind.nl"
 export const DEFAULT_TITLE = "MailMind — AI-powered email automation for SMBs"
 export const DEFAULT_DESCRIPTION =
-  "MailMind is an autonomous AI email operator for SMBs. No chatbot, no autoresponder — a decision engine that classifies, decides, and acts with full transparency."
+  "MailMind is an AI email operator for Dutch SMBs. It sorts incoming email, routes it to the right colleague and drafts replies from your knowledge base — a person approves every reply before it is sent."
 
 // Public pages. Used by the sitemap and by the proxy to recognise known routes.
 // Update `lastModified` when a page's content changes.

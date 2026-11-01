@@ -66,7 +66,7 @@ const features = [
     icon: ShieldCheck,
     title: "Safe by Design",
     description:
-      "Every AI decision is logged and auditable. Human-in-the-loop controls let you set approval thresholds — nothing critical runs without oversight.",
+      "Every AI decision is logged and auditable. A person reviews every draft — nothing is sent without a click from your team.",
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
     border: "border-emerald-500/20",
@@ -75,7 +75,7 @@ const features = [
     icon: BrainCircuit,
     title: "Training & Control",
     description:
-      "Teach MailMind your communication style. The AI learns from your corrections and never makes the same mistake twice.",
+      "MailMind drafts replies from your knowledge base (schedule, prices, opening hours) and learns from the replies you approve, edit or reject.",
     color: "text-blue-400",
     bg: "bg-blue-500/10",
     border: "border-blue-500/20",
@@ -84,7 +84,7 @@ const features = [
     icon: Building2,
     title: "Built for Business",
     description:
-      "Designed for Dutch SMBs — handles invoices, support requests, supplier emails, and internal routing without breaking a sweat.",
+      "Designed for Dutch SMBs — sorts customer questions and supplier email, and forwards each email to the right colleague. Cancellations, payments and complaints always go to a person.",
     color: "text-violet-400",
     bg: "bg-violet-500/10",
     border: "border-violet-500/20",
@@ -98,21 +98,21 @@ const steps = [
     icon: Mail,
     title: "Connect your mailbox",
     description:
-      "Link your business email in minutes. MailMind connects via OAuth — no passwords stored, no IMAP credentials.",
+      "Connect your business mailbox via IMAP. MailMind sorts incoming email into the categories you set up.",
   },
   {
     number: "02",
     icon: BrainCircuit,
-    title: "Train the AI",
+    title: "Set up your knowledge base",
     description:
-      "Set classification rules, approval thresholds, and routing logic. The AI learns from your first 50 emails automatically.",
+      "Add your schedule, prices and opening hours, and choose who handles which category. MailMind learns from the replies you approve.",
   },
   {
     number: "03",
     icon: Zap,
-    title: "Let it work",
+    title: "You decide",
     description:
-      "MailMind classifies, decides, and acts 24/7. You stay in control via the dashboard and get notified only when it matters.",
+      "MailMind sorts, routes and drafts replies. A person approves, edits or rejects every draft — nothing is sent without a click. Live mode (MailMind sends replies itself, per category you enable) is coming early 2027.",
   },
 ]
 
@@ -131,18 +131,6 @@ export function HomePage() {
         <div className="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-[1fr_1.8fr] gap-4 items-center w-full">
           {/* Left */}
           <div>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2563eb]/30 bg-[#2563eb]/10 mb-6"
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-[#2563eb] animate-pulse" />
-              <span className="text-xs font-medium text-[#93c5fd]">
-                Trusted by Dutch SMBs
-              </span>
-            </motion.div>
-
             <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -162,9 +150,9 @@ export function HomePage() {
               transition={{ duration: 0.6, delay: 0.35 }}
               className="text-lg text-[#64748b] leading-relaxed mb-8 max-w-lg"
             >
-              MailMind is not a chatbot or autoresponder. It&apos;s a decision engine
-              that classifies, decides, and acts on your emails — with complete
-              transparency and human oversight.
+              MailMind is not a chatbot or autoresponder. It sorts your email, routes
+              it to the right colleague and drafts replies from your knowledge base —
+              and a person decides on every reply.
             </motion.p>
 
             <motion.div
@@ -193,7 +181,7 @@ export function HomePage() {
               transition={{ delay: 0.7 }}
               className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8"
             >
-              {["AVG compliant", "No data training", "Data stored in the EU"].map((item) => (
+              {["Built with GDPR in mind", "No data training", "Data stored in the EU"].map((item) => (
                 <div key={item} className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span className="text-sm text-[#64748b]">{item}</span>
@@ -216,25 +204,6 @@ export function HomePage() {
               <DashboardMockup />
             </motion.div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* ── Social proof bar ── */}
-      <section className="border-y border-white/8 bg-white/2">
-        <div className="max-w-7xl mx-auto px-6 py-5">
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
-            <p className="text-sm font-medium text-[#64748b]">
-              Trusted by Dutch SMB businesses
-            </p>
-            <div className="w-px h-4 bg-white/10 hidden sm:block" />
-            {["Sportscholen", "Detailhandel", "Zakelijke dienstverlening", "Logistiek", "Horeca", "Zorg"].map(
-              (sector) => (
-                <span key={sector} className="text-sm text-[#94a3b8]">
-                  {sector}
-                </span>
-              )
-            )}
-          </div>
         </div>
       </section>
 
@@ -307,7 +276,7 @@ export function HomePage() {
               How it works
             </p>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-              From mailbox to fully automated in 3 steps
+              From mailbox to approved replies in 3 steps
             </h2>
           </motion.div>
 
@@ -357,8 +326,8 @@ export function HomePage() {
               Ready to take control of your inbox?
             </h2>
             <p className="text-[#64748b] text-lg mb-8 max-w-xl mx-auto">
-              Join Dutch businesses that trust MailMind to handle their email — safely,
-              transparently, and automatically.
+              See what MailMind does with your own inbox — with a person approving
+              every reply.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link

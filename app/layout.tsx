@@ -30,12 +30,12 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: DEFAULT_TITLE,
     description:
-      "Autonomous AI email operator for Dutch SMBs. Full control, zero chaos.",
+      "AI email operator for Dutch SMBs: sorts, routes and drafts replies. A person decides.",
   },
   twitter: {
     card: "summary_large_image",
     title: "MailMind — AI-powered email automation",
-    description: "Autonomous AI email operator for Dutch SMBs.",
+    description: "AI email operator for Dutch SMBs: sorts, routes and drafts replies. A person decides.",
   },
   robots: {
     index: true,

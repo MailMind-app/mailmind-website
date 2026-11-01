@@ -71,14 +71,6 @@ export default function PricingPage() {
                     : "border-white/8 bg-[#0d1426]/60"
                 }`}
               >
-                {tier.highlight && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="bg-[#2563eb] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg shadow-blue-500/30">
-                      Most popular
-                    </span>
-                  </div>
-                )}
-
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-2">{tier.name}</h3>
                   <div className="flex items-baseline gap-1 mb-3">
@@ -151,19 +143,11 @@ export default function PricingPage() {
             {[
               {
                 q: "What counts as an AI-processed email?",
-                a: "Every email MailMind reads, classifies, routes, or acts on counts as one processing unit. A typical Dutch SMB uses 300–800 per month.",
-              },
-              {
-                q: "Can I upgrade or downgrade later?",
-                a: "Yes. Upgrades take effect immediately (prorated). Downgrades apply at the next billing cycle.",
-              },
-              {
-                q: "What happens if I exceed my limit?",
-                a: "You'll get a notification at 80%. If you hit the limit, processing pauses until you upgrade or the cycle resets — MailMind never acts silently.",
+                a: "Every email MailMind reads, classifies, routes, or acts on counts as one processing unit.",
               },
               {
                 q: "How does data privacy work?",
-                a: "MailMind is AVG-compliant. Your email data is stored in the EU (Hetzner, Helsinki). For classification and draft replies, email content is processed via the OpenAI API, outside the EU. Your email data is not used to train AI models, and you retain full ownership. See our privacy policy for all subprocessors.",
+                a: "MailMind is built with GDPR in mind. Your email data is stored in the EU (Hetzner, Helsinki). For classification and draft replies, email content is processed via the OpenAI API, outside the EU. Your email data is not used to train AI models. See our privacy policy for all subprocessors.",
               },
               {
                 q: "Is there a free trial?",

@@ -15,9 +15,9 @@ const sections = [
     items: [
       "AI drafts — you approve before anything sends",
       "Every suggestion is editable before action",
-      "No autonomous sending without explicit approval",
-      "Feedback loop trains the AI specifically for your business",
-      "Configurable approval thresholds per email type",
+      "Nothing is sent without explicit approval",
+      "Learns from the replies you approve and correct",
+      "Coming early 2027: Live mode — MailMind sends replies itself, per category you enable",
     ],
   },
   {
@@ -43,13 +43,12 @@ const sections = [
     border: "border-violet-500/20",
     type: "check" as const,
     items: [
-      "Enterprise-grade access control",
-      "Secure OAuth authentication — no passwords stored",
+      "Mailbox connection via IMAP",
       "No unauthorized use of your business data",
       "Strict multi-tenant data separation",
       "Data stored in the EU (Hetzner, Helsinki)",
       "AI processing via the OpenAI API, outside the EU",
-      "AVG / GDPR compliant by design",
+      "Built with GDPR in mind",
     ],
   },
   {
@@ -65,7 +64,6 @@ const sections = [
       "Replace human accountability or judgment",
       "Operate without logging or oversight",
       "Use your email data to train shared AI models",
-      "Store credentials or act as an IMAP client",
     ],
   },
 ]
@@ -108,8 +106,8 @@ export default function SecurityPage() {
               <span className="text-[#94a3b8]">by design</span>
             </h1>
             <p className="text-lg text-[#64748b] max-w-2xl mx-auto">
-              MailMind combines advanced AI with strict human oversight, full
-              decision transparency, and enterprise-grade data protection.
+              MailMind combines AI drafts with human approval of every reply and
+              a decision log for every email.
             </p>
           </motion.div>
         </div>
@@ -149,22 +147,6 @@ export default function SecurityPage() {
               </motion.div>
             ))}
           </motion.div>
-        </div>
-      </section>
-
-      {/* ── Bottom statement ── */}
-      <section className="border-t border-white/8 py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-lg text-[#64748b] italic leading-relaxed"
-          >
-            &ldquo;MailMind is built for organizations that require control, transparency
-            and accountability — not blind automation.&rdquo;
-          </motion.p>
         </div>
       </section>
     </div>

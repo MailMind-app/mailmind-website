@@ -17,13 +17,13 @@ const demoIncludes = [
   },
   {
     icon: Users,
-    title: "Q&A with the team",
-    description: "Ask anything — architecture, pricing, compliance, integrations.",
+    title: "Q&A with the founder",
+    description: "Ask anything — how it works, pricing, privacy.",
   },
   {
     icon: ShieldCheck,
     title: "Security & compliance review",
-    description: "We walk through AVG compliance, data handling, and audit logs.",
+    description: "We walk through GDPR, data handling, and the decision log.",
   },
 ]
 

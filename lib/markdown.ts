@@ -9,9 +9,9 @@ const pageList = publicRoutes
 
 export const homeMarkdown = `# MailMind — AI-powered email automation. Full control. Zero chaos.
 
-MailMind is not a chatbot or autoresponder. It's a decision engine that classifies, decides, and acts on your emails — with complete transparency and human oversight.
+MailMind is not a chatbot or autoresponder. It sorts your email, routes it to the right colleague and drafts replies from your knowledge base — and a person decides on every reply.
 
-AVG compliant · No data training · Data stored in the EU
+Built with GDPR in mind · No data training · Data stored in the EU
 
 [See how it works](${absoluteUrl("/security")}) · [Request demo](${absoluteUrl("/demo")})
 
@@ -19,15 +19,15 @@ AVG compliant · No data training · Data stored in the EU
 
 Built for businesses that can't afford blind automation.
 
-- **Safe by Design** — Every AI decision is logged and auditable. Human-in-the-loop controls let you set approval thresholds — nothing critical runs without oversight.
-- **Training & Control** — Teach MailMind your communication style. The AI learns from your corrections and never makes the same mistake twice.
-- **Built for Business** — Designed for Dutch SMBs — handles invoices, support requests, supplier emails, and internal routing without breaking a sweat.
+- **Safe by Design** — Every AI decision is logged and auditable. A person reviews every draft — nothing is sent without a click from your team.
+- **Training & Control** — MailMind drafts replies from your knowledge base (schedule, prices, opening hours) and learns from the replies you approve, edit or reject.
+- **Built for Business** — Designed for Dutch SMBs — sorts customer questions and supplier email, and forwards each email to the right colleague. Cancellations, payments and complaints always go to a person.
 
-## How it works: from mailbox to fully automated in 3 steps
+## How it works: from mailbox to approved replies in 3 steps
 
-1. **Connect your mailbox** — Link your business email in minutes. MailMind connects via OAuth — no passwords stored, no IMAP credentials.
-2. **Train the AI** — Set classification rules, approval thresholds, and routing logic. The AI learns from your first 50 emails automatically.
-3. **Let it work** — MailMind classifies, decides, and acts 24/7. You stay in control via the dashboard and get notified only when it matters.
+1. **Connect your mailbox** — Connect your business mailbox via IMAP. MailMind sorts incoming email into the categories you set up.
+2. **Set up your knowledge base** — Add your schedule, prices and opening hours, and choose who handles which category. MailMind learns from the replies you approve.
+3. **You decide** — MailMind sorts, routes and drafts replies. A person approves, edits or rejects every draft — nothing is sent without a click. Live mode (MailMind sends replies itself, per category you enable) is coming early 2027.
 
 ## Ready to take control of your inbox?
 

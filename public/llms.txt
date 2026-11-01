@@ -2,7 +2,7 @@
 
 > MailMind is an AI email operator for Dutch small and medium-sized businesses (SMBs), starting with gyms and fitness clubs. It classifies incoming business email and prepares draft replies; a person reviews and approves every reply before it is sent.
 
-MailMind is not a chatbot or an autoresponder. It is a decision engine that classifies, decides and acts on business email with full transparency: every AI decision is logged and visible in the MailMind dashboard.
+MailMind is not a chatbot or an autoresponder. It sorts incoming email into categories, forwards email to the right colleague after a manager's click, and drafts replies from the business's knowledge base. Every AI decision is logged and visible in the MailMind dashboard. Cancellations, payments and complaints always go to a person. Live mode (MailMind sends replies itself, per category you enable) is coming early 2027.
 
 Key facts:
 
@@ -17,7 +17,7 @@ Key facts:
 
 - A Dutch SMB inbox receives a steady stream of recurring questions and the team wants to spend less time answering them by hand.
 - A gym or fitness club gets daily email about memberships, class schedules, opening hours and new sign-ups.
-- Incoming email needs to be classified and routed automatically, with a fallback to a person for anything unclear.
+- Incoming email needs to be sorted into categories and forwarded to the right colleague, with sensitive email (cancellations, payments, complaints) always going to a person.
 - The business wants AI-drafted replies, but with human review: nothing is sent without explicit approval.
 - The organization needs to see why the AI made each decision (decision log) and wants its email data stored in the EU.
 

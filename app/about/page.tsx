@@ -57,8 +57,8 @@ export default function AboutPage() {
                 approves the draft before anything is sent.
               </p>
               <p>
-                MailMind is not a chatbot or an autoresponder. It is a decision engine that
-                classifies, decides, and acts with full transparency, so your team spends less
+                MailMind is not a chatbot or an autoresponder. It sorts email, routes it to the
+                right colleague and logs why it made each decision, so your team spends less
                 time on repetitive questions without giving up control over what goes out.
               </p>
             </div>

@@ -3,7 +3,7 @@
   inset: 0;
   pointer-events: none;
   /* Faint dot grid, fading out towards the edges. */
-  background-image: radial-gradient(circle at center, rgb(138 180 255 / 0.16) 1px, transparent 1.3px);
+  background-image: radial-gradient(circle at center, color-mix(in srgb, var(--accent-text) 16%, transparent) 1px, transparent 1.3px);
   background-size: 16px 16px;
   background-position: center;
   mask-image: radial-gradient(ellipse 70% 80% at 72% 50%, black 30%, transparent 80%);
@@ -19,29 +19,51 @@
   overflow: visible;
 }
 
-.dot {
-  fill: var(--accent-text);
-  opacity: 0.32;
+/* Dotted outline: zero-length dashes with round caps render as dots. */
+.dots {
+  fill: none;
+  stroke: var(--accent-text);
+  stroke-width: 3.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0 13;
+  opacity: 0.3;
+}
+
+/* Same dots, brighter; only visible where the sweep mask passes. */
+.bright {
+  opacity: 0.95;
+}
+
+.sweep {
+  fill: none;
+  stroke: white;
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-dasharray: 90 910;
+  stroke-dashoffset: 1000;
+}
+
+/* Without motion the bright layer stays hidden (mask segment parked off the path). */
+@media (prefers-reduced-motion: reduce) {
+  .bright {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .dot {
-    animation: travel 9s linear infinite;
-    animation-delay: var(--d);
+  .sweep {
+    animation: sweep 9s linear infinite;
   }
 }
 
 /* A soft light travels along the envelope outline. */
-@keyframes travel {
-  0%,
-  100% {
-    opacity: 0.26;
+@keyframes sweep {
+  from {
+    stroke-dashoffset: 1000;
   }
-  6% {
-    opacity: 0.95;
-  }
-  16% {
-    opacity: 0.26;
+  to {
+    stroke-dashoffset: 0;
   }
 }
 

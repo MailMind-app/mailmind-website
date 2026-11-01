@@ -28,7 +28,7 @@ export function Modes() {
                 className={cn("flex flex-col rounded-lg border p-7 sm:p-8", soon ? "border-dashed border-line-strong bg-transparent" : "border-line bg-panel")}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h3 className="text-2xl font-semibold tracking-tight text-fg">{mode.name}</h3>
+                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-fg">{mode.name}</h3>
                   {soon && <SoonBadge when={feature?.when} />}
                 </div>
                 <p className="mt-3 text-muted">{mode.summary}</p>

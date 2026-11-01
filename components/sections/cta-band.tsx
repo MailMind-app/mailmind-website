@@ -12,12 +12,12 @@ export function CtaBand({ attached = false }: { attached?: boolean }) {
       aria-labelledby="cta-title"
     >
       <div className="container-site">
-        <div data-reveal className="relative overflow-hidden rounded-xl border border-line bg-panel px-5 py-10 text-center sm:px-12 sm:py-20">
+        <div data-reveal className="relative overflow-hidden glow-bg rounded-xl border border-line bg-panel px-5 py-10 text-center sm:px-12 sm:py-20">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--accent-line)_1px,transparent_1.3px)] [background-size:16px_16px] opacity-40 [mask-image:radial-gradient(ellipse_60%_70%_at_50%_100%,black,transparent_70%)]"
           />
-          <h2 id="cta-title" className="relative mx-auto max-w-2xl text-[2rem] leading-[1.1] font-semibold tracking-tight text-fg sm:text-5xl">
+          <h2 id="cta-title" className="relative mx-auto max-w-2xl text-[1.95rem] sm:text-5xl">
             <Rich text={finalCta.title} />
           </h2>
           <p className="relative mx-auto mt-5 max-w-xl text-lg text-muted">{finalCta.text}</p>

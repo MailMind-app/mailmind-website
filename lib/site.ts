@@ -41,38 +41,3 @@ export function metadataFor(path: string): Metadata {
     },
   }
 }
-
-// ── Legacy exports for the old English pages. Removed in fase 3. ──
-export const SITE_URL = site.url
-export const SITE_NAME = site.name
-export const CONTACT_EMAIL = site.email
-export const DASHBOARD_LOGIN_URL = site.dashboardLoginUrl
-export const DEFAULT_TITLE = site.title
-export const DEFAULT_DESCRIPTION = site.description
-export const publicRoutes = routes
-
-export function pageMetadata({
-  title,
-  description,
-  path,
-}: {
-  title?: string
-  description: string
-  path: string
-}): Metadata {
-  const fullTitle = title ? `${title} | ${site.name}` : site.title
-  return {
-    ...(title ? { title } : {}),
-    description,
-    alternates: { canonical: path },
-    openGraph: {
-      type: "website",
-      locale: site.locale,
-      siteName: site.name,
-      url: path,
-      title: fullTitle,
-      description,
-      images: [OG_IMAGE],
-    },
-  }
-}

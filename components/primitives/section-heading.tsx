@@ -27,10 +27,7 @@ export function SectionHeading({
       <Tag
         id={id}
         className={cn(
-          "font-semibold tracking-tight text-fg",
-          Tag === "h1"
-            ? "text-[2.5rem] leading-[1.05] sm:text-6xl"
-            : "text-[2rem] leading-[1.1] sm:text-[2.75rem]",
+          Tag === "h1" ? "text-[2.3rem] sm:text-6xl" : "text-[1.95rem] sm:text-[2.75rem]",
         )}
       >
         <Rich text={title} />

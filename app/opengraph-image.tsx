@@ -7,41 +7,23 @@ export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
 // Colours mirror the tokens in app/globals.css (ImageResponse cannot read CSS variables).
-const BG = "#070b16"
-const FG = "#eef2f8"
-const MUTED = "#a9b4c6"
-const ACCENT_TEXT = "#8ab4ff"
+const BG = "#0a0f1e"
+const FG = "#e8eef8"
+const MUTED = "#b2c1d7"
+const EYEBROW = "#38bdf8"
+const GRAD_FROM = "#4f8ff7"
+const GRAD_TO = "#38bdf8"
+const GLOW_BLUE = "#10245d"
+const GLOW_TEAL = "#0b2e48"
 const LINE = "rgba(255,255,255,0.10)"
 
 export default async function Image() {
   const font = (file: string) => readFile(join(process.cwd(), "assets/fonts", file))
-  const [logo, serif, sans, sansBold] = await Promise.all([
+  const [logo, regular, extraBold] = await Promise.all([
     readFile(join(process.cwd(), "assets/brand/logo.png"), "base64"),
-    font("InstrumentSerif-Italic.ttf"),
     font("inter-latin-400-normal.woff"),
-    font("inter-latin-600-normal.woff"),
+    font("inter-latin-800-normal.woff"),
   ])
-
-  // Dot grid in the background, like the hero.
-  const dots = []
-  for (let y = 0; y < 14; y++) {
-    for (let x = 0; x < 26; x++) {
-      dots.push(
-        <div
-          key={`${x}-${y}`}
-          style={{
-            position: "absolute",
-            left: 620 + x * 24,
-            top: 40 + y * 40,
-            width: 3,
-            height: 3,
-            borderRadius: 2,
-            backgroundColor: "rgba(138,180,255,0.18)",
-          }}
-        />,
-      )
-    }
-  }
 
   return new ImageResponse(
     (
@@ -54,23 +36,42 @@ export default async function Image() {
           justifyContent: "space-between",
           padding: "72px 80px",
           backgroundColor: BG,
-          backgroundImage: "radial-gradient(ellipse 700px 420px at 85% 20%, rgba(37,99,235,0.22), rgba(7,11,22,0) 70%)",
+          backgroundImage: `radial-gradient(ellipse 720px 520px at 0% 0%, ${GLOW_BLUE}, rgba(10,15,30,0) 70%), radial-gradient(ellipse 680px 460px at 100% 100%, ${GLOW_TEAL}, rgba(10,15,30,0) 70%)`,
           color: FG,
           fontFamily: "Inter",
-          position: "relative",
         }}
       >
-        {dots}
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`data:image/png;base64,${logo}`} width={56} height={56} alt="" />
-          <div style={{ fontSize: 36, fontWeight: 600, letterSpacing: -0.5 }}>MailMind</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`data:image/png;base64,${logo}`} width={56} height={56} alt="" />
+            <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: -1 }}>MailMind</div>
+          </div>
+          <div style={{ display: "flex", fontSize: 20, fontWeight: 400, letterSpacing: 4, color: EYEBROW }}>
+            VOOR SPORTSCHOLEN
+          </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", fontSize: 76, lineHeight: 1.05, letterSpacing: -2 }}>
-          <div style={{ display: "flex", fontWeight: 600 }}>Je inbox gesorteerd.</div>
-          <div style={{ display: "flex", fontWeight: 600 }}>Je antwoorden klaar.</div>
-          <div style={{ display: "flex", fontFamily: "Instrument Serif", color: ACCENT_TEXT, letterSpacing: 0 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: 80,
+            fontWeight: 800,
+            lineHeight: 1.05,
+            letterSpacing: -2.8,
+          }}
+        >
+          <div style={{ display: "flex" }}>Je inbox gesorteerd.</div>
+          <div style={{ display: "flex" }}>Je antwoorden klaar.</div>
+          <div
+            style={{
+              display: "flex",
+              backgroundImage: `linear-gradient(90deg, ${GRAD_FROM}, ${GRAD_TO})`,
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
             Jij beslist.
           </div>
         </div>
@@ -93,9 +94,8 @@ export default async function Image() {
     {
       ...size,
       fonts: [
-        { name: "Inter", data: sans, style: "normal", weight: 400 },
-        { name: "Inter", data: sansBold, style: "normal", weight: 600 },
-        { name: "Instrument Serif", data: serif, style: "italic", weight: 400 },
+        { name: "Inter", data: regular, style: "normal", weight: 400 },
+        { name: "Inter", data: extraBold, style: "normal", weight: 800 },
       ],
     },
   )

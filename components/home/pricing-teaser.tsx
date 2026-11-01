@@ -11,11 +11,11 @@ export function PricingTeaser() {
       <div className="container-site">
         <SectionHeading id="prijzen-title" eyebrow={pricingTeaser.eyebrow} title={pricingTeaser.title} />
 
-        <div className="mt-10 grid gap-3 sm:mt-14 lg:grid-cols-[1.15fr_1fr] lg:gap-5">
+        <div className="mt-10 grid gap-3 sm:mt-14 lg:grid-cols-[1.15fr_1fr] lg:items-start lg:gap-5">
           <div data-reveal className="relative overflow-hidden rounded-lg border border-accent-line bg-panel p-6 sm:p-9">
             <p className="text-sm font-medium text-accent-text">{founding.title}</p>
             <p className="mt-4 flex items-baseline gap-2">
-              <span className="text-5xl font-semibold tracking-tight text-fg">{formatEuro(founding.monthlyPriceEur)}</span>
+              <span className="text-5xl font-extrabold tracking-[-0.035em] text-fg">{formatEuro(founding.monthlyPriceEur)}</span>
               <span className="text-muted">per maand</span>
             </p>
             <ul className="mt-6 grid gap-2.5 sm:mt-7 sm:grid-cols-2 sm:gap-3">

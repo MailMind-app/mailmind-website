@@ -3,6 +3,8 @@ import { FeatureTitle } from "@/components/primitives/feature-title"
 import { SectionHeading } from "@/components/primitives/section-heading"
 import { getFeature } from "@/content/features"
 import { dashboardShowcase } from "@/content/home"
+// Static import: replacing public/dashboard-screenshot.webp is all it takes to swap
+// the image; width, height and the blur-free responsive sizes come from the file.
 import screenshot from "@/public/dashboard-screenshot.webp"
 
 export function DashboardShowcase() {
@@ -25,7 +27,7 @@ export function DashboardShowcase() {
               quality={90}
             />
           </div>
-          <figcaption className="mt-3 text-sm text-subtle">Fictieve gegevens.</figcaption>
+          <figcaption className="mt-3 text-sm text-subtle">{dashboardShowcase.image.caption}</figcaption>
         </figure>
         <ul className="mt-8 grid gap-6 md:mt-12 md:grid-cols-3 md:gap-8">
           {dashboardShowcase.highlights.map((id, i) => {
@@ -35,7 +37,7 @@ export function DashboardShowcase() {
                 <span className="hidden text-sm text-subtle md:inline" aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h3 className="text-lg font-semibold tracking-tight text-fg md:mt-2">
+                <h3 className="text-lg font-bold tracking-[-0.02em] text-fg md:mt-2">
                   <FeatureTitle feature={feature} />
                 </h3>
                 <p className="mt-2 leading-relaxed text-muted">{feature.description}</p>

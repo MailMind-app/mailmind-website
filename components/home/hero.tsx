@@ -7,7 +7,7 @@ import { SignalField } from "./signal-field"
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-line" aria-labelledby="hero-title">
+    <section className="glow-bg relative overflow-hidden border-b border-line" aria-labelledby="hero-title">
       <SignalField />
       <div className="container-site relative grid items-center gap-10 pt-10 pb-12 sm:pt-20 lg:grid-cols-[1.15fr_1fr] lg:gap-12 lg:pt-28 lg:pb-28">
         <div>
@@ -15,7 +15,7 @@ export function Hero() {
           {/* LCP element: rendered immediately, never animated. */}
           <h1
             id="hero-title"
-            className="text-[2.4rem] leading-[1.05] font-semibold tracking-tight text-fg sm:text-[3.4rem] xl:text-[3.6rem]"
+            className="text-[2.3rem] sm:text-[3.3rem] xl:text-[3.5rem]"
           >
             {hero.title.split(/(?<=\.\*?)\s+/).map((sentence) => (
               <span key={sentence} className="block">

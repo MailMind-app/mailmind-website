@@ -22,7 +22,7 @@ const VOLUME_OPTIONS = new Set([
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const GENERIC_ERROR =
-  "Your request could not be sent. Please try again or email rens@mailmind.nl.";
+  "Je aanvraag kon niet worden verstuurd. Probeer het opnieuw of mail naar rens@mailmind.nl.";
 
 function badRequest(message: string) {
   return NextResponse.json({ error: message }, { status: 400 });
@@ -42,10 +42,10 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return badRequest("Invalid request.");
+    return badRequest("Ongeldige aanvraag.");
   }
   if (typeof body !== "object" || body === null || Array.isArray(body)) {
-    return badRequest("Invalid request.");
+    return badRequest("Ongeldige aanvraag.");
   }
 
   const input = body as Record<string, unknown>;
@@ -63,22 +63,22 @@ export async function POST(request: Request) {
   const bericht = optionalString(input.bericht);
 
   if (bedrijfsnaam === null || email === null || volume === null || bericht === null) {
-    return badRequest("Invalid request.");
+    return badRequest("Ongeldige aanvraag.");
   }
   if (!bedrijfsnaam || !email) {
-    return badRequest("Company name and email are required.");
+    return badRequest("Vul je bedrijfsnaam en e-mailadres in.");
   }
   if (bedrijfsnaam.length > MAX_LENGTH.bedrijfsnaam) {
-    return badRequest(`Company name can be at most ${MAX_LENGTH.bedrijfsnaam} characters.`);
+    return badRequest(`De bedrijfsnaam mag maximaal ${MAX_LENGTH.bedrijfsnaam} tekens zijn.`);
   }
   if (email.length > MAX_LENGTH.email || !EMAIL_PATTERN.test(email)) {
-    return badRequest("Please enter a valid email address.");
+    return badRequest("Vul een geldig e-mailadres in.");
   }
   if (!VOLUME_OPTIONS.has(volume)) {
-    return badRequest("Please choose a valid email volume.");
+    return badRequest("Kies een geldig aantal mails per maand.");
   }
   if (bericht.length > MAX_LENGTH.bericht) {
-    return badRequest(`Message can be at most ${MAX_LENGTH.bericht} characters.`);
+    return badRequest(`Je bericht mag maximaal ${MAX_LENGTH.bericht} tekens zijn.`);
   }
 
   const resendKey = process.env.RESEND_API_KEY;
@@ -93,12 +93,12 @@ export async function POST(request: Request) {
   }
 
   const emailBody = [
-    `New demo request from ${bedrijfsnaam}`,
+    `Nieuwe demo-aanvraag van ${bedrijfsnaam}`,
     ``,
-    `Company: ${bedrijfsnaam}`,
-    `Email: ${email}`,
-    `Volume: ${volume || "Not specified"}`,
-    `Message: ${bericht || "None"}`,
+    `Bedrijf: ${bedrijfsnaam}`,
+    `E-mail: ${email}`,
+    `Volume: ${volume || "Niet opgegeven"}`,
+    `Bericht: ${bericht || "Geen"}`,
   ].join("\n");
 
   try {
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
         from: FROM,
         to: [RECIPIENT],
         reply_to: email,
-        subject: `Demo request: ${bedrijfsnaam.replace(/\s+/g, " ")}`,
+        subject: `Demo-aanvraag: ${bedrijfsnaam.replace(/\s+/g, " ")}`,
         text: emailBody,
       }),
     });

@@ -21,13 +21,13 @@ export function Steps({
               key={step.title}
               data-reveal
               style={{ "--reveal-delay": `${i * 90}ms` } as CSSProperties}
-              className="panel flex gap-4 p-5 sm:p-8 md:flex-col md:gap-0"
+              className="panel flex gap-4 p-5 sm:p-7"
             >
-              <span className="emph shrink-0 text-4xl leading-none text-accent-text md:text-6xl" aria-hidden="true">
+              <span className="step-number" aria-hidden="true">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <div className="md:mt-10">
-                <h3 className="text-lg font-semibold tracking-tight text-fg sm:text-xl">
+              <div>
+                <h3 className="text-lg font-bold tracking-[-0.02em] text-fg sm:text-xl">
                   <span className="sr-only">Stap {i + 1}: </span>
                   {step.title}
                 </h3>

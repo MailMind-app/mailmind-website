@@ -68,7 +68,7 @@ export const features: Feature[] = [
   {
     id: "beslislog",
     title: "Beslislog per mail",
-    description: "Bij elke mail zie je waarom MailMind hem zo heeft ingedeeld en beantwoord.",
+    description: "Bij elke mail zie je waarom MailMind hem zo heeft ingedeeld en welk concept hij voorstelt.",
     status: "bestaat",
   },
   {

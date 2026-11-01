@@ -1,12 +1,11 @@
-import { ArrowRight, CircleHelp, CreditCard, Lock, MessageSquareWarning, UserMinus } from "lucide-react"
+import { ArrowRight, Lock } from "lucide-react"
 import Link from "next/link"
 import { SoonBadge } from "@/components/primitives/feature-title"
 import { SectionHeading } from "@/components/primitives/section-heading"
+import { AlwaysHumanGrid } from "@/components/sections/always-human"
 import { getFeature, modes } from "@/content/features"
 import { control } from "@/content/home"
 import { cn } from "@/lib/cn"
-
-const icons = [UserMinus, CreditCard, MessageSquareWarning, CircleHelp]
 
 function MoreLink({ href, label }: { href: string; label: string }) {
   return (
@@ -27,20 +26,9 @@ export function Control() {
 
           <div data-reveal>
             <h3 className="text-sm font-medium text-muted">{control.alwaysHumanTitle}</h3>
-            <ul className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line">
-              {control.alwaysHuman.map((item, i) => {
-                const Icon = icons[i % icons.length]
-                return (
-                  <li key={item.title} className="flex flex-col gap-3 bg-panel p-4 sm:flex-row sm:gap-4 sm:p-5">
-                    <Icon className="mt-0.5 hidden size-5 shrink-0 text-accent-text sm:block" aria-hidden="true" />
-                    <div>
-                      <p className="font-semibold leading-snug text-fg">{item.title}</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted">{item.text}</p>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
+            <div className="mt-4">
+              <AlwaysHumanGrid />
+            </div>
           </div>
         </div>
 
@@ -63,7 +51,7 @@ export function Control() {
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <p className="font-semibold tracking-tight text-fg sm:text-lg">{mode.name}</p>
+                    <p className="font-bold tracking-[-0.02em] text-fg sm:text-lg">{mode.name}</p>
                     {soon && <SoonBadge when={feature?.when} />}
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-muted">{mode.short}</p>

@@ -1,9 +1,10 @@
-// Teksten van de homepage. *Woorden tussen sterretjes* worden serif-cursief.
+// Teksten van de homepage. *Woorden tussen sterretjes* krijgen het blauwe accentverloop
+// (maximaal één deel per kop).
 // [[functie-id]] wordt de titel van die functie uit content/features.ts, met
 // automatisch een "Binnenkort"-badge waar nodig.
 
 export const hero = {
-  eyebrow: "AI-e-mailassistent voor sportscholen",
+  eyebrow: "Voor sportscholen",
   title: "Je inbox gesorteerd. Je antwoorden klaar. *Jij beslist.*",
   subtitle:
     "MailMind sorteert de mail van je sportschool, stuurt door naar de juiste collega en schrijft conceptantwoorden. Er gaat geen antwoord de deur uit zonder jouw klik.",
@@ -119,7 +120,12 @@ export const dashboardShowcase = {
   eyebrow: "Het dashboard",
   title: "Alles op *één plek.*",
   intro: "Voor de manager en voor medewerkers, elk met een eigen weergave.",
-  image: { alt: "Voorbeeld van het MailMind-dashboard met fictieve gegevens" },
+  // Nieuwe screenshot? Vervang public/dashboard-screenshot.webp (zelfde bestandsnaam)
+  // en pas hier de alt-tekst en het onderschrift aan. Afmetingen leest de build zelf.
+  image: {
+    alt: "Voorbeeld van het MailMind-dashboard met fictieve gegevens",
+    caption: "Fictieve gegevens.",
+  },
   highlights: ["beslislog", "categorieen", "beoordelen"],
 }
 

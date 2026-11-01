@@ -2,16 +2,33 @@ import { ArrowRight, UserRound } from "lucide-react"
 import { Badge } from "@/components/primitives/badge"
 import { SectionHeading } from "@/components/primitives/section-heading"
 import { recognition } from "@/content/home"
+import { cn } from "@/lib/cn"
 
-export function Recognition() {
+type Heading = { eyebrow: string; title: string; intro: string }
+
+/**
+ * Stylised inbox with typical gym mail and what MailMind does with each.
+ * On the homepage some mails are hidden on mobile; `showAll` shows every mail.
+ */
+export function Recognition({
+  heading = recognition,
+  id = "herkenning",
+  showAll = false,
+  bordered = false,
+}: {
+  heading?: Heading
+  id?: string
+  showAll?: boolean
+  bordered?: boolean
+}) {
   return (
-    <section className="section-y" aria-labelledby="herkenning-title">
+    <section className={cn("section-y", bordered && "border-t border-line")} aria-labelledby={`${id}-title`}>
       <div className="container-site grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
         <SectionHeading
-          id="herkenning-title"
-          eyebrow={recognition.eyebrow}
-          title={recognition.title}
-          intro={recognition.intro}
+          id={`${id}-title`}
+          eyebrow={heading.eyebrow}
+          title={heading.title}
+          intro={heading.intro}
           className="lg:sticky lg:top-28 lg:self-start"
         />
 
@@ -22,7 +39,13 @@ export function Recognition() {
           </div>
           <ul className="divide-y divide-line">
             {recognition.mails.map((mail) => (
-              <li key={mail.subject} className={`${mail.desktopOnly ? "hidden sm:grid" : "grid"} gap-2.5 px-4 py-3.5 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-6 sm:px-5 sm:py-4`}>
+              <li
+                key={mail.subject}
+                className={cn(
+                  mail.desktopOnly && !showAll ? "hidden sm:grid" : "grid",
+                  "gap-2.5 px-4 py-3.5 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-6 sm:px-5 sm:py-4",
+                )}
+              >
                 <div className="min-w-0">
                   <div className="flex items-baseline justify-between gap-3 text-sm">
                     <span className="font-medium text-muted">{mail.from}</span>

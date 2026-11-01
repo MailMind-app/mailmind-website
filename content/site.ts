@@ -137,7 +137,6 @@ export const footerNav = [
     title: "Account",
     links: [
       { href: site.dashboardLoginUrl, label: "Inloggen", external: true },
-      { href: site.dashboardUrl, label: "Dashboard", external: true },
     ],
   },
 ]

@@ -19,7 +19,7 @@ export function Comparison() {
                 col.ours ? "border-accent-line bg-accent-soft" : "border-line bg-panel",
               )}
             >
-              <h3 className={cn("text-lg font-semibold tracking-tight", col.ours ? "text-fg" : "text-muted")}>
+              <h3 className={cn("text-lg font-bold tracking-[-0.02em]", col.ours ? "text-fg" : "text-muted")}>
                 {col.name}
               </h3>
               <ul className="mt-3 space-y-2 sm:mt-4 sm:space-y-2.5">

@@ -3,7 +3,7 @@ import { FeatureTitle } from "./feature-title"
 
 /**
  * Renders a content string:
- * - *words between asterisks* become serif italic (for headings);
+ * - *words between asterisks* get the blue accent gradient (headings; max. one part per heading);
  * - [[feature-id]] becomes the feature's title, with a "Binnenkort" badge
  *   for features that do not exist yet.
  */
@@ -17,9 +17,9 @@ export function Rich({ text }: { text: string }) {
         }
         if (part.startsWith("*") && part.endsWith("*")) {
           return (
-            <em key={i} className="emph">
+            <span key={i} className="accent-text">
               {part.slice(1, -1)}
-            </em>
+            </span>
           )
         }
         return <Fragment key={i}>{part}</Fragment>

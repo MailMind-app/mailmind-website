@@ -3,34 +3,43 @@
 /* ─────────────────────────────────────────────────────────────────────────
    Design tokens. Components use only these (via the Tailwind theme below);
    no hex codes in components.
-   Contrast (WCAG AA, 4.5:1) checked against --bg and --panel-3:
-   fg ≥ 14.8:1, muted ≥ 7.9:1, subtle ≥ 5.3:1, accent-text ≥ 8.0:1,
-   success/warning ≥ 10.8:1, white on --accent 5.2:1.
+   Contrast (WCAG AA, 4.5:1), checked on --bg #0a0f1e and the panels:
+   heading ≥ 14.5:1, body ≥ 9.2:1, subtle ≥ 5.8:1, eyebrow ≥ 7.9:1,
+   accent gradient ≥ 6.0:1 (lightest-luminance end #4f8ff7) and ≥ 4.6:1 on the
+   centre of the blue glow, fallback #4fa8f8 7.5:1, white on --accent 5.2:1.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
   color-scheme: dark;
 
   /* Surfaces */
-  --bg: #070b16;
-  --panel: #0b1120;
-  --panel-2: #0f1728;
-  --panel-3: #141e33;
+  --bg: #0a0f1e;
+  --panel: #0f172a;
+  --panel-2: #121b30;
+  --panel-3: #16213a;
 
   /* Lines */
   --line: rgb(255 255 255 / 0.08);
   --line-strong: rgb(255 255 255 / 0.14);
 
   /* Text */
-  --fg: #eef2f8;
-  --muted: #a9b4c6;
-  --subtle: #8592a8;
+  --fg: #e8eef8;
+  --muted: #b2c1d7;
+  --subtle: #8a99b0;
 
-  /* Accent (one blue) */
+  /* Accent: one blue, plus the gradient used for accent words in headings */
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
-  --accent-text: #8ab4ff;
-  --accent-soft: rgb(37 99 235 / 0.14);
-  --accent-line: rgb(96 150 255 / 0.35);
+  --accent-text: #7cc4fb;
+  --accent-soft: rgb(79 143 247 / 0.12);
+  --accent-line: rgb(79 143 247 / 0.45);
+  --accent-grad-from: #4f8ff7;
+  --accent-grad-to: #38bdf8;
+  --accent-grad-fallback: #4fa8f8;
+  --eyebrow: #38bdf8;
+
+  /* Background glows (hero and closing CTA only) */
+  --glow-blue: #10245d;
+  --glow-teal: #0b2e48;
 
   /* Status */
   --success: #6ee7a8;
@@ -49,6 +58,12 @@
   --gutter: clamp(1rem, 4vw, 2rem);
   --section-y: clamp(3rem, 9vw, 7rem);
   --header-h: 4rem;
+
+  /* Type */
+  --heading-weight: 800;
+  --heading-tracking: -0.035em;
+  --heading-leading: 1.05;
+  --body-leading: 1.6;
 }
 
 @theme inline {
@@ -66,6 +81,7 @@
   --color-accent-text: var(--accent-text);
   --color-accent-soft: var(--accent-soft);
   --color-accent-line: var(--accent-line);
+  --color-eyebrow: var(--eyebrow);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
@@ -77,7 +93,6 @@
   --radius-xl: var(--radius-xl);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
 }
 
 @layer base {
@@ -94,8 +109,9 @@
   }
 
   body {
-    @apply bg-bg font-sans text-fg antialiased;
-    font-feature-settings: "cv11", "ss01";
+    @apply bg-bg font-sans text-muted antialiased;
+    font-weight: 400;
+    line-height: var(--body-leading);
     text-rendering: optimizeLegibility;
   }
 
@@ -122,8 +138,17 @@
   }
 
   h1,
-  h2,
-  h3 {
+  h2 {
+    color: var(--fg);
+    font-weight: var(--heading-weight);
+    letter-spacing: var(--heading-tracking);
+    line-height: var(--heading-leading);
+    text-wrap: balance;
+  }
+
+  h3,
+  h4 {
+    color: var(--fg);
     text-wrap: balance;
   }
 
@@ -144,37 +169,71 @@
     padding-block: var(--section-y);
   }
 
-  /* Serif italic for emphasised words in headings. */
-  .emph {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: 0;
+  /* Accent word(s) in a heading: blue gradient text, solid fallback colour. */
+  .accent-text {
+    color: var(--accent-grad-fallback);
+  }
+
+  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+    .accent-text {
+      background-image: linear-gradient(90deg, var(--accent-grad-from), var(--accent-grad-to));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
   }
 
   .eyebrow {
-    @apply text-[13px] font-medium tracking-wide text-accent-text;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
   }
 
   .panel {
     @apply rounded-lg border border-line bg-panel;
   }
+
+  /* Soft blue glow top-left and teal glow bottom-right. Hero and closing CTA only. */
+  .glow-bg {
+    background-image:
+      radial-gradient(ellipse 60% 70% at 0% 0%, var(--glow-blue), transparent 70%),
+      radial-gradient(ellipse 55% 60% at 100% 100%, var(--glow-teal), transparent 70%);
+  }
+
+  /* Numbered step marker. */
+  .step-number {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-md);
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
 }
 
-/* Scroll reveal. Only hidden when JS runs (html.js), so content is always
-   visible without JS. Never used on the hero heading (LCP). */
+/* Scroll reveal. RevealObserver marks only elements that start below the fold
+   as .reveal-pending; anything visible on load is never hidden (no LCP delay,
+   no flash), and without JS nothing is hidden at all. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js [data-reveal] {
-    opacity: 0;
-    transform: translateY(14px);
+  [data-reveal] {
     transition:
       opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
-  html.js [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
+  [data-reveal].reveal-pending {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: none;
   }
 }

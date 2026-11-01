@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Instrument_Serif } from "next/font/google"
+import { Inter } from "next/font/google"
 import "./globals.css"
 import { SiteFooter } from "@/components/layout/site-footer"
 import { SiteHeader } from "@/components/layout/site-header"
@@ -10,17 +10,6 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-})
-
-// Only the italic is used (emphasised words). Not preloaded: it is never the
-// LCP text, so it should not compete with the body font on slow connections.
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: "italic",
-  variable: "--font-instrument",
-  display: "swap",
-  preload: false,
 })
 
 export const metadata: Metadata = {
@@ -52,11 +41,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="nl" className={`${inter.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
-      <head>
-        {/* Marks that JS runs, so scroll reveals may start hidden. */}
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
-      </head>
+    <html lang="nl" className={inter.variable}>
       <body className="min-h-dvh">
         <a
           href="#inhoud"

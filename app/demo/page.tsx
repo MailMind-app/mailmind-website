@@ -39,6 +39,7 @@ export default function DemoPage() {
     email: "",
     volume: "",
     message: "",
+    website: "",
   })
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -64,13 +65,21 @@ export default function DemoPage() {
           email: form.email,
           volume: form.volume,
           bericht: form.message,
+          website: form.website,
         }),
       })
 
-      if (!res.ok) throw new Error("Something went wrong")
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        setError(
+          data?.error ??
+            "Your request could not be sent. Please try again or email rens@mailmind.nl."
+        )
+        return
+      }
       setSuccess(true)
     } catch {
-      setError("Something went wrong. Please try again or email us at rens@mailmind.nl")
+      setError("Your request could not be sent. Please try again or email rens@mailmind.nl.")
     } finally {
       setSubmitting(false)
     }
@@ -143,12 +152,12 @@ export default function DemoPage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-3">Request received</h2>
                   <p className="text-[#64748b] mb-6">
-                    We&apos;ll be in touch within 1 business day to schedule your demo.
+                    We&apos;ll get back to you within 2 business days to schedule your demo.
                   </p>
                   <button
                     onClick={() => {
                       setSuccess(false)
-                      setForm({ company: "", email: "", volume: "", message: "" })
+                      setForm({ company: "", email: "", volume: "", message: "", website: "" })
                     }}
                     className="text-sm text-[#2563eb] hover:text-[#93c5fd] transition-colors"
                   >
@@ -166,6 +175,20 @@ export default function DemoPage() {
                   )}
 
                   <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Honeypot: hidden from people, bots tend to fill it in. */}
+                    <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                      <label htmlFor="website">Leave this field empty</label>
+                      <input
+                        id="website"
+                        name="website"
+                        type="text"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={form.website}
+                        onChange={handleChange}
+                      />
+                    </div>
+
                     <div>
                       <label
                         htmlFor="company"
@@ -178,6 +201,7 @@ export default function DemoPage() {
                         name="company"
                         type="text"
                         required
+                        maxLength={200}
                         value={form.company}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-[#334155] text-sm focus:outline-none focus:border-[#2563eb]/50 focus:ring-1 focus:ring-[#2563eb]/30 transition-all"
@@ -197,6 +221,7 @@ export default function DemoPage() {
                         name="email"
                         type="email"
                         required
+                        maxLength={254}
                         value={form.email}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-[#334155] text-sm focus:outline-none focus:border-[#2563eb]/50 focus:ring-1 focus:ring-[#2563eb]/30 transition-all"
@@ -238,6 +263,7 @@ export default function DemoPage() {
                         id="message"
                         name="message"
                         rows={4}
+                        maxLength={5000}
                         value={form.message}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-[#334155] text-sm focus:outline-none focus:border-[#2563eb]/50 focus:ring-1 focus:ring-[#2563eb]/30 transition-all resize-none"

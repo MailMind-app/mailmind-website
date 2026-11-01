@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>MailMind — Setup Vragenlijst</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -507,13 +508,13 @@
 
       <div class="question">
         <div class="q-label"><span class="q-num">2</span>Wat mag MailMind doen met elk type email?</div>
-        <div class="q-hint">Kies per categorie of MailMind automatisch antwoordt, of de email naar jou doorstuurt.</div>
+        <div class="q-hint">Kies per categorie of MailMind een concept laat maken (jij keurt goed voordat er iets verstuurd wordt) of de email doorstuurt naar een medewerker. Automatisch versturen komt begin 2027.</div>
         <div id="handling-rows" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
 
       <div class="question">
         <div class="q-label"><span class="q-num">3</span>Hoe sluit jouw bedrijf emails af?</div>
-        <div class="q-hint">MailMind gebruikt deze afsluiting in elke mail die hij verstuurt.</div>
+        <div class="q-hint">MailMind gebruikt deze afsluiting in elk conceptantwoord.</div>
         <textarea class="q-input" id="q3" rows="3" placeholder="Bijv. Met vriendelijke groet,&#10;&#10;[Naam bedrijf]"></textarea>
       </div>
     </div>
@@ -608,7 +609,7 @@ const CATEGORIES = [
       row.className = 'handling-row';
       row.innerHTML = '<span class="handling-name">' + cat + '</span>' +
         '<div class="handling-options">' +
-        '<button type="button" class="handling-btn" data-cat="' + cat + '" data-val="auto"><span class="dot-sm"></span> Automatisch</button>' +
+        '<button type="button" class="handling-btn" data-cat="' + cat + '" data-val="auto"><span class="dot-sm"></span> Concept laten maken</button>' +
         '<button type="button" class="handling-btn" data-cat="' + cat + '" data-val="fallback"><span class="dot-sm"></span> Doorsturen</button>' +
         '</div>';
       container.appendChild(row);

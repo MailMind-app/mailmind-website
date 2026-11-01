@@ -48,7 +48,7 @@ export default async function Image() {
             <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: -1 }}>MailMind</div>
           </div>
           <div style={{ display: "flex", fontSize: 20, fontWeight: 400, letterSpacing: 4, color: EYEBROW }}>
-            VOOR SPORTSCHOLEN
+            VOOR HET MKB
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export default async function Image() {
             color: MUTED,
           }}
         >
-          <div style={{ display: "flex" }}>AI-e-mailassistent voor sportscholen en het MKB</div>
+          <div style={{ display: "flex" }}>AI-e-mailassistent voor het MKB, als eerste voor sportscholen</div>
           <div style={{ display: "flex" }}>mailmind.nl</div>
         </div>
       </div>

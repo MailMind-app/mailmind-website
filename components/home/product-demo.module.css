@@ -29,6 +29,15 @@
   color: var(--subtle);
 }
 
+.example {
+  position: absolute;
+  top: -1.75rem;
+  right: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--subtle);
+}
+
 .lights {
   display: flex;
   gap: 6px;

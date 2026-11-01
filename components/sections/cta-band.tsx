@@ -5,7 +5,7 @@ import { finalCta } from "@/content/home"
 import { site } from "@/content/site"
 
 /** Closing call to action. `attached` places it directly under the previous section. */
-export function CtaBand({ attached = false }: { attached?: boolean }) {
+export function CtaBand({ attached = false, text = finalCta.text }: { attached?: boolean; text?: string }) {
   return (
     <section
       className={attached ? "pb-[var(--section-y)]" : "section-y border-t border-line"}
@@ -20,7 +20,7 @@ export function CtaBand({ attached = false }: { attached?: boolean }) {
           <h2 id="cta-title" className="relative mx-auto max-w-2xl text-[1.95rem] sm:text-5xl">
             <Rich text={finalCta.title} />
           </h2>
-          <p className="relative mx-auto mt-5 max-w-xl text-lg text-muted">{finalCta.text}</p>
+          <p className="relative mx-auto mt-5 max-w-xl text-lg text-muted">{text}</p>
           <div className="relative mt-8 flex flex-wrap justify-center gap-3">
             <ButtonLink href={finalCta.primary.href} size="lg">
               {finalCta.primary.label}

@@ -3,6 +3,7 @@ import { DashboardShowcase } from "@/components/home/dashboard-showcase"
 import { Hero } from "@/components/home/hero"
 import { PricingTeaser } from "@/components/home/pricing-teaser"
 import { Recognition } from "@/components/home/recognition"
+import { SportschoolTeaser } from "@/components/home/sportschool-teaser"
 import { Comparison } from "@/components/sections/comparison"
 import { CtaBand } from "@/components/sections/cta-band"
 import { FaqList } from "@/components/sections/faq-list"
@@ -20,6 +21,7 @@ export default function HomePage() {
       <Hero />
       <Recognition />
       <Steps />
+      <SportschoolTeaser />
       <DashboardShowcase />
       <Control />
       <Comparison />

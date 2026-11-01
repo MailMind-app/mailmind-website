@@ -9,10 +9,11 @@ export function ProductDemo() {
   return (
     <div
       role="img"
-      aria-label={`Voorbeeld in ${d.mode}: de mail "${d.subject}" krijgt het label ${d.category} en de klant krijgt een ontvangstbevestiging. MailMind schrijft een concept; het antwoord gaat pas weg nadat jij op Goedkeuren klikt.`}
+      aria-label={`${d.exampleLabel}, in ${d.mode}: de mail "${d.subject}" krijgt het label ${d.category} en de klant krijgt een ontvangstbevestiging. MailMind schrijft een concept; het antwoord gaat pas weg nadat jij op Goedkeuren klikt.`}
       className={styles.window}
     >
       <div aria-hidden="true">
+        <p className={styles.example}>{d.exampleLabel}</p>
         <div className={styles.bar}>
           <span className={styles.lights}>
             <span />

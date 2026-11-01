@@ -10,8 +10,8 @@ export const site = {
   locale: "nl_NL",
   title: "MailMind — je inbox gesorteerd, jij beslist",
   description:
-    "MailMind sorteert de mail van je sportschool, stuurt door naar de juiste collega en schrijft conceptantwoorden uit je kennisbank. Er gaat geen antwoord de deur uit zonder jouw klik.",
-  shortDescription: "AI-e-mailassistent voor sportscholen en het MKB. MailMind sorteert en schrijft concepten, jij beslist.",
+    "MailMind sorteert je zakelijke mail, stuurt door naar de juiste collega en schrijft conceptantwoorden uit je kennisbank. Voor het MKB, met sportscholen als eerste branche. Er gaat geen antwoord de deur uit zonder jouw klik.",
+  shortDescription: "AI-e-mailassistent voor het MKB, met sportscholen als eerste branche. MailMind sorteert en schrijft concepten, jij beslist.",
   demoResponseTime: "binnen 2 werkdagen",
 }
 

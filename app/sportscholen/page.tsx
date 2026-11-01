@@ -8,6 +8,7 @@ import { FaqList } from "@/components/sections/faq-list"
 import { NumberedList } from "@/components/sections/numbered-list"
 import { PointGrid } from "@/components/sections/point-grid"
 import { faqFor } from "@/content/faq"
+import { finalCta } from "@/content/home"
 import { howItWorks } from "@/content/how-it-works"
 import { pilot, showPilot } from "@/content/pilot"
 import { sportscholen as c } from "@/content/sportscholen"
@@ -64,7 +65,7 @@ export default function SportscholenPage() {
       )}
 
       <FaqList items={faqFor("sportscholen")} />
-      <CtaBand attached />
+      <CtaBand attached text={finalCta.textSportschool} />
     </>
   )
 }

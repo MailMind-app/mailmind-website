@@ -16,7 +16,7 @@ function body() {
 
 > ${site.description}
 
-MailMind is een AI-e-mailassistent voor Nederlandse sportscholen en MKB-bedrijven. Het is geen chatbot en geen autoresponder: MailMind sorteert binnenkomende mail, stuurt na een klik van de manager door naar de juiste collega en schrijft conceptantwoorden uit de kennisbank van het bedrijf. Er gaat geen antwoord de deur uit zonder klik van een mens. In Training gaat er niets naar de klant: het team antwoordt zelf. In Semi-Live krijgt de klant direct een automatische ontvangstbevestiging en verstuurt MailMind het antwoord pas na de klik van een medewerker.
+MailMind is een AI-e-mailassistent voor Nederlandse MKB-bedrijven, met sportscholen als eerste branche. Het is geen chatbot en geen autoresponder: MailMind sorteert binnenkomende mail, stuurt na een klik van de manager door naar de juiste collega en schrijft conceptantwoorden uit de kennisbank van het bedrijf. Er gaat geen antwoord de deur uit zonder klik van een mens. In Training gaat er niets naar de klant: het team antwoordt zelf. In Semi-Live krijgt de klant direct een automatische ontvangstbevestiging en verstuurt MailMind het antwoord pas na de klik van een medewerker.
 
 ## Wat MailMind nu doet
 

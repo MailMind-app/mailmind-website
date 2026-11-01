@@ -4,15 +4,16 @@
 // automatisch een "Binnenkort"-badge waar nodig.
 
 export const hero = {
-  eyebrow: "Voor sportscholen",
+  eyebrow: "AI-e-mailassistent voor het MKB",
   title: "Je inbox gesorteerd. Je antwoorden klaar. *Jij beslist.*",
   subtitle:
-    "MailMind sorteert de mail van je sportschool, stuurt door naar de juiste collega en schrijft conceptantwoorden. Er gaat geen antwoord de deur uit zonder jouw klik.",
+    "MailMind sorteert je zakelijke mail, stuurt door naar de juiste collega en schrijft conceptantwoorden. Er gaat geen antwoord de deur uit zonder jouw klik.",
   primaryCta: { label: "Demo aanvragen", href: "/demo" },
   secondaryCta: { label: "Zo werkt het", href: "#zo-werkt-het" },
   notes: ["Werkt met je eigen mailbox", "Opslag in de EU"],
   // Verzonnen voorbeeld; geen bestaande sportschool, naam, lestijd of prijs.
   demo: {
+    exampleLabel: "Voorbeeld: sportschool",
     mailbox: "info@jouwsportschool.nl",
     mode: "Semi-Live",
     from: "Lotte",
@@ -45,7 +46,7 @@ export const recognition = {
   eyebrow: "Herkenning",
   title: "Klinkt dit *bekend?*",
   intro:
-    "Ledenvragen, roosters, een opzegging, een factuur en een bericht van de bond. Allemaal tussen het werk door. MailMind deelt ze in en zet klaar wat klaar kan.",
+    "Klantvragen, een opzegging, een factuur van een leverancier, een bericht van je branchevereniging. Allemaal tussen het werk door.",
   mails: [
     {
       from: "Lotte",
@@ -116,6 +117,12 @@ export const steps = {
   link: { label: "Meer over de werking", href: "/hoe-het-werkt" },
 }
 
+export const sportschoolTeaser = {
+  title: "Heb je een *sportschool?*",
+  text: "Proeflessen, roosters, opzeggingen: zie wat MailMind voor jouw club doet.",
+  cta: { label: "MailMind voor sportscholen", href: "/sportscholen" },
+}
+
 export const dashboardShowcase = {
   eyebrow: "Het dashboard",
   title: "Alles op *één plek.*",
@@ -136,7 +143,7 @@ export const control = {
     "MailMind doet het voorwerk. Er gaat geen antwoord de deur uit zonder jouw klik. In Semi-Live krijgt de klant direct een ontvangstbevestiging.",
   alwaysHumanTitle: "Gaat altijd naar een mens",
   alwaysHuman: [
-    { title: "Opzeggingen", text: "Een lid dat wil stoppen, spreek je zelf." },
+    { title: "Opzeggingen", text: "Een klant die wil stoppen, spreek je zelf." },
     { title: "Betalingen", text: "Alles over geld, incasso en facturen." },
     { title: "Klachten", text: "Een klacht verdient een persoonlijk antwoord." },
     { title: "Geen antwoord in de kennisbank", text: "Dan maakt MailMind geen concept." },
@@ -166,7 +173,7 @@ export const comparison = {
     {
       name: "Chatbot",
       ours: false,
-      points: ["Staat op je website; het lid moet daar zelf naartoe", "Doet niets met je inbox"],
+      points: ["Staat op je website; de klant moet daar zelf naartoe", "Doet niets met je inbox"],
     },
     {
       name: "MailMind",
@@ -194,7 +201,8 @@ export const faqSection = {
 
 export const finalCta = {
   title: "Benieuwd wat MailMind met *jouw inbox* doet?",
-  text: "Vraag een demo aan. We laten MailMind zien met mail zoals jouw sportschool die krijgt.",
+  text: "Vraag een demo aan. We laten MailMind zien met mail zoals jouw bedrijf die krijgt.",
+  textSportschool: "Vraag een demo aan. We laten MailMind zien met mail zoals jouw sportschool die krijgt.",
   primary: { label: "Demo aanvragen", href: "/demo" },
   secondary: { label: "Prijzen bekijken", href: "/prijzen" },
 }

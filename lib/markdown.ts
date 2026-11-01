@@ -1,6 +1,6 @@
 import { faqFor } from "@/content/faq"
 import { featureLabel, getFeature, modes, roadmap, type Mode } from "@/content/features"
-import { comparison, control, dashboardShowcase, finalCta, hero, recognition, steps } from "@/content/home"
+import { comparison, control, dashboardShowcase, finalCta, hero, recognition, sportschoolTeaser, steps } from "@/content/home"
 import { pricingSummary } from "@/content/pricing"
 import { routes, site } from "@/content/site"
 import { absoluteUrl } from "@/lib/site"
@@ -33,6 +33,10 @@ ${recognition.mails.map((m) => `- ${m.subject} → ${m.category}: ${m.action}`).
 ${steps.items.map((s, i) => `${i + 1}. **${s.title}** — ${s.text}`).join("\n")}
 
 [${steps.link.label}](${absoluteUrl(steps.link.href)})
+
+## ${p(sportschoolTeaser.title)}
+
+${sportschoolTeaser.text} [${sportschoolTeaser.cta.label}](${absoluteUrl(sportschoolTeaser.cta.href)})
 
 ## ${p(dashboardShowcase.title)}
 

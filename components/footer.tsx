@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { DASHBOARD_LOGIN_URL } from "@/lib/site"
 
 export function Footer() {
   const year = new Date().getFullYear()

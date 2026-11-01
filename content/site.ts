@@ -156,17 +156,17 @@ export const subprocessors: Subprocessor[] = [
   },
   {
     name: "Vercel",
-    role: "Hosting van deze website (mailmind.nl).",
-    location: "Wordt nog bevestigd",
+    role: "Hosting van deze website. Formulierverwerking in de EU (Frankfurt).",
+    location: "EU (Frankfurt); website via wereldwijd netwerk",
   },
   {
     name: "Resend",
     role: "Bezorgen van demo-aanvragen die via deze website binnenkomen.",
-    location: "Wordt nog bevestigd",
+    location: "EU (Ierland)",
   },
   {
     name: "Microsoft 365",
     role: "Zakelijke e-mail van MailMind.",
-    location: "Wordt nog bevestigd",
+    location: "EU",
   },
 ]

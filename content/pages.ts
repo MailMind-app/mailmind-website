@@ -68,11 +68,17 @@ export const aboutPage = {
       ],
     },
     {
+      title: "Wie erachter zit",
+      paragraphs: [
+        "MailMind is opgericht door Rens van Arkelen. Ik bouw MailMind samen met een Nederlandse sportschool die het dagelijks gebruikt. Daar zag ik hoeveel tijd er gaat zitten in steeds dezelfde mail: proeflessen, roosters, opzeggingen. MailMind neemt dat voorwerk over, zonder dat er een antwoord de deur uit gaat dat niet klopt.",
+      ],
+    },
+    {
       title: "Hoe we werken",
       paragraphs: [
         "Een mens beoordeelt elk concept. Bij elke mail staat in het beslislog waarom MailMind iets besloot. Opzeggingen, betalingen en klachten gaan altijd naar een mens.",
         "Je data staat in de EU, bij Hetzner in Helsinki. Voor de AI-verwerking gebruikt MailMind de OpenAI API; die data wordt niet gebruikt voor training.",
-        "Je hebt direct contact met de oprichter.",
+        "Je hebt direct contact met mij: rens@mailmind.nl.",
       ],
     },
   ],
@@ -125,6 +131,13 @@ export const privacyPage = {
       paragraphs: [
         "Maildata wordt opgeslagen in de database van MailMind bij Hetzner in Helsinki (EU). Het dashboard draait op dezelfde infrastructuur.",
         "Voor het indelen van mail en het schrijven van concepten stuurt MailMind de inhoud via de API naar OpenAI. Die verwerking vindt buiten de EU plaats. OpenAI gebruikt API-data niet voor training.",
+      ],
+    },
+    {
+      title: "Hoe lang we gegevens bewaren",
+      paragraphs: [
+        "Demo-aanvragen en mail aan MailMind bewaren we tot 12 maanden na het laatste contact.",
+        "Mail die klanten via MailMind laten verwerken, bewaren we zolang de overeenkomst loopt. Na het einde van de overeenkomst verwijderen we deze gegevens binnen 30 dagen.",
       ],
     },
     {

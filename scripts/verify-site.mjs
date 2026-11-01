@@ -202,8 +202,16 @@ for (const page of PAGES) {
 // ── Privacy and veiligheid list the subprocessors ──
 for (const page of ["/privacy", "/veiligheid"]) {
   const text = visibleText((await get(page)).body)
-  for (const sp of subprocessors) check(text.includes(sp.name), `${page} lists ${sp.name}`)
+  for (const sp of subprocessors) {
+    check(text.includes(sp.name), `${page} lists ${sp.name}`)
+    check(text.includes(sp.location), `${page} shows the location of ${sp.name}`)
+  }
+  check(!/nog bevestigd/i.test(text), `${page} has no unconfirmed locations`)
 }
+check(
+  subprocessors.every((sp) => !/bevestigd/i.test(sp.location)),
+  "content/site.ts: every subprocessor has a confirmed location",
+)
 
 // ── Open Graph image ──
 {

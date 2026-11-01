@@ -178,6 +178,10 @@ for (const [from, to] of Object.entries(REDIRECTS)) {
 }
 
 // ── Pages: metadata and content ──
+const ogTitles = new Set()
+const ogDescriptions = new Set()
+const meta = (html, attr, name) =>
+  html.match(new RegExp(`<meta ${attr}="${name}" content="([^"]*)"`))?.[1]
 for (const page of PAGES) {
   const { status, body } = await get(page)
   check(status === 200, `${page} returns 200`, `got ${status}`)
@@ -185,7 +189,20 @@ for (const page of PAGES) {
   check(body.includes(`<link rel="canonical" href="${canonical}"/>`), `${page} has canonical ${canonical}`)
   check(body.includes('<html lang="nl"'), `${page} has html lang="nl"`)
   check(body.includes('<meta property="og:locale" content="nl_NL"/>'), `${page} has og:locale nl_NL`)
-  check(/<meta property="og:image" content="[^"]+"/.test(body), `${page} has og:image`)
+  // Link previews (WhatsApp, LinkedIn, Slack): absolute image URL, size, type and alt.
+  const ogImage = meta(body, "property", "og:image") ?? ""
+  check(ogImage.startsWith(`${SITE}/`), `${page} og:image is an absolute ${SITE} URL`, ogImage)
+  check(meta(body, "property", "og:image:width") === "1200", `${page} og:image:width is 1200`)
+  check(meta(body, "property", "og:image:height") === "630", `${page} og:image:height is 630`)
+  check(meta(body, "property", "og:image:type") === "image/png", `${page} og:image:type is image/png`)
+  check(Boolean(meta(body, "property", "og:image:alt")), `${page} has og:image:alt`)
+  check(meta(body, "name", "twitter:card") === "summary_large_image", `${page} twitter:card is summary_large_image`)
+  const ogTitle = meta(body, "property", "og:title") ?? ""
+  const ogDescription = meta(body, "property", "og:description") ?? ""
+  check(Boolean(ogTitle) && !ogTitles.has(ogTitle), `${page} has its own og:title`, ogTitle)
+  check(Boolean(ogDescription) && !ogDescriptions.has(ogDescription), `${page} has its own og:description`)
+  ogTitles.add(ogTitle)
+  ogDescriptions.add(ogDescription)
   check((withoutScripts(body).match(/<h1[\s>]/g) ?? []).length === 1, `${page} has exactly one h1`)
   const text = visibleText(body)
   checkForbidden(page, text)
@@ -213,10 +230,17 @@ check(
   "content/site.ts: every subprocessor has a confirmed location",
 )
 
-// ── Open Graph image ──
+// ── Open Graph image: PNG, 1200×630, under 300 KB (WhatsApp skips larger images) ──
 {
-  const { status, headers } = await get("/opengraph-image")
-  check(status === 200 && headers.get("content-type") === "image/png", "opengraph-image returns a PNG")
+  const res = await fetch(`${BASE}/opengraph-image`)
+  const bytes = new Uint8Array(await res.arrayBuffer())
+  check(res.status === 200 && res.headers.get("content-type") === "image/png", "opengraph-image returns a PNG")
+  // PNG IHDR: width and height are big-endian uint32 at byte 16 and 20.
+  const view = new DataView(bytes.buffer)
+  const width = view.getUint32(16)
+  const height = view.getUint32(20)
+  check(width === 1200 && height === 630, "opengraph-image is 1200×630", `${width}×${height}`)
+  check(bytes.length < 300 * 1024, "opengraph-image is under 300 KB", `${Math.round(bytes.length / 1024)} KB`)
 }
 
 // ── Markdown content negotiation ──

@@ -11,6 +11,7 @@ const OG_IMAGE = {
   url: "/opengraph-image",
   width: 1200,
   height: 630,
+  type: "image/png",
   alt: "MailMind — je inbox gesorteerd, jij beslist",
 }
 

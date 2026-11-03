@@ -1,8 +1,22 @@
 /* Hulpknop met 3D-Rens. Alles position: fixed (geen layout shift) en onder het
-   mobiele menu (z-index 40/50 in de header). Animaties volgen de goedgekeurde schets. */
+   mobiele menu (z-index 40/50 in de header). Wordt via een portal in <body> gezet.
+
+   Maten (zie RensHelper.tsx):
+   --rens-h      hoogte van de staande Rens: clamp(260px, 40vh, 340px)
+   --rens-right  afstand tot de rechterrand: 16px, vanaf 1600px 40px
+   --peek-scale  hoogte peek / hoogte staande Rens, zodat de hoofden even groot zijn
+   --pose-aspect breedte/hoogte van de huidige pose */
 
 .root {
+  --rens-h: clamp(260px, 40vh, 340px);
+  --rens-right: 16px;
   /* geen eigen stacking context: de onderdelen hebben elk hun eigen z-index */
+}
+
+@media (min-width: 1600px) {
+  .root {
+    --rens-right: 40px;
+  }
 }
 
 /* Verborgen zolang het mobiele menu open is (zie components/layout/mobile-nav.tsx). */
@@ -48,23 +62,25 @@
   background: var(--helper-panel);
 }
 
-/* ── Rens: om-de-hoek (peek) en volledig ── */
+/* ── Om-de-hoek (peek): hoofd even groot als bij de staande Rens, bovenkant op dezelfde lijn ── */
 .peek {
   position: fixed;
   right: 0;
-  bottom: 170px;
+  bottom: calc(var(--rens-h) * (1 - var(--peek-scale)));
   z-index: 30;
-  height: 300px;
+  height: calc(var(--rens-h) * var(--peek-scale));
   width: auto;
   pointer-events: none;
 }
 
+/* ── Staande Rens ── */
 .full {
   position: fixed;
-  right: 40px;
+  right: var(--rens-right);
   bottom: 0;
   z-index: 30;
-  height: 340px;
+  height: var(--rens-h);
+  width: calc(var(--rens-h) * var(--pose-aspect));
   padding: 0;
   border: 0;
   background: none;
@@ -75,7 +91,15 @@
   outline-offset: -4px;
 }
 
-.fullImg {
+/* Elke pose rechtsonder verankerd op dezelfde voetlijn; bij een wissel liggen twee lagen over elkaar. */
+.pose {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+}
+
+.poseImg {
   display: block;
   height: 100%;
   width: auto;
@@ -91,10 +115,21 @@
   transform-origin: 46% 99%;
 }
 
-/* ── Ballon ── */
+.crossIn {
+  animation: fade 0.25s ease-out both;
+}
+
+.crossOut {
+  animation: fadeOut 0.25s ease-in both;
+}
+
+/* ── Ballon: boven het hoofd van Rens (staand of peek, zelfde bovenlijn) ── */
 .balloon {
   position: fixed;
+  right: 16px;
+  bottom: calc(var(--rens-h) + 12px);
   z-index: 30;
+  width: 240px;
   padding: 16px 40px 16px 18px;
   border-radius: 16px 16px 4px 16px;
   background: var(--balloon-bg);
@@ -106,19 +141,12 @@
   line-height: 1.45;
 }
 
-/* ≥1600 px: boven het hoofd van Rens, binnen de rechter marge naast de container. */
-.balloonWide {
-  right: 24px;
-  bottom: 352px;
-  width: min(260px, calc((100% - 72rem) / 2 + 2rem - 40px));
-}
-
-/* 1024–1599 px: direct boven het hoofd van de peek, tegen de rechterrand. Zo smal is de
-   marge naast de container hier niet; zo dekt de ballon zo min mogelijk content af. */
-.balloonMid {
-  right: 16px;
-  bottom: 480px;
-  width: 240px;
+/* ≥1600 px: binnen de rechter marge naast de container, zodat hij geen content afdekt. */
+@media (min-width: 1600px) {
+  .balloon {
+    right: 24px;
+    width: min(260px, calc((100% - 72rem) / 2 + 2rem - 40px));
+  }
 }
 
 .balloonTitle {
@@ -179,6 +207,7 @@
   width: 340px;
   max-height: calc(100dvh - var(--header-h) - 116px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 20px;
   background: var(--helper-panel);
@@ -190,18 +219,20 @@
   outline: none;
 }
 
-/* Naast de volledige Rens (≥1600 px): rechts wordt inline gezet. */
+/* Links naast de staande Rens. */
 .windowBeside {
+  right: calc(var(--rens-right) + var(--rens-h) * var(--pose-aspect) + 16px);
   bottom: 24px;
+  max-height: calc(100dvh - var(--header-h) - 40px);
 }
 
-/* <1024 px: bottom sheet. */
+/* <1024 px: bottom sheet. Geen vh op mobiel: dvh volgt de Safari-werkbalk. */
 .sheet {
   left: 0;
   right: 0;
   bottom: 0;
   width: auto;
-  max-height: 85vh;
+  max-height: 85dvh;
   border-radius: 20px 20px 0 0;
   border-bottom: 0;
   padding-bottom: env(safe-area-inset-bottom);
@@ -218,8 +249,8 @@
 /* ── Mobiele balk ── */
 .bar {
   position: fixed;
-  left: 12px;
-  right: 12px;
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
   bottom: calc(12px + env(safe-area-inset-bottom));
   z-index: 30;
   display: flex;
@@ -358,12 +389,12 @@
 }
 
 .leave {
-  animation: leave 0.5s ease-in both;
+  animation: leave 0.35s ease-in both;
 }
 
-/* Zwaaien na het instappen (0,9 s), twee keer. Alleen de hand beweegt. */
+/* Alleen de hand beweegt; het aantal slagen komt uit --wave-count (1 of 2). */
 .wave {
-  animation: wave 1.4s ease-in-out 0.9s 2;
+  animation: wave 1.4s ease-in-out var(--wave-count, 2);
 }
 
 .balloonIn {
@@ -373,10 +404,6 @@
 
 .fadeIn {
   animation: fade 0.2s ease-out both;
-}
-
-.fadeOut {
-  animation: fadeOut 0.2s ease-in both;
 }
 
 /* Geen beweging: alles verschijnt en verdwijnt met een korte fade. */

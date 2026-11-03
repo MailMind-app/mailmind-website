@@ -5,51 +5,89 @@
 import { X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react"
+import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react"
+import { createPortal } from "react-dom"
 import { buttonClasses } from "@/components/primitives/button-link"
-import { helper, helperTexts as t, messageFor, type HelperMessage } from "@/content/helper"
+import { helper, helperTexts as t, messageFor, type HelperMessage, type HelperPose } from "@/content/helper"
 import { cn } from "@/lib/cn"
 import { HelperWindow, type WindowVariant, type WindowView } from "./helper-window"
 import styles from "./rens-helper.module.css"
 
+/** wide ≥1280 px: standing Rens · mid 1024–1279 px: peek + round button · narrow <1024 px: bar */
 type Mode = "wide" | "mid" | "narrow"
-type Figure = { kind: "peek" | "full"; anim: "in" | "out" | "enter" | "leave" }
+/** Session state, restored on every page: has Rens appeared, and is he standing or a button? */
+type HelperState = "none" | "button" | "figure"
+type Phase = "idle" | "peek-in" | "peek-out" | "enter" | "wave" | "switch" | "standing" | "leave"
+type FigureAnim = "enter" | "fade" | "still" | "leave"
 
-const SHOWN_KEY = "mm_helper_shown"
-const DISMISSED_KEY = "mm_helper_dismissed"
+const STATE_KEY = "mm_helper_state"
+const WAVED_KEY = "mm_helper_waved"
 const BUTTON_DELAY_MS = 1500
 const MID_STAY_MS = 12000
 const BAR_SCROLL_PERCENT = 40
+const PRELOAD_AHEAD_MS = 2000
+const PRELOAD_AHEAD_PERCENT = 15
+
+// Durations in ms, matching rens-helper.module.css.
+const T = { peekIn: 700, peekStay: 2000, peekOut: 350, enter: 900, wave: 1400, cross: 250, balloon: 300, leave: 350, fade: 200 }
 
 // Image sizes in public/avatar (see scripts/build-avatar.py).
-const IMG = {
-  head: "/avatar/rens-head.webp",
-  peek: { src: "/avatar/rens-peek.webp", w: 301, h: 600 },
-  zwaaiBase: { src: "/avatar/rens-zwaai-base.webp", w: 293, h: 720 },
-  zwaaiHand: { src: "/avatar/rens-zwaai-hand.webp", w: 99, h: 231 },
+const POSES: Record<HelperPose, { src: string; w: number; h: number }> = {
+  zwaai: { src: "/avatar/rens-zwaai-base.webp", w: 293, h: 720 },
   denk: { src: "/avatar/rens-denk.webp", w: 213, h: 720 },
+  laptop: { src: "/avatar/rens-laptop.webp", w: 379, h: 720 },
+  duim: { src: "/avatar/rens-duim.webp", w: 264, h: 720 },
+  scan: { src: "/avatar/rens-scan.webp", w: 441, h: 640 },
 }
-const PEEK_H = 300
-const FULL_H = 340
-const FULL_RIGHT = 40
+const HAND = { src: "/avatar/rens-zwaai-hand.webp", w: 99, h: 231 }
+const PEEK = { src: "/avatar/rens-peek.webp", w: 301, h: 600 }
+const HEAD = "/avatar/rens-head.webp"
 
-const fullImage = (pose: HelperMessage["pose"]) => (pose === "denk" ? IMG.denk : IMG.zwaaiBase)
-const widthAt = (img: { w: number; h: number }, height: number) => Math.round((img.w / img.h) * height)
+/*
+ * Peek size. Head height (top of hair to chin), measured in the WebPs:
+ *   rens-zwaai.webp: y 0–190 of 720 px → 26.4% of the standing figure
+ *   rens-peek.webp:  y 0–320 of 600 px → 53.3% of the image
+ * Same head size on screen: peek height = standing height × 0.264 / 0.533 ≈ 0.495.
+ * The peek's bottom sits at standing height × (1 − 0.495), so the top of his hair is on the
+ * same line as the standing Rens and both heads are at the same height (CSS: .peek).
+ */
+const HEAD_FRAC_FULL = 190 / 720
+const HEAD_FRAC_PEEK = 320 / 600
+const PEEK_SCALE = HEAD_FRAC_FULL / HEAD_FRAC_PEEK
 
-// ── Browser helpers (all storage access may throw: private mode, blocked site data) ──
-function readStore(kind: "local" | "session", key: string) {
+const poseSrcs = (pose: HelperPose) => (pose === "zwaai" ? [POSES.zwaai.src, HAND.src] : [POSES[pose].src])
+
+// ── Browser helpers (storage access may throw: private mode, blocked site data) ──
+function readSession(key: string) {
   try {
-    return (kind === "local" ? window.localStorage : window.sessionStorage).getItem(key)
+    return window.sessionStorage.getItem(key)
   } catch {
     return null
   }
 }
 
-function writeStore(kind: "local" | "session", key: string) {
+function writeSession(key: string, value: string) {
   try {
-    ;(kind === "local" ? window.localStorage : window.sessionStorage).setItem(key, "1")
+    window.sessionStorage.setItem(key, value)
   } catch {
-    // Not stored: the balloon may show again, which is harmless.
+    // Not stored: the helper starts fresh on the next page load, which is harmless.
+  }
+}
+
+function readState(): HelperState {
+  const value = readSession(STATE_KEY)
+  return value === "button" || value === "figure" ? value : "none"
+}
+
+/** Removes keys of earlier versions (localStorage "never again", sessionStorage "shown"). */
+function removeOldKeys() {
+  try {
+    for (const key of Object.keys(window.localStorage)) {
+      if (key.startsWith("mm_helper_")) window.localStorage.removeItem(key)
+    }
+    window.sessionStorage.removeItem("mm_helper_shown")
+  } catch {
+    // Nothing to clean up.
   }
 }
 
@@ -80,126 +118,356 @@ function useMedia(query: string) {
   )
 }
 
+/** One pose of the standing Rens, anchored bottom right. The zwaai pose has the hand as its own layer. */
+function PoseLayer({ pose, className, waveCount = 0 }: { pose: HelperPose; className?: string; waveCount?: number }) {
+  const img = POSES[pose]
+  return (
+    <span className={cn(styles.pose, className)} style={{ width: `calc(var(--rens-h) * ${img.w / img.h})` }} data-pose-layer={pose}>
+      <img src={img.src} alt="" width={img.w} height={img.h} className={styles.poseImg} />
+      {pose === "zwaai" && (
+        <img
+          src={HAND.src}
+          alt=""
+          width={HAND.w}
+          height={HAND.h}
+          className={cn(styles.hand, waveCount > 0 && styles.wave)}
+          style={waveCount > 0 ? ({ "--wave-count": waveCount } as CSSProperties) : undefined}
+          data-helper-hand=""
+        />
+      )}
+    </span>
+  )
+}
+
 /**
- * Hulpknop met 3D-Rens. Rendered client-only by HelperLoader after the page is idle.
- * ≥1600 px: peek, then full Rens steps in and waves, with a balloon. 1024–1599 px: peek
- * with a balloon, then the round button. <1024 px: a bar after 40% scroll and a bottom sheet.
+ * Hulpknop met 3D-Rens. Rendered client-only by HelperLoader and portalled into <body>.
+ * The session state (mm_helper_state, mm_helper_waved) survives navigation and reloads;
+ * Rens waves at most once per session.
  */
 export function RensHelper() {
   const pathname = usePathname()
-  const wide = useMedia("(min-width: 1600px)")
+  const wide = useMedia("(min-width: 1280px)")
   const atLeastMid = useMedia("(min-width: 1024px)")
   const reduced = useMedia("(prefers-reduced-motion: reduce)")
   const mode: Mode = wide ? "wide" : atLeastMid ? "mid" : "narrow"
 
   const windowId = useId()
-  const [buttonReady, setButtonReady] = useState(false)
+  const [helperState, setHelperState] = useState<HelperState>(readState)
+  const [waved, setWaved] = useState(() => readSession(WAVED_KEY) === "true")
+  const [figure, setFigure] = useState<FigureAnim | null>(() => (readState() === "figure" ? "still" : null))
+  const [pose, setPose] = useState<HelperPose>("zwaai")
+  const [fadingPose, setFadingPose] = useState<HelperPose | null>(null)
+  const [peek, setPeek] = useState<"in" | "out" | null>(null)
+  const [waveCount, setWaveCount] = useState(0)
+  const [balloon, setBalloon] = useState<HelperMessage | null>(null)
+  const [phase, setPhase] = useState<Phase>(() => (readState() === "figure" ? "standing" : "idle"))
+  const [buttonReady, setButtonReady] = useState(() => readState() !== "none")
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<WindowView>("menu")
-  const [message, setMessage] = useState<HelperMessage | null>(null)
-  const [figure, setFigure] = useState<Figure | null>(null)
-  const [balloon, setBalloon] = useState(false)
   const [barVisible, setBarVisible] = useState(false)
 
-  const timers = useRef<number[]>([])
-  const routeStart = useRef<number | null>(null)
+  // Mirrors of state for timers and event handlers (always the latest value).
+  const r = useRef({
+    state: "none" as HelperState,
+    waved: false,
+    figure: null as FigureAnim | null,
+    pose: "zwaai" as HelperPose,
+    peek: null as "in" | "out" | null,
+    phase: "idle" as Phase,
+    open: false,
+    mode: "narrow" as Mode,
+    reduced: false,
+    path: "",
+    routeStart: null as number | null,
+    firedThisPage: false,
+    seq: 0,
+    timers: [] as number[],
+  })
   const windowRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const fullRef = useRef<HTMLButtonElement>(null)
   const barRef = useRef<HTMLButtonElement>(null)
 
-  // New page: close the window and hide the bar until the visitor scrolls again.
+  useEffect(() => {
+    const s = r.current
+    s.state = helperState
+    s.waved = waved
+    s.figure = figure
+    s.pose = pose
+    s.peek = peek
+    s.phase = phase
+    s.open = open
+    s.mode = mode
+    s.reduced = reduced
+  })
+
+  // New page: close the window, drop the balloon of the previous page, hide the bar until 40% scroll.
   const [lastPath, setLastPath] = useState(pathname)
   if (pathname !== lastPath) {
     setLastPath(pathname)
     setOpen(false)
+    setBalloon(null)
     setBarVisible(false)
   }
 
-  const later = useCallback((ms: number, fn: () => void) => {
-    timers.current.push(window.setTimeout(fn, ms))
-  }, [])
-  const clearTimers = useCallback(() => {
-    timers.current.forEach((id) => window.clearTimeout(id))
-    timers.current = []
-  }, [])
-  useEffect(() => clearTimers, [clearTimers])
+  // ── Controller: sequences of timed steps. A new sequence cancels the pending steps of the last one. ──
+  const c = useMemo(() => {
+    const s = () => r.current
+    const set = {
+      state(value: HelperState) {
+        s().state = value
+        setHelperState(value)
+        writeSession(STATE_KEY, value)
+      },
+      waved() {
+        s().waved = true
+        setWaved(true)
+        writeSession(WAVED_KEY, "true")
+      },
+      figure(value: FigureAnim | null) {
+        s().figure = value
+        setFigure(value)
+      },
+      pose(value: HelperPose) {
+        s().pose = value
+        setPose(value)
+      },
+      peek(value: "in" | "out" | null) {
+        s().peek = value
+        setPeek(value)
+      },
+      phase(value: Phase) {
+        s().phase = value
+        setPhase(value)
+      },
+    }
 
-  // Round button: 1.5 s after the page started loading.
-  useEffect(() => {
-    const id = window.setTimeout(() => setButtonReady(true), Math.max(0, BUTTON_DELAY_MS - performance.now()))
-    return () => window.clearTimeout(id)
-  }, [])
+    const clearTimers = () => {
+      s().timers.forEach((id) => window.clearTimeout(id))
+      s().timers = []
+    }
+    const newSequence = () => {
+      clearTimers()
+      return ++s().seq
+    }
+    const later = (ms: number, fn: () => void) => {
+      const seq = s().seq
+      s().timers.push(
+        window.setTimeout(() => {
+          if (seq === s().seq) fn()
+        }, ms),
+      )
+    }
+    const stale = (seq: number) => seq !== s().seq
 
-  // Time triggers count from the start of the current page (navigation start for the first one).
-  useEffect(() => {
-    routeStart.current = routeStart.current === null ? 0 : performance.now()
-  }, [pathname])
+    const showBalloon = (msg: HelperMessage, path: string) => {
+      set.phase("standing")
+      // Only on the page that triggered it, and never on top of the open window.
+      if (s().path === path && !s().open) setBalloon(msg)
+    }
 
-  const standing = mode === "wide" && figure?.kind === "full" && figure.anim !== "leave"
-
-  const hideFigure = useCallback(() => {
-    clearTimers()
-    setBalloon(false)
-    setFigure((f) => (f ? { kind: f.kind, anim: f.kind === "full" ? "leave" : "out" } : null))
-    later(500, () => setFigure(null))
-  }, [clearTimers, later])
-
-  const startMessage = useCallback(
-    async (msg: HelperMessage) => {
-      writeStore("session", SHOWN_KEY)
-      if (mode === "narrow") return
-      const pose = fullImage(msg.pose)
-      if (mode === "wide") {
-        const full = msg.pose === "zwaai" ? [pose.src, IMG.zwaaiHand.src] : [pose.src]
-        await preload(reduced ? full : [IMG.peek.src, ...full])
-        setMessage(msg)
-        if (reduced) {
-          setFigure({ kind: "full", anim: "in" })
-          setBalloon(true)
-          return
+    /** Standing Rens steps in (or fades in), optionally waves, then calls onDone. */
+    const enter = async (pose: HelperPose, opts: { wave: number; onEntered?: () => void; onDone?: () => void }) => {
+      const seq = s().seq
+      await preload(poseSrcs(pose))
+      if (stale(seq)) return
+      set.peek(null)
+      setFadingPose(null)
+      set.pose(pose)
+      set.figure(s().reduced ? "fade" : "enter")
+      set.phase("enter")
+      later(s().reduced ? T.fade : T.enter, () => {
+        opts.onEntered?.()
+        if (opts.wave > 0 && !s().reduced) {
+          set.waved()
+          setWaveCount(opts.wave)
+          set.phase("wave")
+          later(opts.wave * T.wave, () => {
+            setWaveCount(0)
+            set.phase("standing")
+            opts.onDone?.()
+          })
+        } else {
+          set.phase("standing")
+          opts.onDone?.()
         }
-        // 1. peek in (0.7 s) and stay 2 s; 2. peek out (0.35 s), full Rens steps in (0.9 s);
-        // 3. the hand waves (CSS, after the step-in); 4. balloon 0.3 s after the step-in.
-        setFigure({ kind: "peek", anim: "in" })
-        later(2700, () => setFigure({ kind: "peek", anim: "out" }))
-        later(3050, () => setFigure({ kind: "full", anim: "enter" }))
-        later(3050 + 900 + 300, () => setBalloon(true))
+      })
+    }
+
+    /** Crossfade (0.25 s) to another pose; both layers share the bottom-right anchor. */
+    const switchPose = async (next: HelperPose, onDone: () => void) => {
+      if (s().pose === next) return onDone()
+      const seq = s().seq
+      await preload(poseSrcs(next))
+      if (stale(seq)) return
+      setFadingPose(s().pose)
+      set.pose(next)
+      set.phase("switch")
+      later(T.cross, () => {
+        setFadingPose(null)
+        onDone()
+      })
+    }
+
+    const hidePeek = () => {
+      set.peek("out")
+      set.phase("peek-out")
+      later(s().reduced ? T.fade : T.peekOut, () => {
+        set.peek(null)
+        set.phase("idle")
+      })
+    }
+
+    /** A message trigger fired (≥1024 px). */
+    const trigger = async (msg: HelperMessage, path: string) => {
+      const standing = s().figure !== null && s().figure !== "leave" && s().phase === "standing"
+      if (s().mode === "mid") {
+        newSequence()
+        set.state("button")
+        if (s().peek !== "in") {
+          const seq = s().seq
+          await preload([PEEK.src])
+          if (stale(seq)) return
+          set.peek("in")
+          set.phase("peek-in")
+        }
+        later(s().reduced ? 0 : T.peekIn, () => showBalloon(msg, path))
+        later((s().reduced ? 0 : T.peekIn) + MID_STAY_MS, () => {
+          setBalloon(null)
+          hidePeek()
+        })
         return
       }
-      await preload([IMG.peek.src])
-      setMessage(msg)
-      setFigure({ kind: "peek", anim: "in" })
-      const settle = reduced ? 0 : 700
-      later(settle, () => setBalloon(true))
-      later(settle + MID_STAY_MS, hideFigure)
-    },
-    [mode, reduced, later, hideFigure],
-  )
 
-  // Context message: once per visit, never again after it was dismissed.
-  useEffect(() => {
-    if (mode === "narrow" || message || open) return
-    const msg = messageFor(pathname)
-    if (!msg || readStore("local", DISMISSED_KEY) || readStore("session", SHOWN_KEY)) return
-    let fired = false
-    const fire = () => {
-      if (fired) return
-      fired = true
-      void startMessage(msg)
+      newSequence()
+      set.state("figure")
+      if (standing) {
+        // Already in view: no new entrance, just the pose of this message and the balloon.
+        return switchPose(msg.pose, () => showBalloon(msg, path))
+      }
+      if (!s().waved && !s().reduced) {
+        // First appearance this session: peek → step in waving → pose of the message → balloon.
+        const seq = s().seq
+        await preload([PEEK.src, ...poseSrcs("zwaai"), ...poseSrcs(msg.pose)])
+        if (stale(seq)) return
+        set.figure(null)
+        set.peek("in")
+        set.phase("peek-in")
+        later(T.peekIn + T.peekStay, () => {
+          set.peek("out")
+          set.phase("peek-out")
+        })
+        later(T.peekIn + T.peekStay + T.peekOut, () => {
+          void enter("zwaai", { wave: 2, onDone: () => void switchPose(msg.pose, () => showBalloon(msg, path)) })
+        })
+        return
+      }
+      // Already waved this session: step straight in, in the pose of the message.
+      void enter(msg.pose, { wave: 0, onDone: () => later(T.balloon, () => showBalloon(msg, path)) })
     }
+
+    /** Close button on the balloon: Rens slides away, the round button comes (back). */
+    const dismiss = () => {
+      newSequence()
+      setBalloon(null)
+      set.state("button")
+      if (s().figure) {
+        set.figure("leave")
+        set.phase("leave")
+        later(s().reduced ? T.fade : T.leave, () => {
+          set.figure(null)
+          set.phase("idle")
+        })
+      }
+      if (s().peek) hidePeek()
+    }
+
+    /** Round button at ≥1280 px: Rens steps in (waving once if he has not waved yet) and the window opens. */
+    const summon = (openWindow: () => void) => {
+      newSequence()
+      set.state("figure")
+      void enter("zwaai", { wave: s().waved ? 0 : 1, onEntered: openWindow })
+    }
+
+    return { trigger, dismiss, summon, clearTimers }
+  }, [])
+
+  useEffect(() => {
+    removeOldKeys()
+    return c.clearTimers
+  }, [c])
+
+  // Round button: 1.5 s after the page started loading (straight away when restoring a state).
+  useEffect(() => {
+    if (buttonReady) return
+    const id = window.setTimeout(() => setButtonReady(true), Math.max(0, BUTTON_DELAY_MS - performance.now()))
+    return () => window.clearTimeout(id)
+  }, [buttonReady])
+
+  // Per page view: time triggers count from the start of the page (navigation start for the first).
+  useEffect(() => {
+    const s = r.current
+    s.path = pathname
+    s.routeStart = s.routeStart === null ? 0 : performance.now()
+    s.firedThisPage = false
+  }, [pathname])
+
+  // Message triggers (≥1024 px, not on helper.hiddenOn).
+  useEffect(() => {
+    if (mode === "narrow" || (helper.hiddenOn as readonly string[]).includes(pathname)) return
+    const msg = messageFor(pathname)
+    if (!msg) return
+    const s = r.current
+    const eligible = () => !s.firedThisPage && !(msg.repeat === "oncePerSession" && s.state !== "none")
+    if (!eligible()) return
+
+    let retry: number | undefined
+    let preloaded = false
+    const preloadSoon = () => {
+      if (preloaded) return
+      preloaded = true
+      const first = !s.waved && !s.reduced && s.mode === "wide"
+      void preload(s.mode === "mid" ? [PEEK.src] : [...(first ? [PEEK.src, ...poseSrcs("zwaai")] : []), ...poseSrcs(msg.pose)])
+    }
+    const fire = () => {
+      if (!eligible()) return
+      if (s.open) {
+        s.firedThisPage = true // the visitor is already talking to Rens
+        return
+      }
+      if (s.phase !== "idle" && s.phase !== "standing") {
+        retry = window.setTimeout(fire, 500) // an animation is still running
+        return
+      }
+      s.firedThisPage = true
+      void c.trigger(msg, pathname)
+    }
+
     if (msg.trigger.type === "time") {
-      const elapsed = performance.now() - (routeStart.current ?? 0)
-      const id = window.setTimeout(fire, Math.max(0, msg.trigger.seconds * 1000 - elapsed))
-      return () => window.clearTimeout(id)
+      const wait = Math.max(0, msg.trigger.seconds * 1000 - (performance.now() - (s.routeStart ?? 0)))
+      const pre = window.setTimeout(preloadSoon, Math.max(0, wait - PRELOAD_AHEAD_MS))
+      const id = window.setTimeout(fire, wait)
+      return () => {
+        window.clearTimeout(pre)
+        window.clearTimeout(id)
+        window.clearTimeout(retry)
+      }
     }
     const percent = msg.trigger.percent
     const onScroll = () => {
-      if (scrollPercent() >= percent) fire()
+      const p = scrollPercent()
+      if (p >= percent - PRELOAD_AHEAD_PERCENT) preloadSoon()
+      if (p >= percent) fire()
     }
     window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [mode, message, open, pathname, startMessage])
+    // Also check the current position: the visitor may already be past it when this mounts.
+    const initial = window.requestAnimationFrame(onScroll)
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.cancelAnimationFrame(initial)
+      window.clearTimeout(retry)
+    }
+  }, [mode, pathname, c])
 
   // Mobile bar after 40% scroll.
   useEffect(() => {
@@ -208,7 +476,11 @@ export function RensHelper() {
       if (scrollPercent() >= BAR_SCROLL_PERCENT) setBarVisible(true)
     }
     window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    const initial = window.requestAnimationFrame(onScroll)
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.cancelAnimationFrame(initial)
+    }
   }, [mode, barVisible, pathname])
 
   const showBar = mode === "narrow" && barVisible
@@ -233,108 +505,116 @@ export function RensHelper() {
     return () => document.removeEventListener("pointerdown", onDown)
   }, [open])
 
+  // On /bedankt Rens is already big on the page: show the button there (the state stays "figure").
+  const onThanks = pathname === "/bedankt"
+  const figureShown = mode === "wide" && !onThanks && figure !== null
+  const figureVisible = figureShown && figure !== "leave"
+  const showButton = mode !== "narrow" && buttonReady && !figureVisible && peek === null
+  const variant: WindowVariant = mode === "narrow" ? "sheet" : figureVisible ? "beside" : "float"
+
   const focusTrigger = useCallback(() => {
     window.requestAnimationFrame(() => {
-      const target = mode === "narrow" ? barRef.current : standing ? fullRef.current : buttonRef.current
+      const target = r.current.mode === "narrow" ? barRef.current : (fullRef.current ?? buttonRef.current)
       target?.focus()
     })
-  }, [mode, standing])
+  }, [])
 
-  const openWindow = (next: WindowView) => {
+  const openWindow = useCallback((next: WindowView) => {
     setView(next)
     setOpen(true)
-    setBalloon(false)
-  }
-  const toggleWindow = () => {
-    if (open) setOpen(false)
-    else openWindow("menu")
-  }
+    setBalloon(null)
+  }, [])
   const closeWindow = (returnFocus: boolean) => {
     setOpen(false)
     if (returnFocus) focusTrigger()
   }
 
-  const dismissBalloon = () => {
-    writeStore("local", DISMISSED_KEY)
-    hideFigure()
-    // The balloon (and its close button) disappear; the round button remains or comes back.
+  const onButton = () => {
+    if (open) return setOpen(false)
+    if (mode === "wide" && !onThanks) c.summon(() => openWindow("menu"))
+    else openWindow("menu")
+  }
+  const onFigure = () => (open ? setOpen(false) : openWindow("menu"))
+  const onDismiss = () => {
+    c.dismiss()
     window.requestAnimationFrame(() => buttonRef.current?.focus())
   }
+  const onBalloonCta = () => openWindow("question")
 
-  const onBalloonCta = () => {
-    if (mode !== "wide") hideFigure()
-    openWindow("question")
-  }
+  const triggerProps = { "data-helper-trigger": "", "aria-expanded": open, "aria-controls": windowId } as const
+  const figureClass =
+    figure === "leave" ? styles.leave : figure === "enter" ? styles.enter : figure === "fade" ? styles.fadeIn : undefined
+  const rootStyle = {
+    "--peek-scale": PEEK_SCALE,
+    "--pose-aspect": POSES[pose].w / POSES[pose].h,
+  } as CSSProperties
 
-  const showButton = mode !== "narrow" && buttonReady && !standing
-  const fullImg = message ? fullImage(message.pose) : IMG.zwaaiBase
-  const fullWidth = widthAt(fullImg, FULL_H)
-  const variant: WindowVariant = mode === "narrow" ? "sheet" : standing ? "beside" : "float"
-
-  const peekClass = figure?.anim === "out" ? styles.peekOut : styles.peekIn
-  const fullClass = figure?.anim === "leave" ? styles.leave : figure?.anim === "enter" ? styles.enter : styles.fadeIn
-  const triggerProps = {
-    "data-helper-trigger": "",
-    "aria-expanded": open,
-    "aria-controls": windowId,
-  } as const
-
-  return (
-    <div className={styles.root} data-rens-helper="">
-      {figure?.kind === "peek" && mode !== "narrow" && (
+  return createPortal(
+    <div
+      className={styles.root}
+      style={rootStyle}
+      data-rens-helper=""
+      data-mode={mode}
+      data-phase={phase}
+      data-state={helperState}
+      data-waved={waved ? "true" : "false"}
+    >
+      {peek && mode !== "narrow" && (
         <img
-          src={IMG.peek.src}
+          src={PEEK.src}
           alt=""
-          width={widthAt(IMG.peek, PEEK_H)}
-          height={PEEK_H}
-          className={cn(styles.peek, peekClass)}
+          width={PEEK.w}
+          height={PEEK.h}
+          className={cn(styles.peek, peek === "out" ? styles.peekOut : styles.peekIn)}
           data-helper-figure="peek"
+          data-head-frac={HEAD_FRAC_PEEK}
         />
       )}
 
-      {figure?.kind === "full" && mode === "wide" && message && (
+      {figureShown && (
         <button
           ref={fullRef}
           type="button"
           {...triggerProps}
           aria-label={t.buttonLabel}
-          onClick={toggleWindow}
-          className={cn(styles.full, fullClass)}
-          style={{ right: FULL_RIGHT, width: fullWidth }}
+          onClick={onFigure}
+          className={cn(styles.full, figureClass)}
           data-helper-figure="full"
+          data-pose={pose}
+          data-head-frac={HEAD_FRAC_FULL}
         >
-          <img src={fullImg.src} alt="" width={fullWidth} height={FULL_H} className={styles.fullImg} />
-          {message.pose === "zwaai" && (
-            <img
-              src={IMG.zwaaiHand.src}
-              alt=""
-              width={IMG.zwaaiHand.w}
-              height={IMG.zwaaiHand.h}
-              className={cn(styles.hand, figure.anim === "enter" && styles.wave)}
-              data-helper-hand=""
-            />
-          )}
+          {[fadingPose, pose]
+            .filter((p): p is HelperPose => p !== null)
+            .map((p) => (
+              <PoseLayer
+                key={p}
+                pose={p}
+                className={fadingPose ? (p === pose ? styles.crossIn : styles.crossOut) : undefined}
+                waveCount={p === pose ? waveCount : 0}
+              />
+            ))}
         </button>
       )}
 
-      {balloon && message && mode !== "narrow" && (
+      {balloon && mode !== "narrow" && !open && (figureVisible || peek === "in") && (
         <aside
           aria-label={t.balloonLabel}
-          className={cn(styles.balloon, mode === "wide" ? styles.balloonWide : styles.balloonMid, styles.balloonIn)}
+          className={cn(styles.balloon, styles.balloonIn)}
           data-helper-balloon=""
+          data-action={balloon.action}
         >
-          <p className={styles.balloonTitle}>{message.title}</p>
-          <p className={styles.balloonBody}>{message.body}</p>
-          {message.action === "primary" ? (
-            <Link href={helper.options.primary.href} className={styles.balloonCta}>
-              {message.cta}
+          <p className={styles.balloonTitle}>{balloon.title}</p>
+          <p className={styles.balloonBody}>{balloon.body}</p>
+          {balloon.action === "primary" ? (
+            <Link href={helper.options.primary.href} onClick={() => setBalloon(null)} className={styles.balloonCta}>
+              {balloon.cta}
             </Link>
           ) : (
             <button type="button" data-helper-trigger="" onClick={onBalloonCta} className={styles.balloonCta}>
-              {message.cta}
+              {balloon.cta}
             </button>
           )}
-          <button type="button" aria-label={t.closeBalloon} onClick={dismissBalloon} className={styles.balloonClose}>
+          <button type="button" aria-label={t.closeBalloon} onClick={onDismiss} className={styles.balloonClose}>
             <X className="size-4" aria-hidden="true" />
           </button>
         </aside>
@@ -346,26 +626,30 @@ export function RensHelper() {
           type="button"
           {...triggerProps}
           aria-label={t.buttonLabel}
-          onClick={toggleWindow}
+          onClick={onButton}
           className={styles.button}
           data-helper-button=""
         >
-          <img src={IMG.head} alt="" width={58} height={58} className={styles.buttonImg} />
+          <img src={HEAD} alt="" width={58} height={58} className={styles.buttonImg} />
         </button>
       )}
 
       {showBar && (
         <div className={styles.bar} data-helper-bar="">
-          <button ref={barRef} type="button" {...triggerProps} onClick={toggleWindow} className={styles.barMain}>
+          <button ref={barRef} type="button" {...triggerProps} onClick={onButton} className={styles.barMain}>
             <span className={styles.barHead}>
-              <img src={IMG.head} alt="" width={42} height={42} className="size-full rounded-full bg-panel-2 object-cover" />
+              <img src={HEAD} alt="" width={42} height={42} className="size-full rounded-full bg-panel-2 object-cover" />
             </span>
             <span className="min-w-0">
               <span className="block truncate text-[15px] leading-tight font-semibold text-fg">{t.bar.title}</span>
               <span className="block truncate text-[13px] text-muted">{t.bar.sub}</span>
             </span>
           </button>
-          <Link href={helper.options.primary.href} className={buttonClasses("primary", "md", "shrink-0 px-4")}>
+          <Link
+            href={helper.options.primary.href}
+            onClick={() => setOpen(false)}
+            className={buttonClasses("primary", "md", "shrink-0 px-4")}
+          >
             {t.bar.cta}
           </Link>
         </div>
@@ -379,10 +663,10 @@ export function RensHelper() {
         open={open}
         view={view}
         variant={variant}
-        besideRight={FULL_RIGHT + fullWidth + 16}
         onView={setView}
         onClose={closeWindow}
       />
-    </div>
+    </div>,
+    document.body,
   )
 }

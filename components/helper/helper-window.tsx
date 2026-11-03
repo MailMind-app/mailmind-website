@@ -41,7 +41,6 @@ export function HelperWindow({
   open,
   view,
   variant,
-  besideRight,
   onView,
   onClose,
 }: {
@@ -50,7 +49,6 @@ export function HelperWindow({
   open: boolean
   view: WindowView
   variant: WindowVariant
-  besideRight?: number
   onView: (view: WindowView) => void
   /** returnFocus: give focus back to the trigger (Esc, close button). */
   onClose: (returnFocus: boolean) => void
@@ -175,7 +173,6 @@ export function HelperWindow({
       onKeyDown={onKeyDown}
       data-helper-window=""
       className={cn(styles.window, variant === "beside" && styles.windowBeside, variant === "sheet" && styles.sheet)}
-      style={variant === "beside" && besideRight !== undefined ? { right: besideRight } : undefined}
     >
       <div className="relative flex items-center gap-3.5 px-5 pt-5 pb-4">
         <span className="relative shrink-0">

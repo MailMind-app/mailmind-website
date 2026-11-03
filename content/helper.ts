@@ -13,12 +13,15 @@ export const helper = {
     question: { label: "Stel een vraag", sub: "Naam, e-mail, vraag. Meer niet." },
     whatsapp: { label: "WhatsApp Rens", sub: "Direct contact, geen bot", prefill: "Hoi Rens, ik heb een vraag over MailMind:" },
   },
+  // repeat: "perPageview" = elk paginabezoek één keer, ook als Rens eerder is weggeklikt;
+  // "oncePerSession" = alleen als Rens deze sessie nog niet is verschenen.
   messages: [
-    { path: "/prijzen", trigger: { type: "time", seconds: 30 }, pose: "denk", title: "Twijfel je tussen Starter en Professional?", body: "Vraag het gewoon, ik help je kiezen.", cta: "Stel je vraag →", action: "question" },
-    { path: "/veiligheid", trigger: { type: "time", seconds: 30 }, pose: "zwaai", title: "Vraag over je gegevens of de AVG?", body: "Stel hem direct, ik antwoord persoonlijk.", cta: "Stel je vraag →", action: "question" },
-    { path: "/hoe-het-werkt", trigger: { type: "scroll", percent: 60 }, pose: "zwaai", title: "Benieuwd hoe dit bij jou werkt?", body: "In een korte demo laat ik het zien met jouw soort mail.", cta: "Demo aanvragen →", action: "primary" },
-    { path: "*", trigger: { type: "scroll", percent: 50 }, pose: "zwaai", title: "Hoi, ik ben Rens 👋", body: "Vragen over MailMind? Ik help je graag.", cta: "Stel je vraag →", action: "question" },
+    { path: "/prijzen", trigger: { type: "time", seconds: 15 }, pose: "denk", title: "Twijfel je tussen Starter en Professional?", body: "Vraag het gewoon, ik help je kiezen.", cta: "Stel je vraag →", action: "question", repeat: "perPageview" },
+    { path: "/veiligheid", trigger: { type: "time", seconds: 15 }, pose: "denk", title: "Vraag over je gegevens of de AVG?", body: "Stel hem direct, ik antwoord persoonlijk.", cta: "Stel je vraag →", action: "question", repeat: "perPageview" },
+    { path: "/hoe-het-werkt", trigger: { type: "scroll", percent: 60 }, pose: "laptop", title: "Benieuwd hoe dit bij jou werkt?", body: "In een korte demo laat ik het zien met jouw soort mail.", cta: "Demo aanvragen →", action: "primary", repeat: "perPageview" },
+    { path: "*", trigger: { type: "scroll", percent: 50 }, pose: "zwaai", title: "Hoi, ik ben Rens 👋", body: "Vragen over MailMind? Ik help je graag.", cta: "Stel je vraag →", action: "question", repeat: "oncePerSession" },
   ],
+  // Op deze pagina's gaan geen triggers af. De helper blijft wel zichtbaar (op /bedankt als bolletje).
   hiddenOn: ["/demo", "/privacy", "/bedankt"],
 } as const
 
@@ -54,6 +57,10 @@ export const questionLimits = {
   naam: { min: 2, max: 100 },
   vraag: { min: 5, max: 2000 },
 } as const
+
+// Poses van de staande Rens (public/avatar/rens-<pose>.webp).
+export const helperPoses = ["zwaai", "denk", "laptop", "duim", "scan"] as const
+export type HelperPose = (typeof helperPoses)[number]
 
 export type HelperMessage = (typeof helper.messages)[number]
 

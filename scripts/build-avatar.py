@@ -152,7 +152,7 @@ def contact_sheet() -> None:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for name, height in [("rens-duim", 720), ("rens-denk", 720), ("rens-scan", 640)]:
+    for name, height in [("rens-duim", 720), ("rens-denk", 720), ("rens-laptop", 720), ("rens-scan", 640)]:
         save_within({f"{name}.webp": scale_to_height(load_keyed(f"{name}.png"), height)}, LIMIT)
     peek = crop(Image.open(SRC / "rens-peek.png").convert("RGBA"))
     save_within({"rens-peek.webp": scale_to_height(peek, 600)}, LIMIT)

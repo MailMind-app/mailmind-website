@@ -109,8 +109,6 @@ const inOrder = (list, expected) => {
   for (const item of list) if (i < expected.length && item === expected[i]) i++
   return i === expected.length
 }
-const figureAnimations = (page) =>
-  page.locator("[data-helper-figure=full]").evaluate((el) => el.getAnimations({ subtree: true }).filter((a) => a.playState === "running").length)
 const headPx = async (page, selector) => {
   const el = page.locator(selector).first()
   const b = await el.boundingBox()
@@ -583,11 +581,11 @@ for (const [label, browser, options, tag] of mobileRuns) {
 }
 await mobileRuns[1][1].close()
 
-// ── Mobile: reduced motion and the debug box ──
-section("390×844 — reduced motion en ?helperdebug=1")
+// ── Mobile: reduced motion ──
+section("390×844 — reduced motion")
 {
   const mobile = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }
-  let { context, page } = await open(chrome, "/", { ...mobile, reducedMotion: "reduce" })
+  const { context, page } = await open(chrome, "/", { ...mobile, reducedMotion: "reduce" })
   await page.locator("[data-rens-helper]").waitFor({ state: "attached", timeout: 8000 }).catch(() => {})
   await scrollTo(page, 0.45)
   await waitBarShown(page)
@@ -595,16 +593,6 @@ section("390×844 — reduced motion en ?helperdebug=1")
   await page.waitForTimeout(250)
   const style = await page.locator("[data-helper-bar]").evaluate((el) => ({ transform: getComputedStyle(el).transform, opacity: getComputedStyle(el).opacity, hidden: el.dataset.hidden }))
   check(style.hidden === "true" && style.transform === "none" && Number(style.opacity) < 0.05, "reduced motion: bar hides with opacity, no slide", JSON.stringify(style))
-  await context.close()
-
-  ;({ context, page } = await open(chrome, "/?helperdebug=1", mobile))
-  check(await waitVisible(page, "[data-helper-debug]", 8000), "?helperdebug=1 shows the debug box")
-  const text = await page.locator("[data-helper-debug]").innerText()
-  check(["innerHeight", "vv.height", "vv.offsetTop", "scrollY", "balk"].every((k) => text.includes(k)), "debug box shows the viewport values", text.replace(/\n/g, " | "))
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" })
-  await page.locator("[data-rens-helper]").waitFor({ state: "attached", timeout: 8000 }).catch(() => {})
-  await page.waitForTimeout(500)
-  check((await page.locator("[data-helper-debug]").count()) === 0, "without the parameter the debug box is not in the DOM")
   await context.close()
 }
 

@@ -5,7 +5,7 @@
 import { X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type RefObject } from "react"
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react"
 import { createPortal } from "react-dom"
 import { buttonClasses } from "@/components/primitives/button-link"
 import { helper, helperTexts as t, messageFor, type HelperMessage, type HelperPose } from "@/content/helper"
@@ -141,61 +141,6 @@ function PoseLayer({ pose, className, waveCount = 0 }: { pose: HelperPose; class
         />
       )}
     </span>
-  )
-}
-
-type DebugValues = { inner: number; vvHeight: number; vvTop: number; scrollY: number; offset: number; measured: number | null }
-
-/** Temporary debug box (?helperdebug=1): what Safari reports while the toolbar collapses. */
-function DebugPanel({ barRef }: { barRef: RefObject<HTMLDivElement | null> }) {
-  const [v, setV] = useState<DebugValues | null>(null)
-  useEffect(() => {
-    let frame = 0
-    const read = () => {
-      frame = 0
-      const vv = window.visualViewport
-      const vvHeight = vv?.height ?? window.innerHeight
-      const vvTop = vv?.offsetTop ?? 0
-      const bar = barRef.current?.getBoundingClientRect()
-      setV({
-        inner: window.innerHeight,
-        vvHeight,
-        vvTop,
-        scrollY: window.scrollY,
-        offset: Math.max(0, window.innerHeight - (vvHeight + vvTop)),
-        measured: bar ? window.innerHeight - bar.bottom : null,
-      })
-    }
-    const schedule = () => {
-      if (!frame) frame = window.requestAnimationFrame(read)
-    }
-    schedule()
-    const vv = window.visualViewport
-    window.addEventListener("scroll", schedule, { passive: true })
-    window.addEventListener("resize", schedule)
-    vv?.addEventListener("resize", schedule)
-    vv?.addEventListener("scroll", schedule)
-    const interval = window.setInterval(schedule, 500)
-    return () => {
-      window.removeEventListener("scroll", schedule)
-      window.removeEventListener("resize", schedule)
-      vv?.removeEventListener("resize", schedule)
-      vv?.removeEventListener("scroll", schedule)
-      window.clearInterval(interval)
-      window.cancelAnimationFrame(frame)
-    }
-  }, [barRef])
-  if (!v) return null
-  const r1 = (n: number) => Math.round(n * 10) / 10
-  return (
-    <div className={styles.debug} data-helper-debug="" aria-hidden="true">
-      <div>innerHeight: {r1(v.inner)}</div>
-      <div>vv.height: {r1(v.vvHeight)}</div>
-      <div>vv.offsetTop: {r1(v.vvTop)}</div>
-      <div>scrollY: {r1(v.scrollY)}</div>
-      <div>balk bottom: 12 + {r1(v.offset)} + safe-area</div>
-      <div>balk gemeten: {v.measured === null ? "–" : r1(v.measured)}</div>
-    </div>
   )
 }
 
@@ -652,9 +597,6 @@ export function RensHelper() {
     return () => document.removeEventListener("pointerdown", onDown)
   }, [open, c])
 
-  // Temporary: ?helperdebug=1 shows the viewport numbers Safari reports (for testing on a real iPhone).
-  const debug = new URLSearchParams(window.location.search).get("helperdebug") === "1"
-
   // On /bedankt Rens is already big on the page: show the button there (the state stays "figure").
   const onThanks = pathname === "/bedankt"
   const figureShown = mode === "wide" && !onThanks && !BUTTON_ONLY.includes(pathname) && figure !== null
@@ -816,8 +758,6 @@ export function RensHelper() {
       )}
 
       {open && mode === "narrow" && <div className={styles.backdrop} aria-hidden="true" />}
-
-      {debug && <DebugPanel barRef={barElRef} />}
 
       <HelperWindow
         id={windowId}

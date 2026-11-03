@@ -441,17 +441,3 @@
     opacity: 0;
   }
 }
-
-/* Tijdelijk: ?helperdebug=1 */
-.debug {
-  position: fixed;
-  top: 8px;
-  left: 8px;
-  z-index: 200;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: rgb(0 0 0 / 0.8);
-  color: #fff;
-  font: 11px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
-  pointer-events: none;
-}

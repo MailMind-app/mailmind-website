@@ -190,6 +190,11 @@ for (const page of PAGES) {
   const canonical = page === "/" ? SITE : `${SITE}${page}`
   check(body.includes(`<link rel="canonical" href="${canonical}"/>`), `${page} has canonical ${canonical}`)
   check(body.includes('<html lang="nl"'), `${page} has html lang="nl"`)
+  // iOS: viewport-fit=cover makes env(safe-area-inset-*) work; theme-color matches the page background.
+  const viewportMeta = meta(body, "name", "viewport") ?? ""
+  check(/viewport-fit=cover/.test(viewportMeta) && /width=device-width/.test(viewportMeta), `${page} viewport has viewport-fit=cover`, viewportMeta)
+  check(meta(body, "name", "theme-color") === "#0a0f1e", `${page} theme-color is #0a0f1e`, meta(body, "name", "theme-color"))
+  check(/<html[^>]*data-scroll-behavior="smooth"/.test(body), `${page} html has data-scroll-behavior="smooth"`)
   check(body.includes('<meta property="og:locale" content="nl_NL"/>'), `${page} has og:locale nl_NL`)
   // Link previews (WhatsApp, LinkedIn, Slack): absolute image URL, size, type and alt.
   const ogImage = meta(body, "property", "og:image") ?? ""
@@ -247,7 +252,7 @@ check(
 
 // ── Helper avatars: served as WebP with alpha, within the size limits ──
 {
-  const AVATARS = ["rens-zwaai", "rens-zwaai-base", "rens-zwaai-hand", "rens-duim", "rens-denk", "rens-scan", "rens-peek", "rens-head"]
+  const AVATARS = ["rens-zwaai", "rens-zwaai-base", "rens-zwaai-hand", "rens-duim", "rens-denk", "rens-laptop", "rens-scan", "rens-peek", "rens-head"]
   const sizes = {}
   for (const name of AVATARS) {
     const res = await fetch(`${BASE}/avatar/${name}.webp`)

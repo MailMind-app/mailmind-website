@@ -108,7 +108,7 @@ export const privacyPage = {
     title: "Hoe we met je *gegevens* omgaan.",
     intro: "Hoe MailMind omgaat met persoonsgegevens op deze website en in de MailMind-dienst.",
   },
-  lastUpdated: "1 november 2026",
+  lastUpdated: "3 november 2026",
   sections: [
     {
       title: "Wie we zijn",
@@ -121,6 +121,7 @@ export const privacyPage = {
       title: "Welke gegevens we verwerken",
       paragraphs: [
         "Websitebezoek. Vercel host deze website en verwerkt de technische gegevens die nodig zijn om pagina's te tonen. Deze website gebruikt geen analytische of advertentiecookies.",
+        "Websitestatistieken: we gebruiken Vercel Web Analytics om te zien hoe vaak pagina's bezocht worden. Dit werkt zonder cookies en zonder dat we je kunnen herkennen; we zien alleen totalen (pagina, land, apparaattype, verwijzende site).",
         "Demo-aanvragen. Bij een demo-aanvraag ontvangen we je bedrijfsnaam, e-mailadres, het gekozen mailvolume en je bericht. De aanvraag wordt via Resend bezorgd in onze zakelijke mailbox bij Microsoft 365. We gebruiken deze gegevens alleen om op je aanvraag te reageren.",
         "Mail aan ons. Mail aan rens@mailmind.nl komt binnen in onze zakelijke mailbox bij Microsoft 365.",
         "De MailMind-dienst. Voor klanten verwerkt MailMind de mail in de gekoppelde mailboxen: opslaan in de EU, indelen en concepten maken. Er gaat geen antwoord de deur uit zonder klik van een mens. In Semi-Live krijgt de afzender direct een automatische ontvangstbevestiging.",

@@ -37,13 +37,18 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#070b16",
+  themeColor: "#0a0f1e",
   colorScheme: "dark",
+  // Needed for env(safe-area-inset-*) on iOS (helper bar above the home indicator).
+  // .container-site keeps content clear of the notch in landscape.
+  viewportFit: "cover",
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="nl" className={inter.variable}>
+    // data-scroll-behavior: Next.js 16 only switches off the smooth scrolling from globals.css during
+    // navigation with this attribute; without it a new page can keep the old scroll position (iOS).
+    <html lang="nl" className={inter.variable} data-scroll-behavior="smooth">
       <body className="min-h-dvh">
         <a
           href="#inhoud"

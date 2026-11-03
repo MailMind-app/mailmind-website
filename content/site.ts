@@ -73,7 +73,7 @@ export const routes: Route[] = [
     title: "Veiligheid en privacy",
     description:
       "Een mens keurt elk concept goed, elke beslissing staat in het beslislog. Opslag bij Hetzner in Helsinki (EU), AI-verwerking via de OpenAI API.",
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-03",
     priority: 0.8,
   },
   {
@@ -102,7 +102,7 @@ export const routes: Route[] = [
     title: "Privacyverklaring",
     description:
       "Hoe MailMind met persoonsgegevens omgaat: opslag in de EU, AI-verwerking via OpenAI, subverwerkers en je rechten.",
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-03",
     priority: 0.4,
   },
 ]
@@ -161,7 +161,7 @@ export const subprocessors: Subprocessor[] = [
   },
   {
     name: "Resend",
-    role: "Bezorgen van demo-aanvragen die via deze website binnenkomen.",
+    role: "Bezorgen van demo-aanvragen en vragen die via deze website binnenkomen.",
     location: "EU (Ierland)",
   },
   {

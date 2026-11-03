@@ -119,7 +119,9 @@ export const privacyPage = {
       paragraphs: [
         "Websitebezoek. Vercel host deze website en verwerkt de technische gegevens die nodig zijn om pagina's te tonen. Deze website gebruikt geen analytische of advertentiecookies.",
         "Websitestatistieken: we gebruiken Vercel Web Analytics om te zien hoe vaak pagina's bezocht worden. Dit werkt zonder cookies en zonder dat we je kunnen herkennen; we zien alleen totalen (pagina, land, apparaattype, verwijzende site).",
-        "Demo-aanvragen. Bij een demo-aanvraag ontvangen we je bedrijfsnaam, e-mailadres, het gekozen mailvolume en je bericht. De aanvraag wordt via Resend bezorgd in onze zakelijke mailbox bij Microsoft 365. We gebruiken deze gegevens alleen om op je aanvraag te reageren.",
+        "Demo-aanvragen en vragen. Bij een demo-aanvraag ontvangen we je bedrijfsnaam, e-mailadres, het gekozen mailvolume en je bericht. Stel je een vraag via het vraagformulier van de hulpknop, dan ontvangen we je naam, je e-mailadres, de inhoud van je vraag en de pagina waarop je hem stelde. Aanvragen en vragen worden via Resend (EU) bezorgd in onze zakelijke mailbox bij Microsoft 365. We gebruiken deze gegevens alleen om op je aanvraag of vraag te reageren.",
+        "WhatsApp. Je kunt ook via WhatsApp contact met ons opnemen. Dat is optioneel en valt onder de voorwaarden en het privacybeleid van WhatsApp (Meta). Berichten die we via WhatsApp ontvangen, bewaren we net als vragen tot 12 maanden na het laatste contact.",
+        "Opslag in je browser. De hulpknop onthoudt in je browser of je de hulpballon al hebt gezien en of je hem hebt weggeklikt, zodat hij je niet steeds opnieuw stoort. Dat is functioneel: het is geen cookie, het wordt niet naar ons verstuurd en we volgen je er niet mee.",
         "Mail aan ons. Mail aan rens@mailmind.nl komt binnen in onze zakelijke mailbox bij Microsoft 365.",
         "De MailMind-dienst. Voor klanten verwerkt MailMind de mail in de gekoppelde mailboxen: opslaan in de EU, indelen en concepten maken. Er gaat geen antwoord de deur uit zonder klik van een mens. In Semi-Live krijgt de afzender direct een automatische ontvangstbevestiging.",
       ],
@@ -134,7 +136,7 @@ export const privacyPage = {
     {
       title: "Hoe lang we gegevens bewaren",
       paragraphs: [
-        "Demo-aanvragen en mail aan MailMind bewaren we tot 12 maanden na het laatste contact.",
+        "Demo-aanvragen, vragen via het vraagformulier, WhatsApp-berichten en mail aan MailMind bewaren we tot 12 maanden na het laatste contact.",
         "Mail die klanten via MailMind laten verwerken, bewaren we zolang de overeenkomst loopt. Na het einde van de overeenkomst verwijderen we deze gegevens binnen 30 dagen.",
       ],
     },

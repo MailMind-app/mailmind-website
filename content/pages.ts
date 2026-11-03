@@ -1,4 +1,4 @@
-// Teksten voor /prijzen, /demo, /over, /contact en /privacy.
+// Teksten voor /prijzen, /demo, /over, /contact, /privacy, /bedankt en de 404-pagina.
 // *Woorden tussen sterretjes* krijgen het accentverloop.
 
 export const pricingPage = {
@@ -40,9 +40,6 @@ export const demoPage = {
     sending: "Bezig met versturen…",
     privacy: "We gebruiken je gegevens alleen om op je aanvraag te reageren. Lees de",
     privacyLink: "privacyverklaring",
-    successTitle: "Aanvraag ontvangen",
-    successText: "Bedankt. We reageren binnen 2 werkdagen om een demo in te plannen.",
-    another: "Nog een aanvraag versturen",
     genericError: "Je aanvraag kon niet worden verstuurd. Probeer het opnieuw of mail naar rens@mailmind.nl.",
   },
 }
@@ -153,5 +150,41 @@ export const privacyPage = {
         "We passen deze verklaring aan als de dienst of onze leveranciers veranderen. De datum bovenaan laat zien wanneer de verklaring voor het laatst is bijgewerkt.",
       ],
     },
+  ],
+}
+
+// /bedankt: na een demo-aanvraag (standaard) of een vraag via de hulpknop (?type=vraag).
+export const thanksPage = {
+  metaTitle: "Bedankt",
+  imageAlt: "Rens steekt zijn duim op",
+  request: {
+    eyebrow: "Aanvraag ontvangen",
+    title: "Top, *je aanvraag is binnen*",
+    steps: [
+      "Je krijgt binnen 2 werkdagen persoonlijk antwoord van mij",
+      "Samen kijken we naar jouw inbox",
+      "Jij beslist of je verder wilt. Geen verplichtingen.",
+    ],
+  },
+  question: {
+    eyebrow: "Vraag ontvangen",
+    title: "Top, *je vraag is binnen*",
+    steps: [
+      "Je krijgt binnen 2 werkdagen persoonlijk antwoord van mij",
+      "Wil je daarna verder praten? Dan plannen we een korte demo.",
+    ],
+  },
+  back: { label: "Terug naar de homepage", href: "/" },
+}
+
+export const notFoundPage = {
+  eyebrow: "404",
+  title: "Hmm, deze pagina kan ik *niet vinden*",
+  text: "Misschien is hij verhuisd. Probeer een van deze:",
+  imageAlt: "Rens zoekt met een vergrootglas",
+  links: [
+    { href: "/", label: "Home" },
+    { href: "/prijzen", label: "Prijzen" },
+    { href: "/demo", label: "Demo aanvragen" },
   ],
 }

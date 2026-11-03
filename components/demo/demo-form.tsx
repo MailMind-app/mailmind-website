@@ -1,9 +1,11 @@
 "use client"
 
-import { ArrowRight, CheckCircle2 } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState, type ChangeEvent, type FormEvent } from "react"
 import { buttonClasses } from "@/components/primitives/button-link"
+import { fieldClass } from "@/components/primitives/field"
 import { demoPage } from "@/content/pages"
 import { site } from "@/content/site"
 
@@ -11,13 +13,10 @@ const t = demoPage.form
 
 const empty = { company: "", email: "", volume: "", message: "", website: "" }
 
-const fieldClass =
-  "w-full rounded-md border border-line-strong bg-panel-2 px-4 py-3 text-[15px] text-fg placeholder:text-subtle focus:border-accent-text focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
-
 export function DemoForm() {
+  const router = useRouter()
   const [form, setForm] = useState(empty)
   const [submitting, setSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
 
   const update = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -42,34 +41,14 @@ export function DemoForm() {
       if (!res.ok) {
         const data = await res.json().catch(() => null)
         setError(data?.error ?? t.genericError)
+        setSubmitting(false)
         return
       }
-      setSuccess(true)
+      router.push("/bedankt")
     } catch {
       setError(t.genericError)
-    } finally {
       setSubmitting(false)
     }
-  }
-
-  if (success) {
-    return (
-      <div className="panel p-8 text-center" role="status">
-        <CheckCircle2 className="mx-auto size-10 text-success" aria-hidden="true" />
-        <h2 className="mt-5 text-2xl">{t.successTitle}</h2>
-        <p className="mt-3">{t.successText}</p>
-        <button
-          type="button"
-          onClick={() => {
-            setSuccess(false)
-            setForm(empty)
-          }}
-          className="mt-6 text-sm font-medium text-accent-text hover:text-fg"
-        >
-          {t.another}
-        </button>
-      </div>
-    )
   }
 
   return (

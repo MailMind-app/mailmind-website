@@ -1,11 +1,9 @@
-import Image from "next/image"
 import { FeatureTitle } from "@/components/primitives/feature-title"
 import { SectionHeading } from "@/components/primitives/section-heading"
+import { DemoLoader } from "@/components/product-demo/demo-loader"
+import { DemoStatic } from "@/components/product-demo/demo-static"
 import { getFeature } from "@/content/features"
 import { dashboardShowcase } from "@/content/home"
-// Static import: replacing public/dashboard-screenshot.webp is all it takes to swap
-// the image; width, height and the blur-free responsive sizes come from the file.
-import screenshot from "@/public/dashboard-screenshot.webp"
 
 export function DashboardShowcase() {
   return (
@@ -17,18 +15,10 @@ export function DashboardShowcase() {
           title={dashboardShowcase.title}
           intro={dashboardShowcase.intro}
         />
-        <figure data-reveal className="mt-10 sm:mt-14">
-          <div className="overflow-hidden rounded-lg border border-line-strong bg-panel p-1.5 shadow-[0_40px_120px_-40px_rgb(0_0_0/0.8)] sm:p-2.5">
-            <Image
-              src={screenshot}
-              alt={dashboardShowcase.image.alt}
-              sizes="(min-width: 1152px) 1120px, calc(100vw - 2rem)"
-              className="h-auto w-full rounded-md"
-              quality={90}
-            />
-          </div>
-          <figcaption className="mt-3 text-sm text-subtle">{dashboardShowcase.image.caption}</figcaption>
-        </figure>
+        {/* Clickable demo: static placeholder from the server, interactive once it nears the viewport. */}
+        <div className="mt-10 sm:mt-14">
+          <DemoLoader placeholder={<DemoStatic />} />
+        </div>
         <ul className="mt-8 grid gap-6 md:mt-12 md:grid-cols-3 md:gap-8">
           {dashboardShowcase.highlights.map((id, i) => {
             const feature = getFeature(id)

@@ -123,16 +123,12 @@ export const sportschoolTeaser = {
   cta: { label: "MailMind voor sportscholen", href: "/sportscholen" },
 }
 
+// Sectie met de klikbare productdemo (teksten van de demo zelf: content/product-demo.ts).
 export const dashboardShowcase = {
-  eyebrow: "Het dashboard",
-  title: "Alles op *één plek.*",
-  intro: "Voor de manager en voor medewerkers, elk met een eigen weergave.",
-  // Nieuwe screenshot? Vervang public/dashboard-screenshot.webp (zelfde bestandsnaam)
-  // en pas hier de alt-tekst en het onderschrift aan. Afmetingen leest de build zelf.
-  image: {
-    alt: "Voorbeeld van het MailMind-dashboard met fictieve gegevens",
-    caption: "Fictieve gegevens.",
-  },
+  eyebrow: "Probeer het zelf",
+  title: "Zie *zelf* hoe het werkt.",
+  intro:
+    "Vier mails komen binnen bij een sportschool. MailMind sorteert ze en zet een concept klaar. Er gaat geen antwoord de deur uit zonder jouw klik.",
   highlights: ["beslislog", "categorieen", "beoordelen"],
 }
 

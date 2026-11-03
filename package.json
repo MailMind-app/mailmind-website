@@ -10,7 +10,8 @@
     "verify": "node --no-warnings scripts/verify-site.mjs",
     "typecheck": "tsc --noEmit",
     "test:menu": "node scripts/test-mobile-menu.mjs",
-    "test:helper": "node --no-warnings scripts/test-helper.mjs"
+    "test:helper": "node --no-warnings scripts/test-helper.mjs",
+    "test:demo": "node --no-warnings scripts/test-demo.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

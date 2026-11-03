@@ -6,8 +6,9 @@
 // "binnenkort" features always come from the same source as the site.
 
 import { readFile } from "node:fs/promises"
-import { roadmap } from "../content/features.ts"
+import { getFeature, roadmap } from "../content/features.ts"
 import { helper, whatsappUrl } from "../content/helper.ts"
+import { productDemo } from "../content/product-demo.ts"
 import { founding, plans, setupFee } from "../content/pricing.ts"
 import { routes, subprocessors } from "../content/site.ts"
 
@@ -306,6 +307,51 @@ check(
   )
   const helperSource = await readFile(new URL("../content/helper.ts", import.meta.url), "utf8")
   checkForbidden("content/helper.ts", helperSource)
+}
+
+// ── Product demo on the homepage: only real features, "Live" only as "Binnenkort", labelled fictitious ──
+{
+  const source = await readFile(new URL("../content/product-demo.ts", import.meta.url), "utf8")
+  checkForbidden("content/product-demo.ts", source)
+
+  const standaloneLive = /(?<!Semi-)\bLive\b/
+  const offenders = []
+  const walk = (value, parent) => {
+    if (typeof value === "string") {
+      const isBadgedName = parent?.name === value && parent?.badge === "Binnenkort"
+      if (standaloneLive.test(value) && !value.includes("Binnenkort") && !isBadgedName) offenders.push(value)
+    } else if (Array.isArray(value)) value.forEach((v) => walk(v, parent))
+    else if (value && typeof value === "object") Object.values(value).forEach((v) => walk(v, value))
+  }
+  walk(productDemo)
+  check(offenders.length === 0, 'content/product-demo.ts: "Live" only together with "Binnenkort"', offenders.join(" | "))
+  const live = productDemo.modes.find((m) => m.id === "live")
+  check(
+    live?.badge === "Binnenkort" && live.text.includes(getFeature("live-modus").when),
+    "demo: Live has the Binnenkort badge and the date from content/features.ts",
+  )
+  const notExisting = productDemo.usesFeatures.filter((id) => getFeature(id).status !== "bestaat")
+  check(notExisting.length === 0, "demo only shows features with status bestaat", notExisting.join(", "))
+
+  const html = (await get("/")).body
+  const marker = html.indexOf('data-product-demo=""')
+  const from = html.indexOf(">", marker) + 1
+  const to = html.lastIndexOf("<", html.indexOf("data-product-demo-caption", marker))
+  const region = marker === -1 ? "" : visibleText(html.slice(from, to))
+  check(visibleText(html).includes("fictieve gegevens"), 'homepage shows the label "fictieve gegevens"')
+  check(
+    productDemo.mails.every((m) => region.includes(m.subject)) && region.includes("Hoi Lotte"),
+    "homepage HTML has the static demo: four mails and the first concept",
+  )
+  const liveHits = [...region.matchAll(/(?<!Semi-)\bLive\b/g)]
+  check(
+    liveHits.length > 0 && liveHits.every((m) => region.slice(m.index, m.index + 40).includes("Binnenkort")),
+    'demo HTML: "Live" only with "Binnenkort"',
+    `${liveHits.length} occurrence(s)`,
+  )
+  checkForbidden("demo HTML", region)
+  checkPrices("demo HTML", region)
+  check(!html.includes("dashboard-screenshot"), "old dashboard screenshot is gone")
 }
 
 // ── Markdown content negotiation ──

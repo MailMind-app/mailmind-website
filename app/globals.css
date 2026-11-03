@@ -48,6 +48,18 @@
   --balloon-link: var(--accent);
   --helper-bar-h: 68px;
 
+  /* Klikbare productdemo (components/product-demo). Categorielabels getoetst op
+     #111a31 en op de geselecteerde rij: alle ≥ 6.6:1. */
+  --demo-bg: #111a31;
+  --cat-blue-fg: #93c5fd;
+  --cat-blue-bg: rgb(79 143 247 / 0.16);
+  --cat-grey-fg: #c3cfdf;
+  --cat-grey-bg: rgb(255 255 255 / 0.08);
+  --cat-orange-fg: #fdba74;
+  --cat-orange-bg: rgb(251 146 60 / 0.15);
+  --cat-red-fg: #fca5a5;
+  --cat-red-bg: rgb(248 113 113 / 0.15);
+
   /* Status */
   --success: #6ee7a8;
   --success-soft: rgb(110 231 168 / 0.12);

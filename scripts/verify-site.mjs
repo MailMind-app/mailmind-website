@@ -5,7 +5,9 @@
 // Reads content/*.ts directly (Node 24 strips the types), so prices, routes and
 // "binnenkort" features always come from the same source as the site.
 
+import { readFile } from "node:fs/promises"
 import { roadmap } from "../content/features.ts"
+import { helper, whatsappUrl } from "../content/helper.ts"
 import { founding, plans, setupFee } from "../content/pricing.ts"
 import { routes, subprocessors } from "../content/site.ts"
 
@@ -241,6 +243,64 @@ check(
   const height = view.getUint32(20)
   check(width === 1200 && height === 630, "opengraph-image is 1200×630", `${width}×${height}`)
   check(bytes.length < 300 * 1024, "opengraph-image is under 300 KB", `${Math.round(bytes.length / 1024)} KB`)
+}
+
+// ── Helper avatars: served as WebP with alpha, within the size limits ──
+{
+  const AVATARS = ["rens-zwaai", "rens-zwaai-base", "rens-zwaai-hand", "rens-duim", "rens-denk", "rens-scan", "rens-peek", "rens-head"]
+  const sizes = {}
+  for (const name of AVATARS) {
+    const res = await fetch(`${BASE}/avatar/${name}.webp`)
+    const bytes = new Uint8Array(await res.arrayBuffer())
+    sizes[name] = bytes.length
+    const ascii = (from, to) => String.fromCharCode(...bytes.slice(from, to))
+    // RIFF....WEBPVP8X with the alpha flag (0x10) in the first feature byte.
+    const isWebp = ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP"
+    const hasAlpha = ascii(12, 16) === "VP8X" && (bytes[20] & 0x10) !== 0
+    check(res.status === 200 && isWebp, `${name}.webp exists and is a WebP`, `status ${res.status}`)
+    check(hasAlpha, `${name}.webp has transparency`)
+    if (!name.startsWith("rens-zwaai-")) {
+      check(bytes.length < 40 * 1024, `${name}.webp is under 40 KB`, `${(bytes.length / 1024).toFixed(1)} KB`)
+    }
+  }
+  const pair = sizes["rens-zwaai-base"] + sizes["rens-zwaai-hand"]
+  check(pair < 50 * 1024, "rens-zwaai-base + rens-zwaai-hand are under 50 KB together", `${(pair / 1024).toFixed(1)} KB`)
+}
+
+// ── /bedankt and 404: noindex, not in the sitemap ──
+{
+  const sitemap = (await get("/sitemap.xml")).body
+  const robotsMeta = (html) => html.match(/<meta name="robots" content="([^"]*)"/)?.[1] ?? ""
+  for (const path of ["/bedankt", "/bedankt?type=vraag"]) {
+    const { status, body } = await get(path)
+    check(status === 200, `${path} returns 200`, `got ${status}`)
+    check(robotsMeta(body).includes("noindex"), `${path} has noindex`, robotsMeta(body))
+  }
+  check(!sitemap.includes("/bedankt"), "sitemap does not list /bedankt")
+  const missing = await get("/bestaat-niet")
+  check(missing.status === 404, "unknown page returns 404", `got ${missing.status}`)
+  check(robotsMeta(missing.body).includes("noindex"), "404 page has noindex", robotsMeta(missing.body))
+  check(/rens-scan/.test(missing.body), "404 page shows rens-scan")
+  check(!/not-found|bestaat-niet|404/.test(sitemap), "sitemap does not list the 404 page")
+}
+
+// ── Helper: WhatsApp only with a number, no forbidden words ──
+{
+  const expected = "https://wa.me/31645686593?text="
+  const url = whatsappUrl(helper.whatsapp, helper.options.whatsapp.prefill)
+  check(url?.startsWith(expected) === true, "WhatsApp link goes to wa.me/31645686593", url ?? "null")
+  check(
+    url === `${expected}${encodeURIComponent(helper.options.whatsapp.prefill)}`,
+    "WhatsApp link carries the URL-encoded prefill",
+  )
+  check(whatsappUrl("", helper.options.whatsapp.prefill) === null, "no WhatsApp link when helper.whatsapp is empty")
+  const windowSource = await readFile(new URL("../components/helper/helper-window.tsx", import.meta.url), "utf8")
+  check(
+    /const whatsapp = whatsappUrl\(helper\.whatsapp/.test(windowSource) && /\{whatsapp && \(/.test(windowSource),
+    "WhatsApp option is only rendered when helper.whatsapp is set",
+  )
+  const helperSource = await readFile(new URL("../content/helper.ts", import.meta.url), "utf8")
+  checkForbidden("content/helper.ts", helperSource)
 }
 
 // ── Markdown content negotiation ──

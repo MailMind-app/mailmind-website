@@ -5,7 +5,8 @@
    --rens-h      hoogte van de staande Rens: clamp(260px, 40vh, 340px)
    --rens-right  afstand tot de rechterrand: 16px, vanaf 1600px 40px
    --peek-scale  hoogte peek / hoogte staande Rens, zodat de hoofden even groot zijn
-   --pose-aspect breedte/hoogte van de huidige pose */
+   --pose-aspect breedte/hoogte van de huidige pose
+   --vv-offset   deel van het layout-viewport onder de visuele viewport (iOS-werkbalk), via JS */
 
 .root {
   --rens-h: clamp(260px, 40vh, 340px);
@@ -230,7 +231,7 @@
 .sheet {
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: var(--vv-offset, 0px);
   width: auto;
   max-height: 85dvh;
   border-radius: 20px 20px 0 0;
@@ -251,7 +252,7 @@
   position: fixed;
   left: max(12px, env(safe-area-inset-left));
   right: max(12px, env(safe-area-inset-right));
-  bottom: calc(12px + env(safe-area-inset-bottom));
+  bottom: calc(12px + var(--vv-offset, 0px) + env(safe-area-inset-bottom));
   z-index: 30;
   display: flex;
   align-items: center;
@@ -262,7 +263,15 @@
   border-radius: 16px;
   background: var(--helper-panel);
   box-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
-  animation: fade 0.25s ease-out both;
+  /* backwards: after the fade-in the opacity is free again for the reduced-motion hide. */
+  animation: fade 0.25s ease-out backwards;
+  transition: transform 0.25s ease-out;
+}
+
+/* Scrolling down: out of view, below Safari's toolbar. */
+.barHidden {
+  transform: translateY(calc(100% + 24px + var(--vv-offset, 0px) + env(safe-area-inset-bottom)));
+  pointer-events: none;
 }
 
 .barMain {
@@ -422,4 +431,27 @@
   .wave {
     animation: none;
   }
+
+  .bar {
+    transition: opacity 0.15s linear;
+  }
+
+  .barHidden {
+    transform: none;
+    opacity: 0;
+  }
+}
+
+/* Tijdelijk: ?helperdebug=1 */
+.debug {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgb(0 0 0 / 0.8);
+  color: #fff;
+  font: 11px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+  pointer-events: none;
 }

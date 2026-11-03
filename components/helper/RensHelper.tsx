@@ -5,7 +5,7 @@
 import { X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react"
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type RefObject } from "react"
 import { createPortal } from "react-dom"
 import { buttonClasses } from "@/components/primitives/button-link"
 import { helper, helperTexts as t, messageFor, type HelperMessage, type HelperPose } from "@/content/helper"
@@ -27,6 +27,11 @@ const MID_STAY_MS = 12000
 const BAR_SCROLL_PERCENT = 40
 const PRELOAD_AHEAD_MS = 2000
 const PRELOAD_AHEAD_PERCENT = 15
+// Mobile bar: hide while scrolling down, back on scrolling up, after a pause, or at the bottom.
+const BAR_SCROLL_DELTA = 8
+const BAR_IDLE_MS = 600
+// On these pages Rens is always the round button (state "button"), without animation.
+const BUTTON_ONLY = ["/demo"]
 
 // Durations in ms, matching rens-helper.module.css.
 const T = { peekIn: 700, peekStay: 2000, peekOut: 350, enter: 900, wave: 1400, cross: 250, balloon: 300, leave: 350, fade: 200 }
@@ -139,6 +144,61 @@ function PoseLayer({ pose, className, waveCount = 0 }: { pose: HelperPose; class
   )
 }
 
+type DebugValues = { inner: number; vvHeight: number; vvTop: number; scrollY: number; offset: number; measured: number | null }
+
+/** Temporary debug box (?helperdebug=1): what Safari reports while the toolbar collapses. */
+function DebugPanel({ barRef }: { barRef: RefObject<HTMLDivElement | null> }) {
+  const [v, setV] = useState<DebugValues | null>(null)
+  useEffect(() => {
+    let frame = 0
+    const read = () => {
+      frame = 0
+      const vv = window.visualViewport
+      const vvHeight = vv?.height ?? window.innerHeight
+      const vvTop = vv?.offsetTop ?? 0
+      const bar = barRef.current?.getBoundingClientRect()
+      setV({
+        inner: window.innerHeight,
+        vvHeight,
+        vvTop,
+        scrollY: window.scrollY,
+        offset: Math.max(0, window.innerHeight - (vvHeight + vvTop)),
+        measured: bar ? window.innerHeight - bar.bottom : null,
+      })
+    }
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(read)
+    }
+    schedule()
+    const vv = window.visualViewport
+    window.addEventListener("scroll", schedule, { passive: true })
+    window.addEventListener("resize", schedule)
+    vv?.addEventListener("resize", schedule)
+    vv?.addEventListener("scroll", schedule)
+    const interval = window.setInterval(schedule, 500)
+    return () => {
+      window.removeEventListener("scroll", schedule)
+      window.removeEventListener("resize", schedule)
+      vv?.removeEventListener("resize", schedule)
+      vv?.removeEventListener("scroll", schedule)
+      window.clearInterval(interval)
+      window.cancelAnimationFrame(frame)
+    }
+  }, [barRef])
+  if (!v) return null
+  const r1 = (n: number) => Math.round(n * 10) / 10
+  return (
+    <div className={styles.debug} data-helper-debug="" aria-hidden="true">
+      <div>innerHeight: {r1(v.inner)}</div>
+      <div>vv.height: {r1(v.vvHeight)}</div>
+      <div>vv.offsetTop: {r1(v.vvTop)}</div>
+      <div>scrollY: {r1(v.scrollY)}</div>
+      <div>balk bottom: 12 + {r1(v.offset)} + safe-area</div>
+      <div>balk gemeten: {v.measured === null ? "–" : r1(v.measured)}</div>
+    </div>
+  )
+}
+
 /**
  * Hulpknop met 3D-Rens. Rendered client-only by HelperLoader and portalled into <body>.
  * The session state (mm_helper_state, mm_helper_waved) survives navigation and reloads;
@@ -165,6 +225,7 @@ export function RensHelper() {
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<WindowView>("menu")
   const [barVisible, setBarVisible] = useState(false)
+  const [barHidden, setBarHidden] = useState(false)
 
   // Mirrors of state for timers and event handlers (always the latest value).
   const r = useRef({
@@ -187,6 +248,8 @@ export function RensHelper() {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const fullRef = useRef<HTMLButtonElement>(null)
   const barRef = useRef<HTMLButtonElement>(null)
+  const barElRef = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const s = r.current
@@ -208,6 +271,7 @@ export function RensHelper() {
     setOpen(false)
     setBalloon(null)
     setBarVisible(false)
+    setBarHidden(false)
   }
 
   // ── Controller: sequences of timed steps. A new sequence cancels the pending steps of the last one. ──
@@ -382,6 +446,19 @@ export function RensHelper() {
       if (s().peek) hidePeek()
     }
 
+    /** Straight to the round button, without animation (e.g. on /demo). */
+    const toButton = () => {
+      newSequence()
+      setBalloon(null)
+      setWaveCount(0)
+      setFadingPose(null)
+      set.peek(null)
+      set.figure(null)
+      set.phase("idle")
+      // readState(): on a fresh load this runs before the mirror effect has copied the stored state.
+      if (s().state !== "none" || readState() !== "none") set.state("button")
+    }
+
     /** Round button at ≥1280 px: Rens steps in (waving once if he has not waved yet) and the window opens. */
     const summon = (openWindow: () => void) => {
       newSequence()
@@ -389,13 +466,18 @@ export function RensHelper() {
       void enter("zwaai", { wave: s().waved ? 0 : 1, onEntered: openWindow })
     }
 
-    return { trigger, dismiss, summon, clearTimers }
+    return { trigger, dismiss, toButton, summon, clearTimers }
   }, [])
 
   useEffect(() => {
     removeOldKeys()
     return c.clearTimers
   }, [c])
+
+  // /demo: Rens becomes the round button, before the page is painted (no animation, no flash).
+  useLayoutEffect(() => {
+    if (BUTTON_ONLY.includes(pathname)) c.toButton()
+  }, [pathname, c])
 
   // Round button: 1.5 s after the page started loading (straight away when restoring a state).
   useEffect(() => {
@@ -492,6 +574,69 @@ export function RensHelper() {
     }
   }, [showBar])
 
+  // Mobile bar moves with Safari's toolbar: out of view while scrolling down, back when scrolling
+  // up, after a 600 ms pause, or at the bottom of the page. Never hidden while the sheet is open.
+  useEffect(() => {
+    if (!showBar) return
+    let lastY = window.scrollY
+    let frame = 0
+    let idle = 0
+    const update = () => {
+      frame = 0
+      const y = window.scrollY
+      const atBottom = y + window.innerHeight >= document.documentElement.scrollHeight - 2
+      const delta = y - lastY
+      if (atBottom) {
+        setBarHidden(false)
+        lastY = y
+      } else if (delta > BAR_SCROLL_DELTA) {
+        const focused = barElRef.current?.contains(document.activeElement)
+        if (!r.current.open && !focused) setBarHidden(true)
+        lastY = y
+      } else if (delta < -BAR_SCROLL_DELTA) {
+        setBarHidden(false)
+        lastY = y
+      }
+      window.clearTimeout(idle)
+      idle = window.setTimeout(() => setBarHidden(false), BAR_IDLE_MS)
+    }
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(idle)
+    }
+  }, [showBar])
+
+  // Bottom of the bar and sheet relative to the visual viewport (iOS Safari's collapsing toolbar):
+  // --vv-offset = max(0, innerHeight − (visualViewport.height + visualViewport.offsetTop)).
+  useEffect(() => {
+    const vv = window.visualViewport
+    const el = rootRef.current
+    if (!vv || !el) return
+    let frame = 0
+    const apply = () => {
+      frame = 0
+      el.style.setProperty("--vv-offset", `${Math.max(0, window.innerHeight - (vv.height + vv.offsetTop))}px`)
+    }
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(apply)
+    }
+    apply()
+    vv.addEventListener("resize", schedule)
+    vv.addEventListener("scroll", schedule)
+    window.addEventListener("resize", schedule)
+    return () => {
+      vv.removeEventListener("resize", schedule)
+      vv.removeEventListener("scroll", schedule)
+      window.removeEventListener("resize", schedule)
+      window.cancelAnimationFrame(frame)
+    }
+  }, [])
+
   // A click outside the window closes it.
   useEffect(() => {
     if (!open) return
@@ -499,22 +644,28 @@ export function RensHelper() {
       const target = e.target as Element | null
       if (!target || windowRef.current?.contains(target)) return
       if (target.closest?.("[data-helper-trigger]")) return
+      // Closing the window works like the balloon's close button: Rens goes back to the round button.
       setOpen(false)
+      c.dismiss()
     }
     document.addEventListener("pointerdown", onDown)
     return () => document.removeEventListener("pointerdown", onDown)
-  }, [open])
+  }, [open, c])
+
+  // Temporary: ?helperdebug=1 shows the viewport numbers Safari reports (for testing on a real iPhone).
+  const debug = new URLSearchParams(window.location.search).get("helperdebug") === "1"
 
   // On /bedankt Rens is already big on the page: show the button there (the state stays "figure").
   const onThanks = pathname === "/bedankt"
-  const figureShown = mode === "wide" && !onThanks && figure !== null
+  const figureShown = mode === "wide" && !onThanks && !BUTTON_ONLY.includes(pathname) && figure !== null
   const figureVisible = figureShown && figure !== "leave"
   const showButton = mode !== "narrow" && buttonReady && !figureVisible && peek === null
   const variant: WindowVariant = mode === "narrow" ? "sheet" : figureVisible ? "beside" : "float"
 
   const focusTrigger = useCallback(() => {
     window.requestAnimationFrame(() => {
-      const target = r.current.mode === "narrow" ? barRef.current : (fullRef.current ?? buttonRef.current)
+      // After closing, Rens has left: the round button (or the mobile bar) gets the focus.
+      const target = r.current.mode === "narrow" ? barRef.current : buttonRef.current
       target?.focus()
     })
   }, [])
@@ -524,17 +675,19 @@ export function RensHelper() {
     setOpen(true)
     setBalloon(null)
   }, [])
+  /** Every way of closing the window (×, Esc, click outside, a link in it): Rens → round button. */
   const closeWindow = (returnFocus: boolean) => {
     setOpen(false)
+    c.dismiss()
     if (returnFocus) focusTrigger()
   }
 
   const onButton = () => {
-    if (open) return setOpen(false)
+    if (open) return closeWindow(true)
     if (mode === "wide" && !onThanks) c.summon(() => openWindow("menu"))
     else openWindow("menu")
   }
-  const onFigure = () => (open ? setOpen(false) : openWindow("menu"))
+  const onFigure = () => (open ? closeWindow(true) : openWindow("menu"))
   const onDismiss = () => {
     c.dismiss()
     window.requestAnimationFrame(() => buttonRef.current?.focus())
@@ -551,6 +704,7 @@ export function RensHelper() {
 
   return createPortal(
     <div
+      ref={rootRef}
       className={styles.root}
       style={rootStyle}
       data-rens-helper=""
@@ -635,7 +789,13 @@ export function RensHelper() {
       )}
 
       {showBar && (
-        <div className={styles.bar} data-helper-bar="">
+        <div
+          ref={barElRef}
+          className={cn(styles.bar, barHidden && !open && styles.barHidden)}
+          inert={barHidden && !open}
+          data-helper-bar=""
+          data-hidden={barHidden && !open ? "true" : "false"}
+        >
           <button ref={barRef} type="button" {...triggerProps} onClick={onButton} className={styles.barMain}>
             <span className={styles.barHead}>
               <img src={HEAD} alt="" width={42} height={42} className="size-full rounded-full bg-panel-2 object-cover" />
@@ -656,6 +816,8 @@ export function RensHelper() {
       )}
 
       {open && mode === "narrow" && <div className={styles.backdrop} aria-hidden="true" />}
+
+      {debug && <DebugPanel barRef={barElRef} />}
 
       <HelperWindow
         id={windowId}

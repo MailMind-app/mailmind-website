@@ -16,8 +16,8 @@ export const helper = {
   // repeat: "perPageview" = elk paginabezoek één keer, ook als Rens eerder is weggeklikt;
   // "oncePerSession" = alleen als Rens deze sessie nog niet is verschenen.
   messages: [
-    { path: "/prijzen", trigger: { type: "time", seconds: 15 }, pose: "denk", title: "Twijfel je tussen Starter en Professional?", body: "Vraag het gewoon, ik help je kiezen.", cta: "Stel je vraag →", action: "question", repeat: "perPageview" },
-    { path: "/veiligheid", trigger: { type: "time", seconds: 15 }, pose: "denk", title: "Vraag over je gegevens of de AVG?", body: "Stel hem direct, ik antwoord persoonlijk.", cta: "Stel je vraag →", action: "question", repeat: "perPageview" },
+    { path: "/prijzen", trigger: { type: "time", seconds: 10 }, pose: "denk", title: "Twijfel je tussen Starter en Professional?", body: "Vraag het gewoon, ik help je kiezen.", cta: "Stel je vraag →", action: "question", repeat: "perPageview" },
+    { path: "/veiligheid", trigger: { type: "time", seconds: 10 }, pose: "denk", title: "Vraag over je gegevens of de AVG?", body: "Stel hem direct, ik antwoord persoonlijk.", cta: "Stel je vraag →", action: "question", repeat: "perPageview" },
     { path: "/hoe-het-werkt", trigger: { type: "scroll", percent: 60 }, pose: "laptop", title: "Benieuwd hoe dit bij jou werkt?", body: "In een korte demo laat ik het zien met jouw soort mail.", cta: "Demo aanvragen →", action: "primary", repeat: "perPageview" },
     { path: "*", trigger: { type: "scroll", percent: 50 }, pose: "zwaai", title: "Hoi, ik ben Rens 👋", body: "Vragen over MailMind? Ik help je graag.", cta: "Stel je vraag →", action: "question", repeat: "oncePerSession" },
   ],

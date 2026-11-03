@@ -116,6 +116,27 @@ const headPx = async (page, selector) => {
   const b = await el.boundingBox()
   return b ? b.height * Number(await el.getAttribute("data-head-frac")) : 0
 }
+const barState = (page) => page.locator("[data-helper-bar]").getAttribute("data-hidden")
+const waitBarShown = async (page) => {
+  // Let the scroll be handled first: right after scrollTo the bar has not reacted yet, and after a
+  // downward scroll it only comes back once scrolling has stopped for 600 ms.
+  await page.waitForTimeout(700)
+  await page
+    .waitForFunction(() => document.querySelector("[data-helper-bar]")?.dataset.hidden === "false", null, { timeout: 3000 })
+    .catch(() => {})
+  await page.waitForTimeout(350) // transition
+}
+// The bar's box lies completely inside window.visualViewport.
+const barInView = (page) =>
+  page.locator("[data-helper-bar]").evaluate((bar) => {
+    const r = bar.getBoundingClientRect()
+    const v = window.visualViewport
+    const top = v ? v.offsetTop : 0
+    const left = v ? v.offsetLeft : 0
+    const height = v ? v.height : window.innerHeight
+    const width = v ? v.width : window.innerWidth
+    return r.top >= top && r.left >= left && r.bottom <= top + height + 0.5 && r.right <= left + width + 0.5
+  })
 const navClick = async (page, label) => {
   await page.locator('header nav[aria-label="Hoofdmenu"] a', { hasText: label }).click()
   await page.waitForURL((url) => url.pathname === `/${label.toLowerCase()}`)
@@ -144,11 +165,11 @@ section("1600×900 — eerste bezoek /prijzen")
 {
   const { context, page, errors } = await open(chrome, "/prijzen", { clock: true })
   check(await waitVisible(page, "[data-helper-button]"), "round button appears after load")
-  await page.clock.fastForward(10_000)
+  await page.clock.fastForward(7_000)
   await page.waitForTimeout(500)
-  check(!(await visible(page, "[data-helper-figure=peek]")), "nothing after 10 s")
-  await page.clock.fastForward(5_000)
-  check(await waitVisible(page, "[data-helper-figure=peek]", 3000), "peek after 15 s")
+  check(!(await visible(page, "[data-helper-figure=peek]")), "nothing after 7 s")
+  await page.clock.fastForward(3_000)
+  check(await waitVisible(page, "[data-helper-figure=peek]", 3000), "peek after 10 s")
   check(!(await visible(page, "[data-helper-button]")), "round button hidden while Rens is in view")
   const peekHead = await headPx(page, "[data-helper-figure=peek]")
   const peekTop = (await box(page, "[data-helper-figure=peek]"))?.y ?? 0
@@ -191,8 +212,8 @@ section("1600×900 — eerste bezoek /prijzen")
 
   let mark = await phaseCount(page)
   await navClick(page, "Veiligheid")
-  await page.clock.fastForward(15_000)
-  check(await waitVisible(page, "[data-helper-balloon]", 5000), "/veiligheid: Rens comes back after 15 s with a balloon")
+  await page.clock.fastForward(10_000)
+  check(await waitVisible(page, "[data-helper-balloon]", 5000), "/veiligheid: Rens comes back after 10 s with a balloon")
   let since = await phases(page, mark)
   check(!since.some((p) => p.startsWith("peek")), "/veiligheid: no peek", since.join(" → "))
   check(!since.some((p) => p.startsWith("wave")) && (await waves(page)) === 1, "/veiligheid: no wave", since.join(" → "))
@@ -202,8 +223,8 @@ section("1600×900 — eerste bezoek /prijzen")
   await page.locator("[data-helper-balloon]").getByRole("button", { name: "Sluiten" }).click()
   await waitHidden(page, "[data-helper-figure=full]", 2000)
   await navClick(page, "Prijzen")
-  await page.clock.fastForward(15_000)
-  check(await waitVisible(page, "[data-helper-balloon]", 5000), "/prijzen again after dismissing: back after 15 s (perPageview)")
+  await page.clock.fastForward(10_000)
+  check(await waitVisible(page, "[data-helper-balloon]", 5000), "/prijzen again after dismissing: back after 10 s (perPageview)")
 
   await page.locator("[data-helper-balloon]").getByRole("button", { name: "Sluiten" }).click()
   await waitHidden(page, "[data-helper-figure=full]", 2000)
@@ -221,39 +242,67 @@ section("1600×900 — eerste bezoek /prijzen")
   check(win && rens && win.x + win.width <= rens.x, "window opens to the left of Rens", `${JSON.stringify(win)} / ${JSON.stringify(rens)}`)
   await page.screenshot({ path: file("1600-venster.png") })
 
-  await page.keyboard.press("Escape")
-  check(await waitHidden(page, "[data-helper-window]"), "Esc closes the window")
-  await page.waitForTimeout(100)
-  check(await visible(page, "[data-helper-figure=full]"), "Rens stays after closing the window")
-  check(!(await visible(page, "[data-helper-balloon]")), "no balloon after closing the window")
-  check(await activeMatches(page, "[data-helper-figure=full]"), "focus returns to Rens")
-  await page.locator("[data-helper-figure=full]").click()
-  check(await waitVisible(page, "[data-helper-window]"), "click on Rens opens the window again")
-  await page.mouse.click(400, 300)
-  check(await waitHidden(page, "[data-helper-window]"), "a click outside closes the window")
+  // Every way of closing the window: Rens slides away, the round button comes back.
+  const closers = [
+    ["close button", () => page.locator("[data-helper-window]").getByRole("button", { name: "Venster sluiten" }).click()],
+    ["Esc", () => page.keyboard.press("Escape")],
+    ["click outside", () => page.mouse.click(400, 300)],
+  ]
+  for (const [how, close] of closers) {
+    if (!(await visible(page, "[data-helper-window]"))) {
+      await page.locator("[data-helper-button]").click()
+      await waitVisible(page, "[data-helper-window]", 3000)
+      await page.waitForTimeout(300)
+    }
+    await close()
+    check(await waitHidden(page, "[data-helper-window]", 2000), `${how}: window closes`)
+    check(await waitHidden(page, "[data-helper-figure=full]", 2000), `${how}: Rens slides away`)
+    check(await waitVisible(page, "[data-helper-button]", 2000), `${how}: round button appears`)
+    check((await root(page)).state === "button", `${how}: state is button`)
+    if (how === "Esc") {
+      await page.waitForTimeout(100)
+      check(await activeMatches(page, "[data-helper-button]"), "Esc: focus goes to the round button")
+    }
+  }
 
-  section("1600×900 — navigatie /prijzen → /demo met Rens in beeld")
-  await scrollTo(page, 0.7)
+  // Stays a round button on other pages.
+  await page.locator("footer a", { hasText: "Over" }).click()
+  await page.waitForURL(`${BASE}/over`)
+  await scrollTo(page, 0.6)
+  await page.waitForTimeout(1500)
+  check((await visible(page, "[data-helper-button]")) && (await page.locator("[data-helper-figure=full]").count()) === 0, "/over: still the round button")
+  await navClick(page, "Sportscholen")
+  await scrollTo(page, 0.6)
+  await page.waitForTimeout(1500)
+  check((await visible(page, "[data-helper-button]")) && (await page.locator("[data-helper-figure=full]").count()) === 0, "/sportscholen: still the round button")
+
+  // Until a trigger fires.
+  await navClick(page, "Prijzen")
+  await page.clock.fastForward(10_000)
+  check(await waitVisible(page, "[data-helper-balloon]", 5000), "/prijzen: Rens comes back after 10 s (trigger)")
   await page.locator("[data-helper-figure=full]").click()
+  check(await waitVisible(page, "[data-helper-window]", 2000), "click on Rens (standing, no window) opens the window")
+
+  section("1600×900 — naar /demo = bolletje")
+  await scrollTo(page, 0.7)
   await page.locator("[data-helper-window]").getByRole("link", { name: /Demo aanvragen/ }).click()
   await page.waitForURL(`${BASE}/demo`)
   await page.waitForTimeout(700)
   check((await page.evaluate(() => window.scrollY)) === 0, "/demo starts at the top", `${await page.evaluate(() => window.scrollY)}`)
   const formTitle = await box(page, "main form h2")
   check(formTitle && formTitle.y >= 0 && formTitle.y < 900, "demo form heading is in view", JSON.stringify(formTitle))
-  check(await visible(page, "[data-helper-figure=full]"), "/demo: Rens is still there")
-  check(!(await visible(page, "[data-helper-window]")), "/demo: window closed by the navigation")
-  check((await figureAnimations(page)) === 0, "/demo: no animation")
+  check((await page.locator("[data-helper-figure=full]").count()) === 0, "/demo: no standing Rens")
+  check(await visible(page, "[data-helper-button]"), "/demo: round button")
+  check((await root(page)).state === "button", "/demo: state is button")
+  check(!(await visible(page, "[data-helper-window]")), "/demo: window closed")
   await page.clock.fastForward(20_000)
   await page.waitForTimeout(500)
   check(!(await visible(page, "[data-helper-balloon]")), "/demo: no triggers (hiddenOn)")
 
-  mark = 0
   await page.reload({ waitUntil: "networkidle" })
-  check(await waitVisible(page, "[data-helper-figure=full]", 3000), "reload on /demo: Rens is restored")
+  check(await waitVisible(page, "[data-helper-button]", 3000), "reload on /demo: round button restored")
   since = await phases(page)
-  check(!since.some((p) => /^(enter|peek|wave)/.test(p)), "reload: no animation", since.join(" → "))
-  check((await figureAnimations(page)) === 0, "reload: nothing animating")
+  check((await page.locator("[data-helper-figure=full]").count()) === 0 && !since.some((p) => /^(enter|peek|wave)/.test(p)), "reload: no standing Rens, no animation", since.join(" → "))
   check(errors.length === 0, "no page errors", errors.join(" | "))
   await context.close()
 }
@@ -454,42 +503,58 @@ for (const [label, browser, options, tag] of mobileRuns) {
   check(chain.parentIsBody, "bar is portalled into <body>")
   check(chain.issues.length === 0, "no ancestor with transform/filter/backdrop-filter/contain", chain.issues.join(", "))
 
-  // Scroll all the way down and back up: the bar stays fully inside the visual viewport.
-  let outside = []
-  const steps = [0.45, 0.6, 0.8, 0.95, 1, 0.9, 0.7, 0.5, 0.3, 0.1, 0]
-  for (const f of steps) {
-    await scrollTo(page, f)
-    await page.waitForTimeout(150)
-    const fit = await page.locator("[data-helper-bar]").evaluate((bar) => {
-      const r = bar.getBoundingClientRect()
-      const v = window.visualViewport
-      const top = v ? v.offsetTop : 0
-      const left = v ? v.offsetLeft : 0
-      const height = v ? v.height : window.innerHeight
-      const width = v ? v.width : window.innerWidth
-      return r.top >= top && r.left >= left && r.bottom <= top + height + 0.5 && r.right <= left + width + 0.5
-    })
-    if (!fit) outside.push(f)
-  }
-  check(outside.length === 0, "bar fully inside the visual viewport while scrolling down and up", `outside at ${outside.join(", ")}`)
-  const bar = await box(page, "[data-helper-bar]")
-  check(bar && Math.round(bar.x) === 12 && Math.round(options.viewport.width - bar.x - bar.width) === 12 && Math.round(vh - bar.y - bar.height) === 12, "bar: 12 px from the sides and the bottom", JSON.stringify(bar))
-  await page.screenshot({ path: file(`${tag}-balk.png`) })
-
+  // Hide on scroll: out of view while scrolling down, back on scrolling up, after a pause, at the bottom.
+  await waitBarShown(page)
+  await scrollTo(page, 0.6)
+  await page.waitForTimeout(350)
+  let barBox = await box(page, "[data-helper-bar]")
+  check((await barState(page)) === "true" && barBox && barBox.y >= vh, "scrolling down: bar slides out of view", JSON.stringify(barBox))
+  await scrollTo(page, 0.5)
+  await page.waitForTimeout(150)
+  check((await barState(page)) === "false", "scrolling up: bar comes back")
+  await page.waitForTimeout(300)
+  check(await barInView(page), "scrolling up: bar fully in view")
+  await scrollTo(page, 0.7)
+  await page.waitForTimeout(200)
+  check((await barState(page)) === "true", "scrolling down again: hidden")
+  await page.waitForTimeout(800)
+  check((await barState(page)) === "false" && (await barInView(page)), "600 ms without scrolling: bar back")
   await scrollTo(page, 1)
+  await page.waitForTimeout(200)
+  check((await barState(page)) === "false", "at the bottom of the page: bar visible")
   await page.waitForTimeout(300)
   const footerEnd = await page.evaluate(() => document.querySelector("footer")?.getBoundingClientRect().bottom ?? 0)
   check(footerEnd <= ((await box(page, "[data-helper-bar]"))?.y ?? 0) + 1, "at the bottom, the footer ends above the bar")
 
+  // Scroll all the way down and back up: once settled, the bar is fully inside the visual viewport.
+  const outside = []
+  for (const f of [0.6, 0.95, 1, 0.7, 0.3, 0]) {
+    await scrollTo(page, f)
+    await waitBarShown(page)
+    if (!(await barInView(page))) outside.push(f)
+  }
+  check(outside.length === 0, "bar fully inside the visual viewport after scrolling down and up", `outside at ${outside.join(", ")}`)
+  await scrollTo(page, 0.6)
+  await waitBarShown(page)
+  const bar = await box(page, "[data-helper-bar]")
+  check(bar && Math.round(bar.x) === 12 && Math.round(options.viewport.width - bar.x - bar.width) === 12 && Math.round(vh - bar.y - bar.height) === 12, "bar: 12 px from the sides and the bottom", JSON.stringify(bar))
+  await page.screenshot({ path: file(`${tag}-balk.png`) })
+
+  // Bottom sheet: always in view, also while the page scrolls.
   await page.locator("[data-helper-bar] button").first().tap()
   check(await waitVisible(page, "[data-helper-window]"), "tap opens the bottom sheet")
   await page.waitForTimeout(300)
-  const sheet = await box(page, "[data-helper-window]")
+  let sheet = await box(page, "[data-helper-window]")
   check(sheet && Math.round(sheet.width) === options.viewport.width && Math.round(sheet.y + sheet.height) === vh && sheet.height <= vh * 0.85 + 1, "sheet: full width, at the bottom, max 85dvh", JSON.stringify(sheet))
+  await scrollTo(page, 0.9)
+  await page.waitForTimeout(350)
+  sheet = await box(page, "[data-helper-window]")
+  check(sheet && Math.round(sheet.y + sheet.height) === vh && (await barState(page)) === "false", "sheet open: stays in view while scrolling, bar not hidden", JSON.stringify(sheet))
   await page.locator("[data-helper-window]").getByRole("button", { name: "Venster sluiten" }).tap()
   check(await waitHidden(page, "[data-helper-window]"), "close button closes the sheet")
 
   await scrollTo(page, 0.5)
+  await waitBarShown(page)
   const toggle = page.locator("header button[aria-controls]")
   await toggle.tap()
   const panel = page.locator(`[id="${await toggle.getAttribute("aria-controls")}"]`)
@@ -502,6 +567,7 @@ for (const [label, browser, options, tag] of mobileRuns) {
   await page.goto(`${BASE}/hoe-het-werkt`, { waitUntil: "networkidle" })
   await scrollTo(page, 0.8)
   check(await waitVisible(page, "[data-helper-bar]", 5000), "bar appears even when already scrolled past 40% at load")
+  await waitBarShown(page)
   await page.locator("[data-helper-bar] a", { hasText: "Demo aanvragen" }).tap({ timeout: 5000 })
   await page.waitForURL(`${BASE}/demo`)
   await page.waitForTimeout(800)
@@ -517,12 +583,56 @@ for (const [label, browser, options, tag] of mobileRuns) {
 }
 await mobileRuns[1][1].close()
 
+// ── Mobile: reduced motion and the debug box ──
+section("390×844 — reduced motion en ?helperdebug=1")
+{
+  const mobile = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }
+  let { context, page } = await open(chrome, "/", { ...mobile, reducedMotion: "reduce" })
+  await page.locator("[data-rens-helper]").waitFor({ state: "attached", timeout: 8000 }).catch(() => {})
+  await scrollTo(page, 0.45)
+  await waitBarShown(page)
+  await scrollTo(page, 0.6)
+  await page.waitForTimeout(250)
+  const style = await page.locator("[data-helper-bar]").evaluate((el) => ({ transform: getComputedStyle(el).transform, opacity: getComputedStyle(el).opacity, hidden: el.dataset.hidden }))
+  check(style.hidden === "true" && style.transform === "none" && Number(style.opacity) < 0.05, "reduced motion: bar hides with opacity, no slide", JSON.stringify(style))
+  await context.close()
+
+  ;({ context, page } = await open(chrome, "/?helperdebug=1", mobile))
+  check(await waitVisible(page, "[data-helper-debug]", 8000), "?helperdebug=1 shows the debug box")
+  const text = await page.locator("[data-helper-debug]").innerText()
+  check(["innerHeight", "vv.height", "vv.offsetTop", "scrollY", "balk"].every((k) => text.includes(k)), "debug box shows the viewport values", text.replace(/\n/g, " | "))
+  await page.goto(`${BASE}/`, { waitUntil: "networkidle" })
+  await page.locator("[data-rens-helper]").waitFor({ state: "attached", timeout: 8000 }).catch(() => {})
+  await page.waitForTimeout(500)
+  check((await page.locator("[data-helper-debug]").count()) === 0, "without the parameter the debug box is not in the DOM")
+  await context.close()
+}
+
+// ── /demo is always the round button ──
+section("/demo = bolletje")
+{
+  const { context, page } = await open(chrome, "/prijzen", { seed: { state: "figure", waved: "true" } })
+  check(await waitVisible(page, "[data-helper-figure=full]", 3000), "/prijzen: Rens standing (restored)")
+  await page.locator("header").getByRole("link", { name: "Demo aanvragen" }).click()
+  await page.waitForURL(`${BASE}/demo`)
+  await page.waitForTimeout(300)
+  check((await page.locator("[data-helper-figure=full]").count()) === 0 && (await visible(page, "[data-helper-button]")), "header → /demo: round button, no standing Rens")
+  check((await root(page)).state === "button", "header → /demo: state is button")
+  await context.close()
+}
+{
+  const { context, page } = await open(chrome, "/demo", { seed: { state: "figure", waved: "true" } })
+  check(await waitVisible(page, "[data-helper-button]", 3000), "fresh load of /demo with state figure: round button")
+  check((await page.locator("[data-helper-figure=full]").count()) === 0 && (await root(page)).state === "button", "fresh load of /demo: no standing Rens, state button")
+  await context.close()
+}
+
 // ── Reduced motion ──
 section("prefers-reduced-motion: reduce (1600×900)")
 {
   const { context, page, errors } = await open(chrome, "/prijzen", { reducedMotion: "reduce", clock: true })
   await waitVisible(page, "[data-helper-button]")
-  await page.clock.fastForward(15_000)
+  await page.clock.fastForward(10_000)
   const anims = await recordAnimations(page, 2500)
   const withTransform = anims.filter(([, t]) => t).map(([n]) => n)
   check(withTransform.length === 0, "no transform animations are started", withTransform.join(", "))
@@ -555,7 +665,7 @@ section("Video's")
   // 1. First visit to /prijzen up to the balloon.
   let { context, page } = await open(chrome, "/prijzen", { clock: true, video: true })
   await page.waitForTimeout(1500)
-  await page.clock.fastForward(15_000)
+  await page.clock.fastForward(10_000)
   await waitVisible(page, "[data-helper-balloon]", 12_000)
   await page.waitForTimeout(1500)
   await saveVideo(context, page, "1-eerste-bezoek-prijzen.webm")
@@ -563,7 +673,7 @@ section("Video's")
   // 2. Dismiss → round button → click → Rens + window (already waved this session).
   ;({ context, page } = await open(chrome, "/prijzen", { clock: true, video: true, seed: { state: "figure", waved: "true" } }))
   await page.waitForTimeout(1000)
-  await page.clock.fastForward(15_000)
+  await page.clock.fastForward(10_000)
   await waitVisible(page, "[data-helper-balloon]", 5000)
   await page.waitForTimeout(1500)
   await page.locator("[data-helper-balloon]").getByRole("button", { name: "Sluiten" }).click()

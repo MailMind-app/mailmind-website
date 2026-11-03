@@ -27,9 +27,12 @@ export function MobileNav() {
     }
     document.addEventListener("keydown", onKey)
     document.body.style.overflow = "hidden"
+    // Signal for other fixed UI (the helper bar hides while the menu is open).
+    document.body.dataset.menuOpen = ""
     return () => {
       document.removeEventListener("keydown", onKey)
       document.body.style.overflow = ""
+      delete document.body.dataset.menuOpen
     }
   }, [open])
 

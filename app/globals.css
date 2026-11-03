@@ -41,6 +41,13 @@
   --glow-blue: #10245d;
   --glow-teal: #0b2e48;
 
+  /* Hulpknop met 3D-Rens (components/helper) */
+  --helper-panel: #111a31;
+  --balloon-bg: #ffffff;
+  --balloon-fg: var(--bg);
+  --balloon-link: var(--accent);
+  --helper-bar-h: 68px;
+
   /* Status */
   --success: #6ee7a8;
   --success-soft: rgb(110 231 168 / 0.12);
@@ -218,6 +225,12 @@
     font-size: 1.05rem;
     letter-spacing: -0.01em;
   }
+}
+
+/* Hulpknop: ruimte onder de pagina zolang de mobiele balk zichtbaar is, zodat
+   de balk nooit blijvend content of de footer afdekt. */
+body[data-helper-bar-open] {
+  padding-bottom: calc(var(--helper-bar-h) + 24px + env(safe-area-inset-bottom));
 }
 
 /* Scroll reveal. RevealObserver marks only elements that start below the fold

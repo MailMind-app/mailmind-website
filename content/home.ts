@@ -187,6 +187,9 @@ export const comparison = {
 export const pricingTeaser = {
   eyebrow: "Prijzen",
   title: "Begin als *founding-klant.*",
+  /** Kop zodra alle founding-plekken bezet zijn (content/pricing.ts). */
+  titleRegular: "Eerlijke prijzen, *per maand.*",
+  regularLabel: "Reguliere pakketten",
   link: { label: "Bekijk alle prijzen", href: "/prijzen" },
 }
 

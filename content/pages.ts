@@ -1,11 +1,15 @@
 // Teksten voor /prijzen, /demo, /over, /contact, /privacy, /bedankt en de 404-pagina.
 // *Woorden tussen sterretjes* krijgen het accentverloop.
 
+import { founding, foundingOpen } from "./pricing"
+
 export const pricingPage = {
   hero: {
     eyebrow: "Prijzen",
     title: "Eerlijke prijzen, *per maand.*",
-    intro: "Drie pakketten, een founding-aanbod voor de eerste 5 klanten en eenmalige opstartkosten. Alle prijzen exclusief btw.",
+    intro: foundingOpen
+      ? `Drie pakketten, een founding-aanbod voor de eerste ${founding.spotsTotal} klanten en eenmalige opstartkosten. Alle prijzen exclusief btw.`
+      : "Drie pakketten en eenmalige opstartkosten. Alle prijzen exclusief btw.",
   },
 }
 

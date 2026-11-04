@@ -1,6 +1,8 @@
 // Algemene gegevens van MailMind. Teksten en gegevens aanpassen kan hier,
 // zonder iets aan de layout te veranderen.
 
+import { formatEuro, founding, foundingOpen } from "./pricing"
+
 export const site = {
   name: "MailMind",
   url: "https://mailmind.nl",
@@ -64,7 +66,8 @@ export const routes: Route[] = [
     path: "/prijzen",
     title: "Prijzen",
     description:
-      "MailMind-prijzen excl. btw: Starter €149 per maand, Professional €249 per maand, of op maat. Founding-aanbod voor de eerste 5 klanten: €99 per maand.",
+      "MailMind-prijzen excl. btw: Starter €149 per maand, Professional €249 per maand, of op maat." +
+      (foundingOpen ? ` Founding-aanbod voor de eerste ${founding.spotsTotal} klanten: ${formatEuro(founding.monthlyPriceEur)} per maand.` : ""),
     lastModified: "2026-11-01",
     priority: 0.9,
   },

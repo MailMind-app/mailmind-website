@@ -1,4 +1,4 @@
-import { formatEuro, setupFee } from "./pricing"
+import { formatEuro, founding, foundingOpen, setupFee } from "./pricing"
 
 // [[functie-id]] in een antwoord wordt de functietitel, met badge waar nodig.
 export type FaqItem = {
@@ -6,6 +6,8 @@ export type FaqItem = {
   answer: string
   /** Waar de vraag getoond wordt. */
   pages: ("home" | "prijzen" | "sportscholen")[]
+  /** Alleen tonen zolang het founding-aanbod loopt (content/pricing.ts). */
+  foundingOnly?: boolean
 }
 
 export const faq: FaqItem[] = [
@@ -40,7 +42,7 @@ export const faq: FaqItem[] = [
   },
   {
     question: "Wat kost het opstarten?",
-    answer: `Eenmalig ${formatEuro(setupFee.amountEur)} exclusief btw, voor het vullen van je kennisbank (rooster, prijzen, openingstijden) en het inrichten van categorieën en doorsturen. Voor de eerste 5 klanten vervallen de opstartkosten.`,
+    answer: `Eenmalig ${formatEuro(setupFee.amountEur)} exclusief btw, voor het vullen van je kennisbank (rooster, prijzen, openingstijden) en het inrichten van categorieën en doorsturen.${foundingOpen ? ` Voor de eerste ${founding.spotsTotal} klanten (founding-aanbod) vervallen de opstartkosten.` : ""}`,
     pages: ["prijzen"],
   },
   {
@@ -48,6 +50,7 @@ export const faq: FaqItem[] = [
     answer:
       "Het founding-aanbod is maandelijks opzegbaar, en de prijs staat 12 maanden vast. Neem voor de voorwaarden van de andere pakketten contact op.",
     pages: ["prijzen"],
+    foundingOnly: true,
   },
   {
     question: "Is MailMind ook voor andere bedrijven dan sportscholen?",
@@ -58,5 +61,5 @@ export const faq: FaqItem[] = [
 ]
 
 export function faqFor(page: FaqItem["pages"][number]): FaqItem[] {
-  return faq.filter((item) => item.pages.includes(page))
+  return faq.filter((item) => item.pages.includes(page) && (foundingOpen || !item.foundingOnly))
 }

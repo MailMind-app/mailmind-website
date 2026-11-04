@@ -1,5 +1,5 @@
 import { faqFor } from "@/content/faq"
-import { founding, plans } from "@/content/pricing"
+import { founding, foundingOpen, plans } from "@/content/pricing"
 import { company, site } from "@/content/site"
 import { absoluteUrl } from "@/lib/site"
 import { toPlainText } from "@/lib/text"
@@ -68,15 +68,20 @@ export const homeJsonLd = {
                 priceSpecification: priceSpecification(plan.monthlyPriceEur),
               },
         ),
-        {
-          "@type": "Offer",
-          name: founding.title,
-          description: founding.points.join(". ") + ".",
-          price: founding.monthlyPriceEur,
-          priceCurrency: "EUR",
-          url: absoluteUrl("/prijzen"),
-          priceSpecification: priceSpecification(founding.monthlyPriceEur),
-        },
+        // Founding offer only while spots are left (content/pricing.ts).
+        ...(foundingOpen
+          ? [
+              {
+                "@type": "Offer",
+                name: founding.title,
+                description: founding.points.join(". ") + ".",
+                price: founding.monthlyPriceEur,
+                priceCurrency: "EUR",
+                url: absoluteUrl("/prijzen"),
+                priceSpecification: priceSpecification(founding.monthlyPriceEur),
+              },
+            ]
+          : []),
       ],
     },
     {

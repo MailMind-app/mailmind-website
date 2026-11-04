@@ -10,6 +10,7 @@ import { createPortal } from "react-dom"
 import { buttonClasses } from "@/components/primitives/button-link"
 import { helper, helperTexts as t, messageFor, type HelperMessage, type HelperPose } from "@/content/helper"
 import { cn } from "@/lib/cn"
+import { HELPER_OPEN_EVENT, takePendingHelperRequest, type HelperOpenView } from "./helper-events"
 import { HelperWindow, type WindowVariant, type WindowView } from "./helper-window"
 import styles from "./rens-helper.module.css"
 
@@ -62,6 +63,43 @@ const HEAD_FRAC_PEEK = 320 / 600
 const PEEK_SCALE = HEAD_FRAC_FULL / HEAD_FRAC_PEEK
 
 const poseSrcs = (pose: HelperPose) => (pose === "zwaai" ? [POSES.zwaai.src, HAND.src] : [POSES[pose].src])
+
+// ── Areas Rens must not cover: elements with data-helper-avoid (keuzehulp and price cards on /prijzen) ──
+type Box = { left: number; top: number; right: number; bottom: number }
+/** Generous height of a balloon (title, two lines of text, link). */
+const BALLOON_EST_H = 190
+const CONTAINER_PX = 1152 // --container: 72rem
+
+const overlaps = (a: Box, b: Box) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom
+
+/** Where the peek, Rens and his balloon will be on screen (mirrors rens-helper.module.css). */
+function footprint(mode: Mode, poses: HelperPose[]): Box[] {
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  const h = Math.min(340, Math.max(260, vh * 0.4)) // --rens-h
+  const xl = vw >= 1600
+  const balloonRight = xl ? 24 : 16
+  const balloonW = xl ? Math.min(260, (vw - CONTAINER_PX) / 2 + 32 - 40) : 240
+  const balloonBottom = vh - (h + 12)
+  const balloon = { left: vw - balloonRight - balloonW, right: vw - balloonRight, top: balloonBottom - BALLOON_EST_H, bottom: balloonBottom }
+  const peekH = h * PEEK_SCALE
+  const peekBottom = vh - h * (1 - PEEK_SCALE)
+  const peek = { left: vw - (peekH * PEEK.w) / PEEK.h, right: vw, top: peekBottom - peekH, bottom: peekBottom }
+  if (mode === "mid") return [peek, balloon]
+  const rensRight = xl ? 40 : 16 // --rens-right
+  const w = Math.max(...poses.map((p) => (h * POSES[p].w) / POSES[p].h))
+  return [peek, { left: vw - rensRight - w, right: vw - rensRight, top: vh - h, bottom: vh }, balloon]
+}
+
+/** true when one of the boxes lies over a visible data-helper-avoid element. */
+function coversAvoided(boxes: Box[]): boolean {
+  for (const el of document.querySelectorAll("[data-helper-avoid]")) {
+    const zone = el.getBoundingClientRect()
+    if (zone.width === 0 || zone.height === 0) continue
+    if (boxes.some((b) => overlaps(b, zone))) return true
+  }
+  return false
+}
 
 // ── Browser helpers (storage access may throw: private mode, blocked site data) ──
 function readSession(key: string) {
@@ -466,6 +504,8 @@ export function RensHelper() {
     if (!eligible()) return
 
     let retry: number | undefined
+    let recheck = 0
+    let waiting = false
     let preloaded = false
     const preloadSoon = () => {
       if (preloaded) return
@@ -483,8 +523,32 @@ export function RensHelper() {
         retry = window.setTimeout(fire, 500) // an animation is still running
         return
       }
+      // Never over the keuzehulp or the price cards: wait until the visitor has scrolled them clear.
+      const poses: HelperPose[] = s.mode === "wide" && !s.waved ? ["zwaai", msg.pose] : [msg.pose]
+      if (coversAvoided(footprint(s.mode, poses))) {
+        startWaiting()
+        return
+      }
+      stopWaiting()
       s.firedThisPage = true
       void c.trigger(msg, pathname)
+    }
+    const onMove = () => {
+      window.cancelAnimationFrame(recheck)
+      recheck = window.requestAnimationFrame(fire)
+    }
+    const startWaiting = () => {
+      if (waiting) return
+      waiting = true
+      window.addEventListener("scroll", onMove, { passive: true })
+      window.addEventListener("resize", onMove)
+    }
+    const stopWaiting = () => {
+      if (!waiting) return
+      waiting = false
+      window.removeEventListener("scroll", onMove)
+      window.removeEventListener("resize", onMove)
+      window.cancelAnimationFrame(recheck)
     }
 
     if (msg.trigger.type === "time") {
@@ -495,6 +559,7 @@ export function RensHelper() {
         window.clearTimeout(pre)
         window.clearTimeout(id)
         window.clearTimeout(retry)
+        stopWaiting()
       }
     }
     const percent = msg.trigger.percent
@@ -510,6 +575,7 @@ export function RensHelper() {
       window.removeEventListener("scroll", onScroll)
       window.cancelAnimationFrame(initial)
       window.clearTimeout(retry)
+      stopWaiting()
     }
   }, [mode, pathname, c])
 
@@ -633,6 +699,49 @@ export function RensHelper() {
     setOpen(true)
     setBalloon(null)
   }, [])
+  // A page asks for the window (e.g. "Twijfel je? Vraag het gewoon" on /prijzen): like the round button,
+  // but straight to the requested view.
+  useEffect(() => {
+    const openFromPage = (next: HelperOpenView) => {
+      takePendingHelperRequest()
+      if (r.current.open) return setView(next)
+      if (r.current.mode === "wide" && !BUTTON_ONLY.includes(r.current.path)) c.summon(() => openWindow(next))
+      else openWindow(next)
+    }
+    const pending = takePendingHelperRequest()
+    if (pending) openFromPage(pending)
+    const onRequest = (e: Event) => openFromPage((e as CustomEvent<HelperOpenView>).detail)
+    window.addEventListener(HELPER_OPEN_EVENT, onRequest)
+    return () => window.removeEventListener(HELPER_OPEN_EVENT, onRequest)
+  }, [c, openWindow])
+
+  // Rens and his balloon step aside (round button) as soon as scrolling brings a data-helper-avoid
+  // element under them. Not while the window is open: then the visitor asked for him.
+  const inView = !open && (balloon !== null || figureVisible || peek === "in")
+  useEffect(() => {
+    if (!inView || !document.querySelector("[data-helper-avoid]")) return
+    let raf = 0
+    const check = () => {
+      raf = 0
+      const s = r.current
+      // Only once he is in place (a summon from the round button opens the window right after entering).
+      if (s.open || (s.phase !== "standing" && s.phase !== "peek-in")) return
+      const parts = rootRef.current?.querySelectorAll("[data-helper-balloon], [data-helper-figure]") ?? []
+      if (coversAvoided([...parts].map((el) => el.getBoundingClientRect()))) c.dismiss()
+    }
+    const schedule = () => {
+      if (!raf) raf = window.requestAnimationFrame(check)
+    }
+    schedule()
+    window.addEventListener("scroll", schedule, { passive: true })
+    window.addEventListener("resize", schedule)
+    return () => {
+      window.cancelAnimationFrame(raf)
+      window.removeEventListener("scroll", schedule)
+      window.removeEventListener("resize", schedule)
+    }
+  }, [inView, phase, c])
+
   /** Every way of closing the window (×, Esc, click outside, a link in it): Rens → round button. */
   const closeWindow = (returnFocus: boolean) => {
     setOpen(false)

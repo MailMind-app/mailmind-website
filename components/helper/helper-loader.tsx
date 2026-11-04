@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
+import { HELPER_OPEN_EVENT, setHelperAvailable } from "./helper-events"
 
 // Client-only and in its own chunk: nothing of the helper is in the server HTML,
 // so it cannot affect LCP or cause layout shift (everything in it is position: fixed).
@@ -34,7 +35,12 @@ export function HelperLoader() {
     else if (document.readyState === "complete") whenIdle()
     else window.addEventListener("load", whenIdle, { once: true })
     for (const type of INTERACTIONS) window.addEventListener(type, go, { once: true, passive: true })
+    // A page asks for the helper (e.g. "Twijfel je?" on /prijzen): load it now; it picks up the request.
+    window.addEventListener(HELPER_OPEN_EVENT, go)
+    setHelperAvailable(true)
     return () => {
+      setHelperAvailable(false)
+      window.removeEventListener(HELPER_OPEN_EVENT, go)
       window.removeEventListener("load", whenIdle)
       for (const type of INTERACTIONS) window.removeEventListener(type, go)
       if (idleId !== undefined) window.cancelIdleCallback(idleId)

@@ -5,11 +5,13 @@ import { SectionHeading } from "@/components/primitives/section-heading"
 import { AlwaysHuman } from "@/components/sections/always-human"
 import { CtaBand } from "@/components/sections/cta-band"
 import { FaqList } from "@/components/sections/faq-list"
+import { MailTimeSection } from "@/components/sections/mail-time"
 import { NumberedList } from "@/components/sections/numbered-list"
 import { PointGrid } from "@/components/sections/point-grid"
 import { faqFor } from "@/content/faq"
 import { finalCta } from "@/content/home"
 import { howItWorks } from "@/content/how-it-works"
+import { mailTime } from "@/content/mail-time"
 import { pilot, showPilot } from "@/content/pilot"
 import { sportscholen as c } from "@/content/sportscholen"
 import { metadataFor } from "@/lib/site"
@@ -63,6 +65,8 @@ export default function SportscholenPage() {
           </div>
         </section>
       )}
+
+      <MailTimeSection defaults={mailTime.sportschool} />
 
       <FaqList items={faqFor("sportscholen")} />
       <CtaBand attached text={finalCta.textSportschool} />

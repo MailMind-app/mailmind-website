@@ -7,6 +7,7 @@ import { SportschoolTeaser } from "@/components/home/sportschool-teaser"
 import { Comparison } from "@/components/sections/comparison"
 import { CtaBand } from "@/components/sections/cta-band"
 import { FaqList } from "@/components/sections/faq-list"
+import { MailTimeSection } from "@/components/sections/mail-time"
 import { Steps } from "@/components/sections/steps"
 import { faqFor } from "@/content/faq"
 import { metadataFor } from "@/lib/site"
@@ -23,6 +24,7 @@ export default function HomePage() {
       <Steps />
       <SportschoolTeaser />
       <DashboardShowcase />
+      <MailTimeSection />
       <Control />
       <Comparison />
       <PricingTeaser />

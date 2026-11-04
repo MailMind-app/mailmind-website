@@ -19,7 +19,7 @@ export type DemoMail = {
   log: string
   /** Conceptantwoord (alleen als MailMind er een schrijft). */
   concept?: string
-  /** Controle op toezeggingen bij het concept. */
+  /** Controle op toezeggingen: de toezegging die MailMind in het concept vond (melding boven de knoppen). */
   check?: string
   /** Melding in plaats van een concept. */
   notice?: string
@@ -94,7 +94,7 @@ export const productDemo = {
       log: "Vraag over een proefles. Antwoord gevonden in de kennisbank: 'Proeflessen' en 'Openingstijden'.",
       concept:
         "Hoi Lotte,\n\nLeuk dat je een proefles wilt doen! Zaterdag kan prima: we zijn open van 9:00 tot 14:00. Neem sportkleding, schone binnenschoenen en een flesje water mee. Je kunt je aanmelden via de link in onze app, of laat even weten hoe laat je wilt komen, dan zet ik je erop.\n\nSportieve groet,\nTeam Sportschool De Kracht",
-      check: "Controleer: noemt openingstijden zaterdag 9:00–14:00",
+      check: "Toezegging gevonden: 'dan zet ik je erop' (inschrijving proefles). Controleer of dat klopt voordat je verstuurt.",
     },
     {
       id: "opzegging",

@@ -420,13 +420,26 @@ button.sectionHead:hover {
   line-height: 1.55;
 }
 
+/* Commitment check above the buttons: noticeable but calm (amber edge, no red). */
 .check {
   display: flex;
-  gap: 6px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
+  align-items: flex-start;
+  gap: 8px;
+  flex-basis: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgb(252 210 122 / 0.45);
+  border-radius: 10px;
+  background: rgb(252 210 122 / 0.06);
   font-size: 13px;
+  line-height: 1.45;
+  color: var(--fg);
+}
+
+.checkIcon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
   color: var(--warning);
 }
 

@@ -134,11 +134,14 @@ export function ConceptText({ text }: { text: string }) {
   )
 }
 
+/** The commitment check: a calm amber notice above the buttons. */
 export function Check({ text }: { text: string }) {
   return (
-    <p className={styles.check}>
+    <p className={styles.check} data-demo-check="">
+      <TriangleAlert className={styles.checkIcon} aria-hidden="true" />
       <span>
-        <span className="font-semibold">{d.checkTitle}.</span> {text}
+        <span className="sr-only">{d.checkTitle}: </span>
+        {text}
       </span>
     </p>
   )

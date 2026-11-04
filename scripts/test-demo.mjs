@@ -119,7 +119,25 @@ for (const [label, browser, options, tag] of runs) {
   }
   check(await waitVisible(page, "[data-demo-concept]", 4000), "mail 1: concept is shown")
   check((await text(page, "[data-demo-concept]")).includes("Sportschool De Kracht"), "concept is signed by the fictitious gym")
-  check((await text(page, "[data-demo-detail]")).includes("Controleer: noemt openingstijden zaterdag 9:00–14:00"), "mail 1: commitment check")
+  const proefles = d.mails.find((m) => m.id === "proefles")
+  check(
+    proefles.check === "Toezegging gevonden: 'dan zet ik je erop' (inschrijving proefles). Controleer of dat klopt voordat je verstuurt.",
+    "content: commitment check names the commitment found"
+  )
+  // innerText includes the screen-reader prefix ("Controle op toezeggingen:"); compare the rest.
+  const checkText = (await text(page, "[data-demo-check]")).replace(/\s+/g, " ").trim()
+  check(checkText === `${d.checkTitle}: ${proefles.check}`, "mail 1: commitment check shows the commitment found", checkText)
+  check(!(await text(page, "[data-demo-detail]")).includes("openingstijden zaterdag"), "mail 1: old opening-hours check is gone")
+  const checkBox = await page.locator("[data-demo-check]").boundingBox()
+  const sendBox = await page.locator("[data-demo-send]").boundingBox()
+  check(checkBox && sendBox && checkBox.y + checkBox.height <= sendBox.y, "mail 1: commitment check sits above the buttons")
+  check((await page.locator("[data-demo-footer] [data-demo-check]").count()) === 1, "mail 1: commitment check is in the action area")
+  const checkStyle = await page.locator("[data-demo-check]").evaluate((el) => {
+    const cs = getComputedStyle(el)
+    return { border: cs.borderTopColor, width: cs.borderTopWidth, bg: cs.backgroundColor }
+  })
+  check(/^rgba?\(252, 210, 122/.test(checkStyle.border) && checkStyle.width === "1px", "commitment check: amber border", JSON.stringify(checkStyle))
+  check(!/^rgba?\(2(48|39|20), (113|68|38)/.test(checkStyle.bg), "commitment check: no red", checkStyle.bg)
   if (shotAll) await page.locator("[data-product-demo]").screenshot({ path: file(`${tag}-concept.png`) })
   await page.locator("[data-demo-send]").click()
   check((await text(page, "[data-demo-send]")).includes("Versturen…"), "Versturen shows “Versturen…”")

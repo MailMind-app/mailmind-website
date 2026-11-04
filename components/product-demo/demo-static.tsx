@@ -57,14 +57,16 @@ export function DemoStatic() {
               <p className={styles.sectionHead}>{d.conceptTitle}</p>
               <div className={styles.sectionBody}>
                 <ConceptText text={first.concept ?? ""} />
-                {first.check && <Check text={first.check} />}
               </div>
             </div>
             {/* Buttons do nothing without JavaScript; on a phone the concept gets the room instead. */}
-            <div className={cn(styles.footer, styles.staticMobileHide)} aria-hidden="true">
-              <span className={cn(styles.btn, styles.btnPrimary)}>{d.actions.send}</span>
-              <span className={styles.btn}>{d.actions.adjust}</span>
-              <span className={styles.btn}>{d.actions.reject}</span>
+            <div className={styles.footer}>
+              {first.check && <Check text={first.check} />}
+              <div className={cn(styles.actions, styles.staticMobileHide)} aria-hidden="true">
+                <span className={cn(styles.btn, styles.btnPrimary)}>{d.actions.send}</span>
+                <span className={styles.btn}>{d.actions.adjust}</span>
+                <span className={styles.btn}>{d.actions.reject}</span>
+              </div>
             </div>
           </div>
         </div>

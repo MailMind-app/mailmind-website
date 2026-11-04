@@ -344,7 +344,6 @@ function DemoBody({ started, reduced, onAct }: { started: boolean; reduced: bool
                       ) : (
                         <div className={cn(!reduced && styles.appear)}>
                           <ConceptText text={drafts[mail.id] ?? mail.concept} />
-                          {mail.check && <Check text={mail.check} />}
                         </div>
                       )}
                     </div>
@@ -361,6 +360,7 @@ function DemoBody({ started, reduced, onAct }: { started: boolean; reduced: bool
         {/* Pinned to the bottom of the panel: the actions, and once something has happened the
             status that replaces them (announced politely). */}
         <div className={cn(styles.footer, !hasFooter && styles.footerEmpty)} data-demo-footer="">
+          {showConceptActions && mail.check && <Check text={mail.check} />}
           {showConceptActions && (
             <div className={styles.actions}>
               <button

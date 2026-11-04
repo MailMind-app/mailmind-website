@@ -22,6 +22,7 @@ type FigureAnim = "enter" | "fade" | "still" | "leave"
 
 const STATE_KEY = "mm_helper_state"
 const WAVED_KEY = "mm_helper_waved"
+const PEEKED_KEY = "mm_helper_peeked"
 const BUTTON_DELAY_MS = 1500
 const MID_STAY_MS = 12000
 const BAR_SCROLL_PERCENT = 40
@@ -30,11 +31,11 @@ const PRELOAD_AHEAD_PERCENT = 15
 // Mobile bar: hide while scrolling down, back on scrolling up, after a pause, or at the bottom.
 const BAR_SCROLL_DELTA = 8
 const BAR_IDLE_MS = 600
-// On these pages Rens is always the round button (state "button"), without animation.
-const BUTTON_ONLY = ["/demo"]
+// On these pages Rens is always the round button, never standing (on /bedankt he is already big on the page).
+const BUTTON_ONLY = ["/demo", "/bedankt"]
 
 // Durations in ms, matching rens-helper.module.css.
-const T = { peekIn: 700, peekStay: 2000, peekOut: 350, enter: 900, wave: 1400, cross: 250, balloon: 300, leave: 350, fade: 200 }
+const T = { peekIn: 700, peekStay: 2000, peekStayAgain: 1200, peekOut: 350, enter: 900, wave: 1400, cross: 250, balloon: 300, leave: 350, fade: 200 }
 
 // Image sizes in public/avatar (see scripts/build-avatar.py).
 const POSES: Record<HelperPose, { src: string; w: number; h: number }> = {
@@ -82,6 +83,11 @@ function writeSession(key: string, value: string) {
 function readState(): HelperState {
   const value = readSession(STATE_KEY)
   return value === "button" || value === "figure" ? value : "none"
+}
+
+/** On a (re)load Rens is restored at most as the round button, never standing. */
+function readStartState(): HelperState {
+  return readState() === "none" ? "none" : "button"
 }
 
 /** Removes keys of earlier versions (localStorage "never again", sessionStorage "shown"). */
@@ -157,15 +163,16 @@ export function RensHelper() {
   const mode: Mode = wide ? "wide" : atLeastMid ? "mid" : "narrow"
 
   const windowId = useId()
-  const [helperState, setHelperState] = useState<HelperState>(readState)
+  const [helperState, setHelperState] = useState<HelperState>(readStartState)
   const [waved, setWaved] = useState(() => readSession(WAVED_KEY) === "true")
-  const [figure, setFigure] = useState<FigureAnim | null>(() => (readState() === "figure" ? "still" : null))
+  const [figure, setFigure] = useState<FigureAnim | null>(null)
   const [pose, setPose] = useState<HelperPose>("zwaai")
   const [fadingPose, setFadingPose] = useState<HelperPose | null>(null)
   const [peek, setPeek] = useState<"in" | "out" | null>(null)
+  const [peekMs, setPeekMs] = useState(T.peekStay)
   const [waveCount, setWaveCount] = useState(0)
   const [balloon, setBalloon] = useState<HelperMessage | null>(null)
-  const [phase, setPhase] = useState<Phase>(() => (readState() === "figure" ? "standing" : "idle"))
+  const [phase, setPhase] = useState<Phase>("idle")
   const [buttonReady, setButtonReady] = useState(() => readState() !== "none")
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<WindowView>("menu")
@@ -354,25 +361,34 @@ export function RensHelper() {
         // Already in view: no new entrance, just the pose of this message and the balloon.
         return switchPose(msg.pose, () => showBalloon(msg, path))
       }
-      if (!s().waved && !s().reduced) {
-        // First appearance this session: peek → step in waving → pose of the message → balloon.
-        const seq = s().seq
-        await preload([PEEK.src, ...poseSrcs("zwaai"), ...poseSrcs(msg.pose)])
-        if (stale(seq)) return
-        set.figure(null)
-        set.peek("in")
-        set.phase("peek-in")
-        later(T.peekIn + T.peekStay, () => {
-          set.peek("out")
-          set.phase("peek-out")
-        })
-        later(T.peekIn + T.peekStay + T.peekOut, () => {
-          void enter("zwaai", { wave: 2, onDone: () => void switchPose(msg.pose, () => showBalloon(msg, path)) })
-        })
+      if (s().reduced) {
+        // No movement: Rens and the balloon appear straight away, in the pose of the message.
+        void enter(msg.pose, { wave: 0, onDone: () => later(T.balloon, () => showBalloon(msg, path)) })
         return
       }
-      // Already waved this session: step straight in, in the pose of the message.
-      void enter(msg.pose, { wave: 0, onDone: () => later(T.balloon, () => showBalloon(msg, path)) })
+      // Every trigger: peek (2 s the first time this session, then 1.2 s) → step in → wave once per
+      // session (if not done yet) → pose of the message → balloon.
+      const firstWave = !s().waved
+      const seq = s().seq
+      await preload([PEEK.src, ...(firstWave ? poseSrcs("zwaai") : []), ...poseSrcs(msg.pose)])
+      if (stale(seq)) return
+      const stay = readSession(PEEKED_KEY) === "true" ? T.peekStayAgain : T.peekStay
+      writeSession(PEEKED_KEY, "true")
+      setPeekMs(stay)
+      set.figure(null)
+      set.peek("in")
+      set.phase("peek-in")
+      later(T.peekIn + stay, () => {
+        set.peek("out")
+        set.phase("peek-out")
+      })
+      later(T.peekIn + stay + T.peekOut, () => {
+        if (firstWave) {
+          void enter("zwaai", { wave: 2, onDone: () => void switchPose(msg.pose, () => showBalloon(msg, path)) })
+        } else {
+          void enter(msg.pose, { wave: 0, onDone: () => later(T.balloon, () => showBalloon(msg, path)) })
+        }
+      })
     }
 
     /** Close button on the balloon: Rens slides away, the round button comes (back). */
@@ -391,7 +407,7 @@ export function RensHelper() {
       if (s().peek) hidePeek()
     }
 
-    /** Straight to the round button, without animation (e.g. on /demo). */
+    /** Straight to the round button, without animation (page change, /demo, /bedankt). */
     const toButton = () => {
       newSequence()
       setBalloon(null)
@@ -419,9 +435,10 @@ export function RensHelper() {
     return c.clearTimers
   }, [c])
 
-  // /demo: Rens becomes the round button, before the page is painted (no animation, no flash).
+  // Every page change (link, back/forward) and every (re)load: Rens becomes the round button, before the
+  // page is painted (no animation, no flash). If he has not appeared this session, the state stays "none".
   useLayoutEffect(() => {
-    if (BUTTON_ONLY.includes(pathname)) c.toButton()
+    c.toButton()
   }, [pathname, c])
 
   // Round button: 1.5 s after the page started loading (straight away when restoring a state).
@@ -597,9 +614,8 @@ export function RensHelper() {
     return () => document.removeEventListener("pointerdown", onDown)
   }, [open, c])
 
-  // On /bedankt Rens is already big on the page: show the button there (the state stays "figure").
-  const onThanks = pathname === "/bedankt"
-  const figureShown = mode === "wide" && !onThanks && !BUTTON_ONLY.includes(pathname) && figure !== null
+  const buttonOnlyPage = BUTTON_ONLY.includes(pathname)
+  const figureShown = mode === "wide" && !buttonOnlyPage && figure !== null
   const figureVisible = figureShown && figure !== "leave"
   const showButton = mode !== "narrow" && buttonReady && !figureVisible && peek === null
   const variant: WindowVariant = mode === "narrow" ? "sheet" : figureVisible ? "beside" : "float"
@@ -626,7 +642,7 @@ export function RensHelper() {
 
   const onButton = () => {
     if (open) return closeWindow(true)
-    if (mode === "wide" && !onThanks) c.summon(() => openWindow("menu"))
+    if (mode === "wide" && !buttonOnlyPage) c.summon(() => openWindow("menu"))
     else openWindow("menu")
   }
   const onFigure = () => (open ? closeWindow(true) : openWindow("menu"))
@@ -664,6 +680,7 @@ export function RensHelper() {
           className={cn(styles.peek, peek === "out" ? styles.peekOut : styles.peekIn)}
           data-helper-figure="peek"
           data-head-frac={HEAD_FRAC_PEEK}
+          data-peek-ms={mode === "wide" ? peekMs : undefined}
         />
       )}
 

@@ -5,11 +5,13 @@
 // Reads content/*.ts directly (Node 24 strips the types), so prices, routes and
 // "binnenkort" features always come from the same source as the site.
 
+import { spawnSync } from "node:child_process"
 import { readFile } from "node:fs/promises"
 import { getFeature, roadmap } from "../content/features.ts"
 import { helper, whatsappUrl } from "../content/helper.ts"
 import { productDemo } from "../content/product-demo.ts"
-import { founding, plans, setupFee } from "../content/pricing.ts"
+import { mailTime, monthlyHours, workdays } from "../content/mail-time.ts"
+import { founding, foundingSpots, plans, setupFee } from "../content/pricing.ts"
 import { routes, subprocessors } from "../content/site.ts"
 
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/$/, "")
@@ -33,8 +35,11 @@ const FORBIDDEN = [
   "autonoom",
   "multi-tenant",
 ]
+const SPOTS = foundingSpots()
 const ALLOWED_PRICES = new Set(
-  [...plans.map((p) => p.monthlyPriceEur), founding.monthlyPriceEur, setupFee.amountEur].filter((p) => p !== null),
+  [...plans.map((p) => p.monthlyPriceEur), ...(SPOTS.open ? [founding.monthlyPriceEur] : []), setupFee.amountEur].filter(
+    (p) => p !== null,
+  ),
 )
 const BROWSER_ACCEPT =
   "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
@@ -167,7 +172,7 @@ for (const [from, to] of Object.entries(REDIRECTS)) {
     const faq = graph.find((n) => n["@type"] === "FAQPage")
     check(app?.applicationCategory === "BusinessApplication", "SoftwareApplication present")
     const offerPrices = (app?.offers ?? []).map((o) => o.price).filter((p) => p !== undefined)
-    const expected = [...plans.map((p) => p.monthlyPriceEur).filter((p) => p !== null), founding.monthlyPriceEur]
+    const expected = [...plans.map((p) => p.monthlyPriceEur).filter((p) => p !== null), ...(SPOTS.open ? [founding.monthlyPriceEur] : [])]
     check(
       JSON.stringify([...offerPrices].sort()) === JSON.stringify([...expected].sort()),
       "JSON-LD offer prices match content/pricing.ts",
@@ -375,6 +380,106 @@ check(
   check(ranked.headers.get("content-type")?.startsWith("text/html"), "HTML wins when ranked above Markdown")
   const knownPage = await get("/prijzen", "text/markdown")
   check(knownPage.status === 200, "known page with Markdown Accept is not a 404", `got ${knownPage.status}`)
+}
+
+// ── Founding counter: numbers from content/pricing.ts, offer gone everywhere once all spots are taken ──
+{
+  check(
+    foundingSpots({ ...founding, spotsTaken: 1 }).label === "Nog 4 van de 5 plekken beschikbaar",
+    'founding counter with spotsTaken 1: "Nog 4 van de 5 plekken beschikbaar"',
+    foundingSpots({ ...founding, spotsTaken: 1 }).label,
+  )
+  check(!foundingSpots({ ...founding, spotsTaken: 5 }).open, "founding offer closed at spotsTaken 5")
+  check(!foundingSpots({ ...founding, spotsTaken: 7 }).open, "founding offer closed above spotsTotal")
+
+  // The live build (current spotsTaken): counter on /prijzen and the homepage, one dot per spot.
+  for (const page of ["/prijzen", "/"]) {
+    const html = (await get(page)).body
+    const text = visibleText(html)
+    const taken = (html.match(/data-spot="taken"/g) ?? []).length
+    const free = (html.match(/data-spot="free"/g) ?? []).length
+    if (SPOTS.open) {
+      check(text.includes(SPOTS.label), `${page}: founding counter "${SPOTS.label}"`)
+      check(taken === SPOTS.taken && free === SPOTS.left, `${page}: ${SPOTS.taken} dot(s) taken, ${SPOTS.left} free`, `${taken} taken, ${free} free`)
+    } else {
+      check(!/founding/i.test(text) && taken + free === 0, `${page}: no founding offer (all spots taken)`)
+    }
+    check(!/nog maar/i.test(text), `${page}: no "nog maar" urgency`)
+  }
+
+  // Every text outside the components, loaded with spotsTaken overridden (no second build needed).
+  const textsWith = (taken) => {
+    const run = spawnSync(
+      process.execPath,
+      ["--no-warnings", "--import", "./scripts/lib/register-content-hooks.mjs", "scripts/lib/founding-texts.mjs"],
+      { cwd: new URL("..", import.meta.url), env: { ...process.env, FOUNDING_SPOTS_TAKEN: String(taken) }, encoding: "utf8" },
+    )
+    if (run.status !== 0) throw new Error(`founding-texts.mjs failed:\n${run.stderr}`)
+    return JSON.parse(run.stdout)
+  }
+  const mentions = (text) => /founding/i.test(text) || /eerste \d+ klanten/i.test(text) || text.includes(`€${founding.monthlyPriceEur}`)
+  const open = textsWith(1)
+  check(open.open && open.spots.label === "Nog 4 van de 5 plekken beschikbaar", "override spotsTaken 1: offer open, 4 of 5 left")
+  for (const [label, text] of Object.entries(open.texts)) check(mentions(text), `spotsTaken 1: ${label} names the founding offer`)
+  const closed = textsWith(5)
+  check(!closed.open, "override spotsTaken 5: offer closed")
+  for (const [label, text] of Object.entries(closed.texts)) check(!mentions(text), `spotsTaken 5: no founding offer in ${label}`)
+  const offers = JSON.parse(closed.texts["JSON-LD"])["@graph"].find((n) => n["@type"] === "SoftwareApplication").offers
+  check(
+    offers.length === plans.length && offers.every((o) => plans.some((p) => p.name === o.name)),
+    "spotsTaken 5: JSON-LD keeps exactly the regular plans",
+    offers.map((o) => o.name).join(", "),
+  )
+  check(
+    plans.every((p) => p.monthlyPriceEur === null || closed.texts["llms.txt"].includes(`€${p.monthlyPriceEur}`)),
+    "spotsTaken 5: llms.txt keeps the regular prices",
+  )
+  const pricingComponents = await Promise.all(
+    ["../components/sections/pricing-plans.tsx", "../components/home/pricing-teaser.tsx"].map((f) => readFile(new URL(f, import.meta.url), "utf8")),
+  )
+  check(
+    pricingComponents.every((src) => /\{foundingOpen && \(/.test(src)),
+    "pricing components render the founding card only while foundingOpen",
+  )
+}
+
+// ── Mailtijd-calculator: formula, defaults on the pages, no savings claims ──
+{
+  check(monthlyHours({ mailsPerDay: 25, minutesPerMail: 4 }) === 35, "calculator: 25 × 4 × 21 / 60 = 35 hours")
+  check(workdays(35) === 4.5, "calculator: 35 hours ≈ 4,5 workdays", `${workdays(35)}`)
+  check(mailTime.days(workdays(35)) === "Dat is ongeveer 4,5 werkdagen", "calculator: “Dat is ongeveer 4,5 werkdagen”", mailTime.days(workdays(35)))
+  check(monthlyHours({ mailsPerDay: 150, minutesPerMail: 15 }) === 788 && workdays(788) === 98.5, "calculator: 150 × 15 → 788 hours, 98,5 workdays")
+  check(mailTime.mails.defaultValue === 25 && mailTime.minutes.defaultValue === 4, "calculator defaults: 25 mails, 4 minutes")
+  check(
+    mailTime.mails.min === 5 && mailTime.mails.max === 150 && mailTime.mails.step === 5 &&
+      mailTime.minutes.min === 1 && mailTime.minutes.max === 15 && mailTime.minutes.step === 1,
+    "calculator ranges: 5–150 step 5, 1–15 step 1",
+  )
+  check(
+    mailTime.sportschool.mailsPerDay === 30 && mailTime.sportschool.minutesPerMail === 3,
+    "calculator on /sportscholen: 30 mails, 3 minutes",
+  )
+  const pagesWithCalculator = { "/": "±35 uur per maand", "/prijzen": "±35 uur per maand", "/sportscholen": "±32 uur per maand" }
+  for (const [page, hours] of Object.entries(pagesWithCalculator)) {
+    const html = (await get(page)).body
+    const text = visibleText(html)
+    check(html.includes("data-mail-time=") && text.includes(hours), `${page}: calculator shows ${hours}`)
+    check(text.includes(mailTime.note), `${page}: calculator note “Geen garantie of belofte”`)
+  }
+  check(
+    visibleText((await get("/prijzen")).body).includes("Bij ±525 mails per maand past Professional."),
+    "/prijzen: “Bij ±525 mails per maand past Professional.”",
+  )
+
+  const SAVINGS = /bespaar|besparing|bespaart/i
+  for (const file of ["../content/mail-time.ts", "../components/sections/mail-time-calculator.tsx", "../components/sections/mail-time.tsx"]) {
+    const source = await readFile(new URL(file, import.meta.url), "utf8")
+    check(!SAVINGS.test(source), `${file.slice(3)}: no savings words (bespaar, besparing, bespaart)`, source.match(SAVINGS)?.[0])
+    check(!/\d+\s?%/.test(source), `${file.slice(3)}: no percentages`)
+  }
+  for (const page of Object.keys(pagesWithCalculator)) {
+    check(!SAVINGS.test(visibleText((await get(page)).body)), `${page}: no savings words on the page`)
+  }
 }
 
 console.log(failures ? `\n${failures} check(s) failed` : "\nAll checks passed")

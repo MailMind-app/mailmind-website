@@ -12,7 +12,16 @@ import { helper, whatsappUrl } from "../content/helper.ts"
 import { productDemo } from "../content/product-demo.ts"
 import { mailTime, monthlyHours, workdays } from "../content/mail-time.ts"
 import { founding, foundingSpots, plans, setupFee } from "../content/pricing.ts"
-import { routes, subprocessors } from "../content/site.ts"
+import {
+  company,
+  companyAddressLine,
+  companyLegalNote,
+  companyLine,
+  companySummary,
+  routes,
+  site,
+  subprocessors,
+} from "../content/site.ts"
 
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/$/, "")
 const SITE = "https://mailmind.nl"
@@ -480,6 +489,89 @@ check(
   for (const page of Object.keys(pagesWithCalculator)) {
     check(!SAVINGS.test(visibleText((await get(page)).body)), `${page}: no savings words on the page`)
   }
+}
+
+// ── Bedrijfsgegevens: KvK-nummer en adres uit content/site.ts, geen leeg btw-label ──
+{
+  const KVK = "42213617"
+  const ADDRESS = "Akelei 33, 4007 TC Tiel"
+  const CONTROLLER = `MailMind, handelsnaam van R. van Arkelen (eenmanszaak), ${ADDRESS}, KvK ${KVK}, rens@mailmind.nl`
+  check(company.kvk === KVK, `content/site.ts: KvK-nummer is ${KVK}`, company.kvk)
+  check(companyAddressLine === ADDRESS, `content/site.ts: adres is ${ADDRESS}`, companyAddressLine)
+  check(companyLegalNote === "handelsnaam van R. van Arkelen (eenmanszaak)", "content/site.ts: handelsnaam van R. van Arkelen (eenmanszaak)")
+  check(companyLine.startsWith(`MailMind · KvK ${KVK} · ${ADDRESS}`), "content/site.ts: company line", companyLine)
+  if (!company.vatId) check(!/btw/i.test(companyLine) && !/btw/i.test(companySummary), "no btw-id in the company line while vatId is empty")
+
+  const footerOf = (html) => html.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? ""
+  // "exclusief btw" / "excl. btw:" bij prijzen is prima; een btw-label of -nummer zonder waarde niet.
+  // "Btw:" met hoofdletter is een label, "excl. btw:" niet (vandaar zonder i-vlag).
+  const VAT_LABEL = /[Bb]tw-?(id|ID|nummer)|[Bb]tw-identificatienummer|(?<!\. )\bBtw\s*:|\b[Vv][Aa][Tt]\s?[Ii][Dd]\b/
+  const PLACEHOLDER = /nog bevestigd|\bTODO\b|volgt na de KvK|nog niet bekend|nog in te vullen|\[(adres|kvk)[^\]]*\]|xxxx/i
+  for (const page of [...PAGES, "/bestaat-niet"]) {
+    const html = (await get(page)).body
+    const text = visibleText(html)
+    const footer = visibleText(footerOf(html))
+    check(footer.includes(companyLine), `${page}: footer shows "${companyLine}"`, footer.slice(-120))
+    check(footer.includes(`KvK ${KVK}`), `${page}: footer has KvK ${KVK}`)
+    if (!company.vatId) {
+      check(!/btw/i.test(footer), `${page}: footer has no btw while vatId is empty`)
+      check(!VAT_LABEL.test(text), `${page}: no btw-id label while vatId is empty`, text.match(VAT_LABEL)?.[0])
+    }
+    check(!PLACEHOLDER.test(text), `${page}: no placeholders for company details`, text.match(PLACEHOLDER)?.[0])
+    check(!/<(dt|dd)[^>]*>\s*<\/(dt|dd)>/.test(withoutScripts(html)), `${page}: no empty labels or values`)
+    check(!/\bKvK\b(?!\s*\d{8})/.test(text), `${page}: every "KvK" has a number`)
+  }
+
+  // /contact: the company details block is visible with every field.
+  {
+    const html = (await get("/contact")).body
+    const block = html.match(/<section[^>]*data-company-details=""[\s\S]*?<\/section>/)?.[0] ?? ""
+    const text = visibleText(block)
+    check(Boolean(block) && !/\bhidden\b|sr-only/.test(block.slice(0, block.indexOf(">"))), "/contact: company details block is shown")
+    for (const value of ["MailMind", "Handelsnaam van R. van Arkelen (eenmanszaak)", ADDRESS, `KvK ${KVK}`, "rens@mailmind.nl"]) {
+      check(text.includes(value), `/contact: company details show "${value}"`, text)
+    }
+    if (!company.vatId) check(!/btw/i.test(text), "/contact: no btw row while vatId is empty")
+  }
+
+  // /privacy: controller with the full company details, "Laatst bijgewerkt" matches the sitemap date.
+  {
+    const text = visibleText((await get("/privacy")).body)
+    check(text.includes(`Verantwoordelijk voor de verwerking: ${CONTROLLER}.`), "/privacy: controller with KvK and address", CONTROLLER)
+    const months = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"]
+    const [y, m, d] = routes.find((r) => r.path === "/privacy").lastModified.split("-").map(Number)
+    const date = `${d} ${months[m - 1]} ${y}`
+    check(text.includes(`Laatst bijgewerkt: ${date}`), `/privacy: "Laatst bijgewerkt: ${date}" matches lastModified`)
+  }
+
+  // JSON-LD Organization: PostalAddress and KvK identifier, no vatID while empty.
+  {
+    const block = jsonLdBlocks((await get("/")).body)[0] ?? "{}"
+    const org = (JSON.parse(block)["@graph"] ?? []).find((n) => n["@type"] === "Organization") ?? {}
+    const a = org.address ?? {}
+    check(
+      a["@type"] === "PostalAddress" && a.streetAddress === "Akelei 33" && a.postalCode === "4007 TC" &&
+        a.addressLocality === "Tiel" && a.addressCountry === "NL",
+      "JSON-LD: Organization address is a PostalAddress in Tiel, NL",
+      JSON.stringify(a),
+    )
+    const id = org.identifier ?? {}
+    check(id["@type"] === "PropertyValue" && id.propertyID === "KvK" && id.value === KVK, `JSON-LD: identifier KvK ${KVK}`, JSON.stringify(id))
+    if (!company.vatId) check(!("vatID" in org) && !/vatID|btw/i.test(block), "JSON-LD: no vatID while vatId is empty")
+  }
+
+  // llms.txt and the Markdown versions carry the same short line.
+  {
+    const llms = (await get("/llms.txt")).body
+    const md = (await get("/", "text/markdown")).body
+    const md404 = (await get("/bestaat-niet", "text/markdown")).body
+    for (const [label, body] of [["llms.txt", llms], ["Markdown /", md], ["Markdown 404", md404]]) {
+      check(body.includes(companySummary), `${label}: company details`, companySummary)
+      check(body.includes(`KvK ${KVK}`) && body.includes(ADDRESS), `${label}: KvK ${KVK} and ${ADDRESS}`)
+      if (!company.vatId) check(!VAT_LABEL.test(body), `${label}: no btw-id label while vatId is empty`)
+    }
+  }
+  check(site.email === "rens@mailmind.nl", "content/site.ts: e-mail is rens@mailmind.nl")
 }
 
 console.log(failures ? `\n${failures} check(s) failed` : "\nAll checks passed")

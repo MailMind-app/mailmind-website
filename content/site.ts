@@ -17,16 +17,44 @@ export const site = {
   demoResponseTime: "binnen 2 werkdagen",
 }
 
-// Bedrijfsgegevens. Volgen na de KvK-inschrijving.
-// Zolang alle velden leeg zijn, wordt het blok in de footer en op /contact niet getoond.
+// Bedrijfsgegevens uit de KvK-inschrijving. Gebruikt door de footer, /contact, de
+// privacyverklaring, de JSON-LD, llms.txt en de Markdown-versies.
+// Een leeg veld (zoals vatId) wordt nergens getoond, ook niet als label.
 export const company = {
-  legalName: "",
-  kvk: "",
+  tradeName: "MailMind",
+  owner: "R. van Arkelen",
+  legalForm: "eenmanszaak",
+  kvk: "42213617",
   vatId: "",
-  address: "",
+  address: {
+    street: "Akelei 33",
+    postalCode: "4007 TC",
+    city: "Tiel",
+    country: "Nederland",
+    countryCode: "NL",
+  },
 }
 
-export const hasCompanyDetails = Object.values(company).some((value) => value.trim() !== "")
+/** "handelsnaam van R. van Arkelen (eenmanszaak)" */
+export const companyLegalNote = `handelsnaam van ${company.owner} (${company.legalForm})`
+/** "MailMind is een handelsnaam van R. van Arkelen (eenmanszaak)" */
+export const companyDescription = `${company.tradeName} is een ${companyLegalNote}`
+/** "Akelei 33, 4007 TC Tiel" */
+export const companyAddressLine = `${company.address.street}, ${company.address.postalCode} ${company.address.city}`
+/** Short parts for one-line use: ["MailMind", "KvK 42213617", "Akelei 33, 4007 TC Tiel", ("Btw-id …")]. */
+export const companyLineParts = [
+  company.tradeName,
+  company.kvk && `KvK ${company.kvk}`,
+  companyAddressLine,
+  company.vatId && `Btw-id ${company.vatId}`,
+].filter(Boolean) as string[]
+/** "MailMind · KvK 42213617 · Akelei 33, 4007 TC Tiel" */
+export const companyLine = companyLineParts.join(" · ")
+/** For llms.txt and Markdown: "MailMind is een handelsnaam van …, Akelei 33, 4007 TC Tiel, KvK 42213617." */
+export const companySummary =
+  [companyDescription, companyAddressLine, company.kvk && `KvK ${company.kvk}`, company.vatId && `btw-id ${company.vatId}`]
+    .filter(Boolean)
+    .join(", ") + "."
 
 export type Route = {
   path: string
@@ -97,7 +125,7 @@ export const routes: Route[] = [
     path: "/contact",
     title: "Contact",
     description: "Neem contact op met MailMind via rens@mailmind.nl, of vraag direct een demo aan.",
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-05",
     priority: 0.6,
   },
   {
@@ -105,7 +133,7 @@ export const routes: Route[] = [
     title: "Privacyverklaring",
     description:
       "Hoe MailMind met persoonsgegevens omgaat: opslag in de EU, AI-verwerking via OpenAI, subverwerkers en je rechten.",
-    lastModified: "2026-11-03",
+    lastModified: "2026-11-05",
     priority: 0.4,
   },
 ]

@@ -2,7 +2,7 @@ import { faqFor } from "@/content/faq"
 import { featureLabel, getFeature, modes, roadmap, type Mode } from "@/content/features"
 import { comparison, control, dashboardShowcase, finalCta, hero, recognition, sportschoolTeaser, steps } from "@/content/home"
 import { pricingSummary } from "@/content/pricing"
-import { routes, site } from "@/content/site"
+import { companySummary, routes, site } from "@/content/site"
 import { absoluteUrl } from "@/lib/site"
 import { toPlainText as p } from "@/lib/text"
 
@@ -85,6 +85,7 @@ ${finalCta.text} We reageren ${site.demoResponseTime}.
 
 - [${finalCta.primary.label}](${absoluteUrl(finalCta.primary.href)})
 - Contact: ${site.email}
+- Bedrijfsgegevens: ${companySummary}
 
 ## Pagina's
 
@@ -100,4 +101,6 @@ Deze pagina bestaat niet op mailmind.nl.
 ${pageList}
 
 Vragen? Mail naar ${site.email}.
+
+${companySummary}
 `

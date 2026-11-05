@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { company, footerNav, hasCompanyDetails, site } from "@/content/site"
+import { Fragment } from "react"
+import { companyLineParts, footerNav, site } from "@/content/site"
 import { Logo } from "./logo"
 
 export function SiteFooter() {
@@ -46,34 +47,18 @@ export function SiteFooter() {
               {site.email}
             </a>
           </p>
-          {hasCompanyDetails && (
-            <dl className="flex flex-wrap gap-x-6 gap-y-1" aria-label="Bedrijfsgegevens">
-              {company.legalName && (
-                <div>
-                  <dt className="sr-only">Bedrijfsnaam</dt>
-                  <dd>{company.legalName}</dd>
-                </div>
-              )}
-              {company.address && (
-                <div>
-                  <dt className="sr-only">Adres</dt>
-                  <dd>{company.address}</dd>
-                </div>
-              )}
-              {company.kvk && (
-                <div className="flex gap-1">
-                  <dt>KvK</dt>
-                  <dd>{company.kvk}</dd>
-                </div>
-              )}
-              {company.vatId && (
-                <div className="flex gap-1">
-                  <dt>Btw-id</dt>
-                  <dd>{company.vatId}</dd>
-                </div>
-              )}
-            </dl>
-          )}
+          {/* Bedrijfsgegevens uit content/site.ts. Elk deel breekt als geheel af, de " ·" blijft aan het vorige deel. */}
+          <p data-company-line="">
+            {companyLineParts.map((part, i) => (
+              <Fragment key={part}>
+                {i > 0 && " "}
+                <span className="whitespace-nowrap">
+                  {part}
+                  {i < companyLineParts.length - 1 && " ·"}
+                </span>
+              </Fragment>
+            ))}
+          </p>
         </div>
       </div>
     </footer>

@@ -1,6 +1,6 @@
 import { existingFeatures, featureLabel, roadmap } from "@/content/features"
 import { pricingSummary } from "@/content/pricing"
-import { routes, site, subprocessors } from "@/content/site"
+import { companySummary, routes, site, subprocessors } from "@/content/site"
 import { absoluteUrl } from "@/lib/site"
 
 // llms.txt, generated at build time from the content files.
@@ -43,6 +43,7 @@ ${pages}
 - [Inloggen](${site.dashboardLoginUrl}): inloggen op het MailMind-dashboard.
 - [Sitemap](${absoluteUrl("/sitemap.xml")}): alle openbare pagina's.
 - Contact: ${site.email}
+- Bedrijfsgegevens: ${companySummary}
 `
 }
 

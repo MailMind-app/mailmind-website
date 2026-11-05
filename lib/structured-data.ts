@@ -14,12 +14,17 @@ const priceSpecification = (price: number) => ({
   valueAddedTaxIncluded: false,
 })
 
-// Company details are only included once they are filled in content/site.ts.
+// Company details from content/site.ts. Empty fields (such as vatId) are left out.
 const companyFields = {
-  ...(company.legalName ? { legalName: company.legalName } : {}),
-  ...(company.vatId ? { vatID: company.vatId } : {}),
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: company.address.street,
+    postalCode: company.address.postalCode,
+    addressLocality: company.address.city,
+    addressCountry: company.address.countryCode,
+  },
   ...(company.kvk ? { identifier: { "@type": "PropertyValue", propertyID: "KvK", value: company.kvk } } : {}),
-  ...(company.address ? { address: company.address } : {}),
+  ...(company.vatId ? { vatID: company.vatId } : {}),
 }
 
 // JSON-LD for the homepage, built from the content files.

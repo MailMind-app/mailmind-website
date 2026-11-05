@@ -9,6 +9,9 @@
   position: relative;
   width: 100%;
   max-width: 30rem;
+  /* As a grid item it may shrink below its content's min width; otherwise the hero
+     column grows to ±312px and sticks out of the screen at 320px. */
+  min-width: 0;
   margin-inline: auto;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);

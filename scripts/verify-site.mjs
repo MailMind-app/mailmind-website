@@ -542,6 +542,10 @@ check(
     const [y, m, d] = routes.find((r) => r.path === "/privacy").lastModified.split("-").map(Number)
     const date = `${d} ${months[m - 1]} ${y}`
     check(text.includes(`Laatst bijgewerkt: ${date}`), `/privacy: "Laatst bijgewerkt: ${date}" matches lastModified`)
+    // The "Wijzigingen" section points to the date where it actually is: below it, at the bottom.
+    const changes = text.indexOf("Onderaan deze pagina zie je bij")
+    check(!/datum bovenaan/i.test(text), '/privacy: no "datum bovenaan" (the date is at the bottom)')
+    check(changes !== -1 && text.indexOf("Laatst bijgewerkt:") > changes, '/privacy: "Laatst bijgewerkt" sits below the "Wijzigingen" text')
   }
 
   // JSON-LD Organization: PostalAddress and KvK identifier, no vatID while empty.

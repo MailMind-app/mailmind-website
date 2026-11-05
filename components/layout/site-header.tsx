@@ -10,7 +10,9 @@ export function SiteHeader() {
       {/* Blur lives on its own layer: backdrop-filter on the header itself would make the
           header the containing block for the fixed mobile menu panel (height ≈ 0). */}
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-bg/85 backdrop-blur-md" />
-      <div className="container-site flex h-full items-center justify-between gap-6">
+      {/* Below 360px: smaller gap and the header button reads "Demo" (the full label stays
+          for screen readers and in the menu), so nothing sticks out at 320px. */}
+      <div className="container-site flex h-full items-center justify-between gap-6 max-[359px]:gap-3">
         <Logo />
         <nav aria-label="Hoofdmenu" className="hidden lg:block">
           <NavLinks />
@@ -22,8 +24,10 @@ export function SiteHeader() {
           >
             Inloggen
           </a>
-          <ButtonLink href="/demo">
-            Demo aanvragen
+          <ButtonLink href="/demo" className="max-[359px]:px-3.5">
+            <span>
+              Demo<span className="max-[359px]:sr-only"> aanvragen</span>
+            </span>
           </ButtonLink>
           <MobileNav />
         </div>

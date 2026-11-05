@@ -155,7 +155,7 @@ export const privacyPage = {
     {
       title: "Wijzigingen",
       paragraphs: [
-        "We passen deze verklaring aan als de dienst of onze leveranciers veranderen. De datum bovenaan laat zien wanneer de verklaring voor het laatst is bijgewerkt.",
+        "We passen deze verklaring aan als de dienst of onze leveranciers veranderen. Onderaan deze pagina zie je bij ‘Laatst bijgewerkt’ wanneer de verklaring voor het laatst is aangepast.",
       ],
     },
   ],

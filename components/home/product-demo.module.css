@@ -234,8 +234,21 @@
   position: relative;
 }
 
+/* The button underneath keeps its idle look; the approved look is this layer on top, so only its
+   opacity animates (animating colours and box-shadow keeps the main thread busy every frame). */
 .approve {
-  border-color: var(--accent);
+  position: relative;
+}
+
+.approve::after {
+  content: attr(data-label);
+  position: absolute;
+  inset: -1px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
   background: var(--accent);
   color: white;
   box-shadow: 0 0 0 4px var(--accent-soft);
@@ -292,7 +305,7 @@
     animation: actionsIn 14s infinite both;
   }
 
-  .approve {
+  .approve::after {
     animation: approve 14s infinite both;
   }
 
@@ -424,17 +437,11 @@
 @keyframes approve {
   0%,
   63% {
-    border-color: var(--line-strong);
-    background: transparent;
-    color: var(--muted);
-    box-shadow: none;
+    opacity: 0;
   }
   66%,
-  93% {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: white;
-    box-shadow: 0 0 0 4px var(--accent-soft);
+  100% {
+    opacity: 1;
   }
 }
 

@@ -30,21 +30,15 @@
   opacity: 0.3;
 }
 
-/* Same dots, brighter; only visible where the sweep mask passes. */
+/* A run of 16 brighter dots on the same positions as .dots, then a gap for the rest of the
+   envelope (2184 = 168 dots × 13, the outline's length). Moving the pattern in steps of exactly
+   one dot keeps them on top of the static dots, and only the path repaints, about 19× a second. */
 .bright {
   opacity: 0.95;
+  stroke-dasharray: 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 1989;
+  stroke-dashoffset: 2184;
 }
 
-.sweep {
-  fill: none;
-  stroke: white;
-  stroke-width: 14;
-  stroke-linecap: round;
-  stroke-dasharray: 90 910;
-  stroke-dashoffset: 1000;
-}
-
-/* Without motion the bright layer stays hidden (mask segment parked off the path). */
 @media (prefers-reduced-motion: reduce) {
   .bright {
     display: none;
@@ -52,15 +46,15 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .sweep {
-    animation: sweep 9s linear infinite;
+  .bright {
+    animation: sweep 9s steps(168, end) infinite;
   }
 }
 
 /* A soft light travels along the envelope outline. */
 @keyframes sweep {
   from {
-    stroke-dashoffset: 1000;
+    stroke-dashoffset: 2184;
   }
   to {
     stroke-dashoffset: 0;

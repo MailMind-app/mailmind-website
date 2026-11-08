@@ -60,7 +60,9 @@ export function ProductDemo() {
             </div>
             <div className={styles.actions}>
               <span className={styles.approveWrap}>
-                <span className={cn(styles.action, styles.approve)}>Goedkeuren</span>
+                <span className={cn(styles.action, styles.approve)} data-label="Goedkeuren">
+                  Goedkeuren
+                </span>
                 <svg className={styles.cursor} viewBox="0 0 24 24" fill="currentColor">
                   <path d="M5 3l14 8.5-6.2 1.3L10 19z" stroke="var(--bg)" strokeWidth="1.2" strokeLinejoin="round" />
                 </svg>

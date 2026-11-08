@@ -248,6 +248,12 @@ body[data-helper-bar-open] {
   padding-bottom: calc(var(--helper-bar-h) + 24px + env(safe-area-inset-bottom));
 }
 
+/* Hero animations stand still while the hero is out of view (HeroMotion). */
+[data-hero][data-paused] *,
+[data-hero][data-paused] *::after {
+  animation-play-state: paused;
+}
+
 /* Scroll reveal. RevealObserver marks only elements that start below the fold
    as .reveal-pending; anything visible on load is never hidden (no LCP delay,
    no flash), and without JS nothing is hidden at all. */

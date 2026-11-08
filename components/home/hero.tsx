@@ -2,12 +2,14 @@ import { ArrowRight, Check } from "lucide-react"
 import { ButtonLink } from "@/components/primitives/button-link"
 import { Rich } from "@/components/primitives/rich-text"
 import { hero } from "@/content/home"
+import { HeroMotion } from "./hero-motion"
 import { ProductDemo } from "./product-demo"
 import { SignalField } from "./signal-field"
 
 export function Hero() {
   return (
-    <section className="glow-bg relative overflow-hidden border-b border-line" aria-labelledby="hero-title">
+    <section className="glow-bg relative overflow-hidden border-b border-line" aria-labelledby="hero-title" data-hero="">
+      <HeroMotion />
       <SignalField />
       <div className="container-site relative grid items-center gap-10 pt-10 pb-12 sm:pt-20 lg:grid-cols-[1.15fr_1fr] lg:gap-12 lg:pt-28 lg:pb-28">
         <div>

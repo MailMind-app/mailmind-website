@@ -1,10 +1,14 @@
 import { ArrowRight } from "lucide-react"
+import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { Rich } from "@/components/primitives/rich-text"
 import { notFoundPage as c } from "@/content/pages"
 
-// Next.js zet zelf <meta name="robots" content="noindex"> op elke 404-respons.
+// Next.js zet zelf <meta name="robots" content="noindex"> op elke 404-respons. Zonder deze regel
+// komt daar "index, follow" uit de root-layout bij. De root-layout zet geen canonical.
+export const metadata: Metadata = { robots: null }
+
 export default function NotFound() {
   return (
     <section className="glow-bg" aria-labelledby="page-title">

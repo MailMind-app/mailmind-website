@@ -3,6 +3,9 @@ const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  async headers() {
+    return [{ source: "/", headers: [{ key: "Vary", value: "Accept" }] }]
+  },
   async redirects() {
     return [
       { source: "/login", destination: "https://dashboard.mailmind.nl/accounts/login/", permanent: true },

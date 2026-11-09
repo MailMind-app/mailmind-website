@@ -6,8 +6,10 @@ import { textVersionHeaders } from "@/lib/site"
 // Content negotiation: clients that prefer `text/markdown` get a Markdown version
 // of the homepage, and a Markdown 404 for unknown pages. The matcher only runs this
 // for requests whose Accept header mentions text/markdown; browsers never send it,
-// so regular HTML responses are untouched. (A `Vary: Accept` on the HTML response
-// is not possible here: Next.js overwrites Vary on prerendered pages.)
+// so regular HTML responses are untouched.
+// Caches stay apart because this runs before the CDN cache and the Markdown is marked no-store.
+// `Vary: Accept` for the HTML is set in next.config.mjs; Next.js's own server replaces Vary on app
+// pages (`next start` never shows it), so that header can only take effect at the CDN.
 
 const knownPaths = new Set<string>(routes.map((route) => route.path))
 
@@ -33,6 +35,7 @@ function markdownResponse(body: string, status: number, headers: Record<string, 
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
       Vary: "Accept",
+      "Cache-Control": "private, no-store",
       ...headers,
     },
   })

@@ -59,8 +59,9 @@ const check = (ok, label, detail = "") => {
   if (!ok) failures++
 }
 
-async function get(path, accept = BROWSER_ACCEPT) {
-  const res = await fetch(BASE + path, { headers: { Accept: accept }, redirect: "manual" })
+async function get(path, accept = BROWSER_ACCEPT, userAgent) {
+  const headers = { Accept: accept, ...(userAgent && { "User-Agent": userAgent }) }
+  const res = await fetch(BASE + path, { headers, redirect: "manual" })
   return { status: res.status, headers: res.headers, body: await res.text() }
 }
 
@@ -427,7 +428,10 @@ check(
     const found = canonicals((await get(path)).body)
     check(found.length === 1 && found[0] === expected, `${path} has canonical ${expected}`, found.join(", ") || "none")
   }
-  check(canonicals((await get("/bestaat-niet")).body).length === 0, "404 page has no canonical")
+  const notFound = await get("/bestaat-niet")
+  check(canonicals(notFound.body).length === 0, "404 page has no canonical")
+  const robotTags = [...notFound.body.matchAll(/<meta name="robots" content="([^"]*)"/g)].map((m) => m[1])
+  check(robotTags.length === 1 && robotTags[0] === "noindex", "404 page has only noindex", robotTags.join(" | "))
 
   // Text versions: not indexed, and they name the real page.
   const homeLink = `<${SITE}/>; rel="canonical"`
@@ -448,6 +452,36 @@ check(
   check((await get("/")).headers.get("x-robots-tag") === null, "HTML /: no X-Robots-Tag")
   check((await get("/", "text/markdown;q=0.5, text/html")).headers.get("x-robots-tag") === null, "HTML / (Markdown ranked lower): no X-Robots-Tag")
   check((await get("/prijzen", "text/markdown")).headers.get("x-robots-tag") === null, "/prijzen with Markdown Accept (serves HTML): no X-Robots-Tag")
+}
+
+// ── Markdown variant never reaches an HTML visitor: Markdown first, then Googlebot on the same URL ──
+// Run against production with BASE_URL=https://mailmind.nl to test the CDN cache as well.
+{
+  const GOOGLEBOT_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  const GOOGLEBOT_UA =
+    "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Chrome/131.0.0.0 Safari/537.36"
+  const isLive = !/localhost|127\.0\.0\.1/.test(BASE)
+  for (const [path, canonical] of [["/", `${SITE}/`], ["/prijzen", `${SITE}/prijzen`]]) {
+    for (let round = 1; round <= 3; round++) {
+      const label = `${path} round ${round}`
+      const md = await get(path, "text/markdown")
+      if (path === "/") {
+        check(md.headers.get("content-type")?.startsWith("text/markdown"), `${label}: Markdown request gets Markdown`, md.headers.get("content-type"))
+        check(/\bAccept\b/.test(md.headers.get("vary") ?? ""), `${label}: Markdown has Vary: Accept`, md.headers.get("vary"))
+        check(md.headers.get("cache-control") === "private, no-store", `${label}: Markdown is private, no-store`, md.headers.get("cache-control"))
+      }
+      const bot = await get(path, GOOGLEBOT_ACCEPT, GOOGLEBOT_UA)
+      check(bot.status === 200, `${label}: Googlebot gets 200`, `got ${bot.status}`)
+      check(bot.headers.get("content-type")?.startsWith("text/html"), `${label}: Googlebot gets HTML`, bot.headers.get("content-type"))
+      check(/^<!doctype html/i.test(bot.body), `${label}: Googlebot body is HTML`, bot.body.slice(0, 40))
+      check(!/noindex/i.test(bot.headers.get("x-robots-tag") ?? ""), `${label}: Googlebot gets no X-Robots-Tag noindex`, bot.headers.get("x-robots-tag"))
+      check(!/<meta name="robots" content="[^"]*noindex/.test(bot.body), `${label}: Googlebot gets no noindex meta`)
+      const found = [...bot.body.matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1])
+      check(found.length === 1 && found[0] === canonical, `${label}: Googlebot gets canonical ${canonical}`, found.join(", ") || "none")
+      // Next.js's own server replaces Vary on app pages, so this can only hold behind the CDN.
+      if (isLive && path === "/") check(/\bAccept\b/.test(bot.headers.get("vary") ?? ""), `${label}: HTML has Vary: Accept`, bot.headers.get("vary"))
+    }
+  }
 }
 
 // ── Founding counter: numbers from content/pricing.ts, offer gone everywhere once all spots are taken ──

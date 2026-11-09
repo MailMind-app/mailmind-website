@@ -8,8 +8,8 @@ import { textVersionHeaders } from "@/lib/site"
 // for requests whose Accept header mentions text/markdown; browsers never send it,
 // so regular HTML responses are untouched.
 // Caches stay apart because this runs before the CDN cache and the Markdown is marked no-store.
-// `Vary: Accept` for the HTML is set in next.config.mjs; Next.js's own server replaces Vary on app
-// pages (`next start` never shows it), so that header can only take effect at the CDN.
+// `Vary: Accept` for the HTML of / is set in vercel.json: Next.js's own server replaces Vary on app
+// pages, so it can only be added at the CDN (`next start` never shows it).
 
 const knownPaths = new Set<string>(routes.map((route) => route.path))
 

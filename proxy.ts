@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { homeMarkdown, notFoundMarkdown } from "@/lib/markdown"
 import { routes } from "@/content/site"
+import { textVersionHeaders } from "@/lib/site"
 
 // Content negotiation: clients that prefer `text/markdown` get a Markdown version
 // of the homepage, and a Markdown 404 for unknown pages. The matcher only runs this
@@ -26,12 +27,13 @@ function prefersMarkdown(accept: string | null) {
   return markdownQ > 0 && markdownQ >= htmlQ
 }
 
-function markdownResponse(body: string, status: number) {
+function markdownResponse(body: string, status: number, headers: Record<string, string>) {
   return new NextResponse(body, {
     status,
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
       Vary: "Accept",
+      ...headers,
     },
   })
 }
@@ -41,8 +43,8 @@ export function proxy(request: NextRequest) {
   if (!prefersMarkdown(request.headers.get("accept"))) return NextResponse.next()
 
   const pathname = request.nextUrl.pathname.replace(/\/+$/, "") || "/"
-  if (pathname === "/") return markdownResponse(homeMarkdown, 200)
-  if (!knownPaths.has(pathname)) return markdownResponse(notFoundMarkdown, 404)
+  if (pathname === "/") return markdownResponse(homeMarkdown, 200, textVersionHeaders("/"))
+  if (!knownPaths.has(pathname)) return markdownResponse(notFoundMarkdown, 404, { "X-Robots-Tag": "noindex" })
 
   return NextResponse.next()
 }

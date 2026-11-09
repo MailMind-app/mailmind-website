@@ -1,7 +1,7 @@
 import { existingFeatures, featureLabel, roadmap } from "@/content/features"
 import { pricingSummary } from "@/content/pricing"
 import { companySummary, routes, site, subprocessors } from "@/content/site"
-import { absoluteUrl } from "@/lib/site"
+import { absoluteUrl, textVersionHeaders } from "@/lib/site"
 
 // llms.txt, generated at build time from the content files.
 export const dynamic = "force-static"
@@ -49,6 +49,6 @@ ${pages}
 
 export function GET() {
   return new Response(body(), {
-    headers: { "Content-Type": "text/plain; charset=utf-8" },
+    headers: { "Content-Type": "text/plain; charset=utf-8", ...textVersionHeaders("/") },
   })
 }

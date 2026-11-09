@@ -21,24 +21,37 @@ export function metadataFor(path: string): Metadata {
   if (!route) throw new Error(`Route ontbreekt in content/site.ts: ${path}`)
   const isHome = path === "/"
   const fullTitle = isHome ? site.title : `${route.title} | ${site.name}`
+  const canonical = absoluteUrl(path)
+  const image = absoluteUrl(OG_IMAGE.url)
   return {
+    // Resolved against a metadataBase, Next.js drops the slash of a root URL ("https://mailmind.nl").
+    // Every URL here is absolute, so the homepage can do without one and keep "https://mailmind.nl/".
+    ...(isHome && { metadataBase: null }),
     title: isHome ? { absolute: site.title } : route.title,
     description: route.description,
-    alternates: { canonical: path },
+    alternates: { canonical },
     openGraph: {
       type: "website",
       locale: site.locale,
       siteName: site.name,
-      url: path,
+      url: canonical,
       title: fullTitle,
       description: route.description,
-      images: [OG_IMAGE],
+      images: [{ ...OG_IMAGE, url: image }],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description: route.description,
-      images: [OG_IMAGE.url],
+      images: [image],
     },
+  }
+}
+
+/** Headers for a text version of a page (Markdown, llms.txt): keep it out of the index, name the real page. */
+export function textVersionHeaders(pagePath: string) {
+  return {
+    Link: `<${absoluteUrl(pagePath)}>; rel="canonical"`,
+    "X-Robots-Tag": "noindex",
   }
 }

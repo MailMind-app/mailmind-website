@@ -8,6 +8,8 @@ import { thanksPage as c } from "@/content/pages"
 // Niet in content/site.ts (routes), dus ook niet in de sitemap, llms.txt of Markdown.
 export const metadata: Metadata = {
   title: c.metaTitle,
+  // /bedankt?type=vraag is the same page: one canonical without the query.
+  alternates: { canonical: "/bedankt" },
   robots: { index: false, follow: true },
 }
 

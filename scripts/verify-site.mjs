@@ -202,7 +202,7 @@ const meta = (html, attr, name) =>
 for (const page of PAGES) {
   const { status, body } = await get(page)
   check(status === 200, `${page} returns 200`, `got ${status}`)
-  const canonical = page === "/" ? SITE : `${SITE}${page}`
+  const canonical = page === "/" ? `${SITE}/` : `${SITE}${page}`
   check(body.includes(`<link rel="canonical" href="${canonical}"/>`), `${page} has canonical ${canonical}`)
   check(body.includes('<html lang="nl"'), `${page} has html lang="nl"`)
   // iOS: viewport-fit=cover makes env(safe-area-inset-*) work; theme-color matches the page background.
@@ -389,6 +389,65 @@ check(
   check(ranked.headers.get("content-type")?.startsWith("text/html"), "HTML wins when ranked above Markdown")
   const knownPage = await get("/prijzen", "text/markdown")
   check(knownPage.status === 200, "known page with Markdown Accept is not a 404", `got ${knownPage.status}`)
+}
+
+// ── Canonical URLs: one per indexable page, query strings point to the clean URL ──
+{
+  const canonicals = (html) => [...html.matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1])
+  const robotsOf = ({ headers, body }) => `${body.match(/<meta name="robots" content="([^"]*)"/)?.[1] ?? ""} ${headers.get("x-robots-tag") ?? ""}`
+
+  // Every sitemap URL is clean, resolves without redirect, is indexable and is its own canonical.
+  const sitemap = (await get("/sitemap.xml")).body
+  const locs = [...sitemap.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1])
+  check(locs.length === PAGES.length, "sitemap: one URL per route", `${locs.length} URLs, ${PAGES.length} routes`)
+  check(new Set(locs).size === locs.length, "sitemap: no duplicate URLs")
+  for (const loc of locs) {
+    const url = new URL(loc)
+    check(
+      url.origin === SITE && !url.search && !url.hash && (url.pathname === "/" || !url.pathname.endsWith("/")),
+      `sitemap: ${loc} is a clean ${SITE} URL`,
+    )
+    const res = await get(url.pathname)
+    check(res.status === 200, `sitemap: ${loc} returns 200 (no redirect)`, `got ${res.status}`)
+    check(!/noindex/i.test(robotsOf(res)), `sitemap: ${loc} is not noindex`, robotsOf(res))
+    const found = canonicals(res.body)
+    check(found.length === 1 && found[0] === loc, `${loc} has exactly one canonical, pointing to itself`, found.join(", ") || "none")
+  }
+  check(!/llms|\.md</.test(sitemap), "sitemap: no llms.txt or Markdown versions")
+
+  // Query strings never become their own canonical.
+  const withQuery = {
+    "/?v=4": `${SITE}/`,
+    "/?utm_source=test": `${SITE}/`,
+    "/prijzen?utm_source=test": `${SITE}/prijzen`,
+    "/bedankt": `${SITE}/bedankt`,
+    "/bedankt?type=vraag": `${SITE}/bedankt`,
+  }
+  for (const [path, expected] of Object.entries(withQuery)) {
+    const found = canonicals((await get(path)).body)
+    check(found.length === 1 && found[0] === expected, `${path} has canonical ${expected}`, found.join(", ") || "none")
+  }
+  check(canonicals((await get("/bestaat-niet")).body).length === 0, "404 page has no canonical")
+
+  // Text versions: not indexed, and they name the real page.
+  const homeLink = `<${SITE}/>; rel="canonical"`
+  const versions = [
+    ["Markdown /", await get("/", "text/markdown")],
+    ["Markdown /?v=4", await get("/?v=4", "text/markdown")],
+    ["llms.txt", await get("/llms.txt")],
+  ]
+  for (const [label, res] of versions) {
+    check(res.headers.get("link") === homeLink, `${label}: Link header is the canonical of the homepage`, res.headers.get("link") ?? "none")
+    check(/noindex/i.test(res.headers.get("x-robots-tag") ?? ""), `${label}: X-Robots-Tag noindex`, res.headers.get("x-robots-tag") ?? "none")
+  }
+  const markdown404 = await get("/bestaat-niet", "text/markdown")
+  check(/noindex/i.test(markdown404.headers.get("x-robots-tag") ?? ""), "Markdown 404: X-Robots-Tag noindex")
+  check(markdown404.headers.get("link") === null, "Markdown 404: no canonical header")
+
+  // The noindex of the text versions must never reach the HTML of the same URL.
+  check((await get("/")).headers.get("x-robots-tag") === null, "HTML /: no X-Robots-Tag")
+  check((await get("/", "text/markdown;q=0.5, text/html")).headers.get("x-robots-tag") === null, "HTML / (Markdown ranked lower): no X-Robots-Tag")
+  check((await get("/prijzen", "text/markdown")).headers.get("x-robots-tag") === null, "/prijzen with Markdown Accept (serves HTML): no X-Robots-Tag")
 }
 
 // ── Founding counter: numbers from content/pricing.ts, offer gone everywhere once all spots are taken ──

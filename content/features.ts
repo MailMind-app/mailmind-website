@@ -168,13 +168,13 @@ export const modes: Mode[] = [
   {
     id: "training",
     name: "Training",
-    summary: "MailMind leert je bedrijf kennen.",
-    short: "MailMind maakt concepten, je team antwoordt zelf. Er gaat niets naar de klant.",
+    summary: "De inrichtingsfase: Rens richt MailMind in voor jouw bedrijf.",
+    short: "De inrichtingsfase. Rens richt MailMind in, jij beantwoordt je mail in die tijd zelf.",
     points: [
-      "MailMind sorteert je mail en maakt concepten",
-      "Je team antwoordt zelf vanuit het eigen mailprogramma",
-      "Goedkeuren, verbeteren en afwijzen trainen MailMind",
-      "Er gaat niets naar de klant",
+      "Rens bekijkt je mail en richt MailMind in",
+      "Categorieën, kennisbank en doorstuurregels",
+      "Jij beantwoordt je mail in die tijd zelf",
+      "Is alles goed ingesteld, dan gaat MailMind naar Semi-Live",
     ],
   },
   {

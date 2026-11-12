@@ -35,7 +35,7 @@ export const howItWorks = {
     eyebrow: "Drie modi",
     title: "Jij bepaalt *hoeveel* MailMind doet.",
     intro:
-      "Je begint in Training. In Semi-Live krijgt de klant direct een ontvangstbevestiging en gaat het antwoord pas na een klik van een medewerker de deur uit.",
+      "Je begint in Training, de inrichtingsfase. Rens bekijkt je mail en richt MailMind in: categorieën, kennisbank en doorstuurregels. Jij beantwoordt je mail in die tijd zelf. Is alles goed ingesteld, dan gaat MailMind naar Semi-Live. Daar krijgt de klant direct een ontvangstbevestiging en gaat het antwoord pas na een klik van een medewerker de deur uit.",
   },
   alwaysHuman: {
     eyebrow: "Grenzen",

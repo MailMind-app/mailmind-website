@@ -64,7 +64,7 @@ export function PricingTeaser() {
               ))}
             </ul>
             <p className="mt-4 text-sm text-subtle">
-              Opstartkosten eenmalig {formatEuro(setupFee.amountEur)}. {pricingNotes[0]}
+              Opstartkosten eenmalig {formatEuro(setupFee.amountEur)}, {setupFee.covers}. {pricingNotes[0]}
             </p>
             <Link
               href={pricingTeaser.link.href}

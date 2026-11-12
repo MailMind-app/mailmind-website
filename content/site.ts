@@ -71,7 +71,7 @@ export const routes: Route[] = [
     path: "/",
     title: "Home",
     description: site.description,
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-12",
     priority: 1,
   },
   {
@@ -79,7 +79,7 @@ export const routes: Route[] = [
     title: "Hoe het werkt",
     description:
       "Zo werkt MailMind: mailbox koppelen via IMAP, samen de kennisbank vullen, en jij keurt elk concept goed. Met de roadmap van wat er binnenkort bij komt.",
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-12",
     priority: 0.9,
   },
   {
@@ -87,7 +87,7 @@ export const routes: Route[] = [
     title: "Voor sportscholen",
     description:
       "MailMind voor sportscholen: proeflessen, roosters en abonnementsvragen krijgen een concept; opzeggingen, betalingen en klachten gaan altijd naar een mens.",
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-12",
     priority: 0.9,
   },
   {
@@ -96,7 +96,7 @@ export const routes: Route[] = [
     description:
       "MailMind-prijzen excl. btw: Starter €149 per maand, Professional €249 per maand, of op maat." +
       (foundingOpen ? ` Founding-aanbod voor de eerste ${founding.spotsTotal} klanten: ${formatEuro(founding.monthlyPriceEur)} per maand.` : ""),
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-12",
     priority: 0.9,
   },
   {
@@ -104,7 +104,7 @@ export const routes: Route[] = [
     title: "Veiligheid en privacy",
     description:
       "Een mens keurt elk concept goed, elke beslissing staat in het beslislog. Opslag bij Hetzner in Helsinki (EU), AI-verwerking via de OpenAI API.",
-    lastModified: "2026-11-03",
+    lastModified: "2026-11-12",
     priority: 0.8,
   },
   {
@@ -133,7 +133,7 @@ export const routes: Route[] = [
     title: "Privacyverklaring",
     description:
       "Hoe MailMind met persoonsgegevens omgaat: opslag in de EU, AI-verwerking via OpenAI, subverwerkers en je rechten.",
-    lastModified: "2026-11-05",
+    lastModified: "2026-11-12",
     priority: 0.4,
   },
 ]
@@ -172,32 +172,44 @@ export const footerNav = [
   },
 ]
 
-export type Subprocessor = { name: string; role: string; location: string }
+export type SubprocessorGroup = "dienst" | "website"
+export type Subprocessor = { name: string; role: string; location: string; group: SubprocessorGroup }
+
+/** Kopjes boven de subverwerkers op /veiligheid, /privacy en in llms.txt, in deze volgorde. */
+export const subprocessorGroups: { id: SubprocessorGroup; title: string }[] = [
+  { id: "dienst", title: "Voor de MailMind-dienst (je mail)" },
+  { id: "website", title: "Alleen voor deze website" },
+]
 
 export const subprocessors: Subprocessor[] = [
   {
+    group: "dienst",
     name: "Hetzner Online GmbH",
-    role: "Hosting van het MailMind-dashboard en opslag van maildata.",
+    role: "Servers in het datacenter in Helsinki, Finland.",
     location: "EU (Helsinki, Finland)",
   },
   {
-    name: "OpenAI",
-    role: "AI-verwerking van mailinhoud voor indeling en conceptantwoorden, via de OpenAI API. API-data wordt niet gebruikt voor training.",
-    location: "Buiten de EU",
+    group: "dienst",
+    name: "OpenAI Ireland Ltd.",
+    role: "Verwerking van mailtekst voor sorteren en concepten. Verwerking kan in de Verenigde Staten plaatsvinden, op basis van standaardcontractbepalingen. Gegevens via de API worden niet gebruikt om modellen te trainen.",
+    location: "Ierland; verwerking ook in de Verenigde Staten mogelijk",
   },
   {
-    name: "Vercel",
-    role: "Hosting van deze website. Formulierverwerking in de EU (Frankfurt).",
-    location: "EU (Frankfurt); website via wereldwijd netwerk",
+    group: "dienst",
+    name: "Microsoft Ireland Operations Ltd.",
+    role: "Microsoft 365. Exchange-gegevens staan in de EU/EFTA met Nederland als toegewezen geografie; volgens de verwerkersovereenkomst van Microsoft kan verwerking ook in de Verenigde Staten plaatsvinden.",
+    location: "EU/EFTA (Nederland); verwerking ook in de Verenigde Staten mogelijk",
   },
   {
+    group: "website",
+    name: "Vercel Inc.",
+    role: "Hosting van de website. Functies draaien in Frankfurt; levering via het wereldwijde netwerk van Vercel.",
+    location: "Frankfurt (EU); wereldwijd netwerk",
+  },
+  {
+    group: "website",
     name: "Resend",
-    role: "Bezorgen van demo-aanvragen en vragen die via deze website binnenkomen.",
+    role: "Verzending van formulierberichten naar MailMind.",
     location: "EU (Ierland)",
-  },
-  {
-    name: "Microsoft 365",
-    role: "Zakelijke e-mail van MailMind.",
-    location: "EU",
   },
 ]

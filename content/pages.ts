@@ -110,7 +110,7 @@ export const privacyPage = {
     title: "Hoe we met je *gegevens* omgaan.",
     intro: "Hoe MailMind omgaat met persoonsgegevens op deze website en in de MailMind-dienst.",
   },
-  lastUpdated: "5 november 2026",
+  lastUpdated: "12 november 2026",
   sections: [
     {
       title: "Wie we zijn",
@@ -130,6 +130,7 @@ export const privacyPage = {
         "Opslag in je browser. De hulpknop onthoudt tijdens je bezoek of Rens al is verschenen en of je hem hebt weggeklikt, zodat hij je niet steeds opnieuw stoort. Dat staat in de sessie-opslag van je browser en verdwijnt als je het tabblad sluit. Het is functioneel: geen cookie, het wordt niet naar ons verstuurd en we volgen je er niet mee.",
         "Mail aan ons. Mail aan rens@mailmind.nl komt binnen in onze zakelijke mailbox bij Microsoft 365.",
         "De MailMind-dienst. Voor klanten verwerkt MailMind de mail in de gekoppelde mailboxen: opslaan in de EU, indelen en concepten maken. Er gaat geen antwoord de deur uit zonder klik van een mens. In Semi-Live krijgt de afzender direct een automatische ontvangstbevestiging.",
+        "Tijdens de inrichting bekijk ik (Rens) je mail. Dat is nodig om categorieën, kennisbank en doorstuurregels goed in te stellen. Dit is vastgelegd in de verwerkersovereenkomst.",
       ],
     },
     {
@@ -143,7 +144,7 @@ export const privacyPage = {
       title: "Hoe lang we gegevens bewaren",
       paragraphs: [
         "Demo-aanvragen, vragen via het vraagformulier, WhatsApp-berichten en mail aan MailMind bewaren we tot 12 maanden na het laatste contact.",
-        "Mail die klanten via MailMind laten verwerken, bewaren we zolang de overeenkomst loopt. Na het einde van de overeenkomst verwijderen we deze gegevens binnen 30 dagen.",
+        "Mail die klanten via MailMind laten verwerken, verwijderen we binnen 30 dagen na het einde van de overeenkomst.",
       ],
     },
     {

@@ -38,6 +38,10 @@ export const security = {
       },
       { title: "Geen eigen AI-model", text: "MailMind leert van de antwoorden die je goedkeurt, niet door een model op jouw mail te trainen." },
       { title: "Mailbox via IMAP", text: "MailMind koppelt met je bestaande mailbox via IMAP." },
+      {
+        title: "Inzage tijdens de inrichting",
+        text: "Tijdens de inrichting bekijk ik (Rens) je mail. Dat is nodig om categorieën, kennisbank en doorstuurregels goed in te stellen. Dit is vastgelegd in de verwerkersovereenkomst.",
+      },
     ],
   },
   subprocessors: {

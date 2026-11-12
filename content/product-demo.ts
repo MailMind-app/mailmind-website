@@ -44,7 +44,7 @@ export const productDemo = {
     {
       id: "training",
       name: "Training",
-      text: "Training: MailMind zet concepten klaar, jullie antwoorden zelf vanuit je eigen mailprogramma. Er gaat niets naar de klant.",
+      text: "Training is de inrichtingsfase. Rens bekijkt je mail en richt MailMind in: categorieën, kennisbank en doorstuurregels. Jij beantwoordt je mail in die tijd zelf. Is alles goed ingesteld, dan gaat MailMind naar Semi-Live.",
     },
     {
       id: "live",

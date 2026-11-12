@@ -53,7 +53,7 @@ export const sportscholen = {
       },
       {
         title: "Start in Training",
-        text: "MailMind maakt concepten, je team antwoordt nog zelf. Gaat het goed, dan stap je over op Semi-Live.",
+        text: "Training is de inrichtingsfase. Rens bekijkt je mail en richt MailMind in: categorieën, kennisbank en doorstuurregels. Jij beantwoordt je mail in die tijd zelf. Is alles goed ingesteld, dan gaat MailMind naar Semi-Live.",
       },
     ],
   },

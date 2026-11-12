@@ -14,7 +14,7 @@ export const faq: FaqItem[] = [
   {
     question: "Verstuurt MailMind zelf mail?",
     answer:
-      "Er gaat geen antwoord de deur uit zonder jouw klik. In Training gaat er niets naar de klant: je team antwoordt zelf vanuit het eigen mailprogramma. In Semi-Live krijgt de klant direct een automatische ontvangstbevestiging en verstuurt MailMind het antwoord pas na de klik van een medewerker. In de [[live-modus]] verstuurt MailMind per categorie zelf, alleen voor mailtypes die aantoonbaar goed gaan, met noodstop.",
+      "Er gaat geen antwoord de deur uit zonder jouw klik. Training is de inrichtingsfase: ik bekijk je mail en richt MailMind in, en jij beantwoordt je mail in die tijd zelf. Er gaat dan niets naar de klant. In Semi-Live krijgt de klant direct een automatische ontvangstbevestiging en verstuurt MailMind het antwoord pas na de klik van een medewerker. In de [[live-modus]] verstuurt MailMind per categorie zelf, alleen voor mailtypes die aantoonbaar goed gaan, met noodstop.",
     pages: ["home", "sportscholen"],
   },
   {
@@ -41,8 +41,8 @@ export const faq: FaqItem[] = [
     pages: ["prijzen"],
   },
   {
-    question: "Wat kost het opstarten?",
-    answer: `Eenmalig ${formatEuro(setupFee.amountEur)} exclusief btw, voor het vullen van je kennisbank (rooster, prijzen, openingstijden) en het inrichten van categorieën en doorsturen.${foundingOpen ? ` Voor de eerste ${founding.spotsTotal} klanten (founding-aanbod) vervallen de opstartkosten.` : ""}`,
+    question: "Waarvoor zijn de opstartkosten?",
+    answer: `Voor de inrichting: ik bekijk je mail en stel categorieën, kennisbank en doorstuurregels in, zodat MailMind vanaf de eerste dag past bij jouw bedrijf. De opstartkosten zijn eenmalig ${formatEuro(setupFee.amountEur)} exclusief btw.${foundingOpen ? ` Voor de eerste ${founding.spotsTotal} klanten (founding-aanbod) vervallen de opstartkosten.` : ""}`,
     pages: ["prijzen"],
   },
   {

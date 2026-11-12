@@ -90,7 +90,7 @@ export const founding = {
     `Voor de eerste ${SPOTS_TOTAL} klanten`,
     "Prijs 12 maanden gegarandeerd",
     "Maandelijks opzegbaar",
-    "Opstartkosten kwijtgescholden",
+    "Opstartkosten (inrichting) kwijtgescholden",
   ],
 }
 
@@ -116,7 +116,10 @@ export const foundingOpen = foundingSpots().open
 export const setupFee = {
   title: "Opstartkosten",
   amountEur: 349,
-  description: "Eenmalig, voor het vullen van je kennisbank en het inrichten van MailMind voor jouw bedrijf.",
+  description:
+    "Eenmalig, voor de inrichting: Rens bekijkt je mail en stelt categorieën, kennisbank en doorstuurregels in, zodat MailMind vanaf de eerste dag past bij jouw bedrijf.",
+  /** Korte toevoeging achter het bedrag (prijzen-teaser, llms.txt, Markdown). */
+  covers: "voor de inrichting van MailMind (categorieën, kennisbank en doorstuurregels)",
 }
 
 export const pricingNotes = [
@@ -221,7 +224,7 @@ export function pricingSummary(f: Founding = founding): string {
     )
     .join("; ")
   const offer = spots.open
-    ? ` ${f.title}: ${formatEuro(f.monthlyPriceEur)} per maand voor de eerste ${spots.total} klanten (nog ${spots.left} van de ${spots.total} plekken vrij), prijs 12 maanden gegarandeerd, maandelijks opzegbaar, opstartkosten kwijtgescholden.`
+    ? ` ${f.title}: ${formatEuro(f.monthlyPriceEur)} per maand voor de eerste ${spots.total} klanten (nog ${spots.left} van de ${spots.total} plekken vrij), prijs 12 maanden gegarandeerd, maandelijks opzegbaar, opstartkosten (inrichting) kwijtgescholden.`
     : ""
-  return `${priced}.${offer} Opstartkosten eenmalig ${formatEuro(setupFee.amountEur)}. ${pricingNotes.join(" ")}`
+  return `${priced}.${offer} Opstartkosten eenmalig ${formatEuro(setupFee.amountEur)}, ${setupFee.covers}. ${pricingNotes.join(" ")}`
 }

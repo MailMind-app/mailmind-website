@@ -9,7 +9,7 @@
 // "binnenkort" features always come from the same source as the site.
 
 import { spawnSync } from "node:child_process"
-import { readFile } from "node:fs/promises"
+import { readdir, readFile } from "node:fs/promises"
 import { getFeature, roadmap } from "../content/features.ts"
 import { helper, whatsappUrl } from "../content/helper.ts"
 import { productDemo } from "../content/product-demo.ts"
@@ -668,6 +668,51 @@ check(
     }
   }
   check(site.email === "rens@mailmind.nl", "content/site.ts: e-mail is rens@mailmind.nl")
+}
+
+// ── Verwerkersovereenkomst: Training als inrichtingsfase, inzage tijdens de inrichting, subverwerkers gesplitst ──
+{
+  const INSIGHT =
+    "Tijdens de inrichting bekijk ik (Rens) je mail. Dat is nodig om categorieën, kennisbank en doorstuurregels goed in te stellen. Dit is vastgelegd in de verwerkersovereenkomst."
+  const GROUP_TITLES = ["Voor de MailMind-dienst (je mail)", "Alleen voor deze website"]
+  const BANNED = [
+    ["jullie antwoorden zelf vanuit je eigen mailprogramma", /jullie antwoorden zelf vanuit je eigen mailprogramma/i],
+    ["variant: antwoord(t) zelf vanuit het/je eigen mailprogramma", /antwoord\w* (nog )?zelf vanuit (je|het) eigen mailprogramma/i],
+    ["zolang de overeenkomst loopt", /zolang de overeenkomst loopt/i],
+  ]
+
+  // Everything a visitor, crawler or LLM can get: full HTML (incl. the RSC payload), llms.txt, Markdown versions,
+  // and the content source files themselves.
+  const sources = []
+  for (const page of [...PAGES, "/bedankt", "/bestaat-niet"]) sources.push([`${page} (HTML)`, (await get(page)).body])
+  sources.push(["llms.txt", (await get("/llms.txt")).body])
+  sources.push(["Markdown /", (await get("/", "text/markdown")).body])
+  sources.push(["Markdown 404", (await get("/bestaat-niet", "text/markdown")).body])
+  const contentDir = new URL("../content/", import.meta.url)
+  for (const file of (await readdir(contentDir)).filter((f) => f.endsWith(".ts"))) {
+    sources.push([`content/${file}`, await readFile(new URL(file, contentDir), "utf8")])
+  }
+  for (const [phrase, pattern] of BANNED) {
+    const hits = sources.filter(([, text]) => pattern.test(text)).map(([label]) => label)
+    check(hits.length === 0, `nowhere: "${phrase}"`, hits.join(", "))
+  }
+
+  check(visibleText((await get("/hoe-het-werkt")).body).includes("inrichtingsfase"), '/hoe-het-werkt mentions "inrichtingsfase"')
+
+  for (const page of ["/veiligheid", "/privacy"]) {
+    const html = (await get(page)).body
+    const text = visibleText(html)
+    for (const title of GROUP_TITLES) {
+      const headings = [...html.matchAll(/<h3[^>]*>([^<]*)<\/h3>/g)].map((m) => m[1].replace(/&amp;/g, "&"))
+      check(headings.includes(title), `${page} has the heading "${title}"`, headings.join(" | "))
+    }
+    check(text.includes(INSIGHT), `${page} has the sentence about insight during the setup`)
+    // Each subprocessor sits under its own group heading.
+    for (const sp of subprocessors) {
+      const block = html.match(new RegExp(`data-subprocessor-group="${sp.group}"[\\s\\S]*?</table>`))?.[0] ?? ""
+      check(visibleText(block).includes(sp.name), `${page}: ${sp.name} is listed under ${sp.group}`)
+    }
+  }
 }
 
 console.log(failures ? `\n${failures} check(s) failed` : "\nAll checks passed")

@@ -176,7 +176,7 @@ for (const [label, browser, options, tag] of runs) {
 
   // Modes: Training explains, Live is "Binnenkort" and changes nothing.
   await page.locator('[data-demo-mode="training"]').click()
-  check((await text(page, "[data-demo-explain]")).startsWith("Training: MailMind zet concepten klaar"), "Training shows its explanation")
+  check((await text(page, "[data-demo-explain]")).startsWith("Training is de inrichtingsfase."), "Training shows its explanation (inrichtingsfase)")
   const before = await page.locator("[data-demo-done]").count()
   await page.locator('[data-demo-mode="live"]').click()
   check((await text(page, "[data-demo-explain]")).includes("Binnenkort, begin 2027"), "Live shows “Binnenkort, begin 2027”")

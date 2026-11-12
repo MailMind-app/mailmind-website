@@ -151,12 +151,12 @@ for (const [label, browser, options, tag] of runs) {
   )
   if (shotAll) await page.locator("[data-product-demo]").screenshot({ path: file(`${tag}-verstuurd.png`) })
 
-  // Mail 2: no concept, the cancellation notice, forwarding.
+  // Mail 2: no concept until a colleague has it, the cancellation notice, forwarding.
   await selectMail(page, "opzegging")
   check((await page.locator("[data-demo-concept]").count()) === 0, "mail 2: no concept")
-  check((await text(page, "[data-demo-notice]")).includes("Opzeggingen gaan altijd naar een mens"), "mail 2: notice about cancellations")
+  check((await text(page, "[data-demo-notice]")).includes("Opzeggingen gaan altijd eerst naar een mens. Pas als een collega de mail heeft, zet MailMind een concept klaar"), "mail 2: notice about cancellations (concept after forwarding)")
   await page.locator("[data-demo-forward]").click()
-  check((await text(page, "[data-demo-status]")) === "Doorgestuurd naar Sanne ✓", "mail 2: forwarded to Sanne")
+  check((await text(page, "[data-demo-status]")) === "Doorgestuurd ✓ De ledenadministratie krijgt de mail met een concept erbij.", "mail 2: forwarded, the membership desk gets a concept")
 
   // Mail 3: forward to the bookkeeping.
   await selectMail(page, "factuur")
@@ -179,7 +179,7 @@ for (const [label, browser, options, tag] of runs) {
   check((await text(page, "[data-demo-explain]")).startsWith("Training is de inrichtingsfase."), "Training shows its explanation (inrichtingsfase)")
   const before = await page.locator("[data-demo-done]").count()
   await page.locator('[data-demo-mode="live"]').click()
-  check((await text(page, "[data-demo-explain]")).includes("Binnenkort, begin 2027"), "Live shows “Binnenkort, begin 2027”")
+  check((await text(page, "[data-demo-explain]")).startsWith("Binnenkort:") && !/2027/.test(await text(page, "[data-demo-explain]")), "Live shows “Binnenkort” without a date")
   check((await text(page, '[data-demo-mode="live"]')).includes("Binnenkort"), "Live carries the Binnenkort badge")
   check((await page.locator("[data-demo-done]").count()) === before && (await page.locator('[data-demo-mail="phishing"]').getAttribute("aria-current")) === "true", "Live does not change the demo")
 
@@ -243,7 +243,7 @@ section("Toetsenbord (1440×900)")
   await page.keyboard.press("Enter")
   check(await tabTo("[data-demo-forward]"), "Tab reaches Doorsturen", await active())
   await page.keyboard.press("Enter")
-  check((await text(page, "[data-demo-status]")) === "Doorgestuurd naar Sanne ✓", "Enter forwards mail 2")
+  check((await text(page, "[data-demo-status]")) === "Doorgestuurd ✓ De ledenadministratie krijgt de mail met een concept erbij.", "Enter forwards mail 2")
   check(await tabTo('[data-demo-mail="phishing"]', true), "Shift+Tab to mail 4", await active())
   await page.keyboard.press("Enter")
   await page.waitForTimeout(100)

@@ -26,7 +26,7 @@ export const faq: FaqItem[] = [
   {
     question: "Wat gebeurt er met opzeggingen, betalingen en klachten?",
     answer:
-      "Die gaan altijd naar een mens. Ook mail waarvoor het antwoord niet in de kennisbank staat, krijgt geen concept en gaat naar een mens.",
+      "Die gaan altijd eerst naar een mens. Bij een opzegging zet MailMind pas een concept klaar als een collega de mail heeft, op basis van eerdere antwoorden. Mail waarvoor het antwoord niet in de kennisbank staat, krijgt geen concept en gaat naar een mens.",
     pages: ["home", "sportscholen"],
   },
   {
@@ -42,7 +42,7 @@ export const faq: FaqItem[] = [
   },
   {
     question: "Waarvoor zijn de opstartkosten?",
-    answer: `Voor de inrichting: ik bekijk je mail en stel categorieën, kennisbank en doorstuurregels in, zodat MailMind vanaf de eerste dag past bij jouw bedrijf. De opstartkosten zijn eenmalig ${formatEuro(setupFee.amountEur)} exclusief btw.${foundingOpen ? ` Voor de eerste ${founding.spotsTotal} klanten (founding-aanbod) vervallen de opstartkosten.` : ""}`,
+    answer: `Voor de inrichting: ik bekijk je mail en stel categorieën, kennisbank en doorstuurregels in, zodat MailMind vanaf de eerste dag past bij jouw bedrijf. De opstartkosten zijn eenmalig ${formatEuro(setupFee.amountEur)} exclusief btw.${foundingOpen ? ` Ook bij het founding-aanbod voor de eerste ${founding.spotsTotal} klanten betaal je deze eenmalige opstartkosten.` : ""}`,
     pages: ["prijzen"],
   },
   {

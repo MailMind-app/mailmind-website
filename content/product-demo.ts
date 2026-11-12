@@ -50,7 +50,7 @@ export const productDemo = {
       id: "live",
       name: "Live",
       badge: "Binnenkort",
-      text: "Binnenkort, begin 2027: MailMind verstuurt zelf antwoorden op mailtypes die aantoonbaar goed gaan, per categorie en met noodstop.",
+      text: "Binnenkort: MailMind verstuurt zelf antwoorden op mailtypes die aantoonbaar goed gaan, per categorie en met noodstop.",
     },
   ] as { id: DemoModeId; name: string; text: string; badge?: string }[],
   /** De demo zelf laat altijd Semi-Live zien. */
@@ -105,9 +105,12 @@ export const productDemo = {
       subject: "Opzeggen lidmaatschap",
       body: "Ik wil mijn abonnement per 1 december opzeggen.",
       category: "opzegging",
-      log: "Opzegging herkend. Opzeggingen gaan altijd naar een mens, dus MailMind schrijft geen concept.",
-      notice: "Opzeggingen gaan altijd naar een mens. MailMind schrijft hier geen antwoord.",
-      forward: { label: "Doorsturen naar Sanne (ledenadministratie)", done: "Doorgestuurd naar Sanne ✓" },
+      log: "Opzegging herkend. Opzeggingen gaan altijd eerst naar een mens; MailMind zet pas een concept klaar als een collega de mail heeft.",
+      notice: "Opzeggingen gaan altijd eerst naar een mens. Pas als een collega de mail heeft, zet MailMind een concept klaar op basis van eerdere antwoorden.",
+      forward: {
+        label: "Doorsturen naar Sanne (ledenadministratie)",
+        done: "Doorgestuurd ✓ De ledenadministratie krijgt de mail met een concept erbij.",
+      },
     },
     {
       id: "factuur",
@@ -119,7 +122,7 @@ export const productDemo = {
       body: "In de bijlage vindt u de factuur voor oktober.",
       category: "leverancier",
       log: "Factuur van een leverancier. Facturen gaan naar de boekhouding; hier hoort geen antwoord bij.",
-      notice: "Facturen gaan naar de boekhouding. MailMind schrijft hier geen antwoord.",
+      notice: "Facturen gaan naar de boekhouding. Hier hoort geen antwoord bij.",
       forward: { label: "Doorsturen naar boekhouding", done: "Doorgestuurd ✓" },
     },
     {

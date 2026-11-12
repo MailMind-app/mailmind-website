@@ -79,18 +79,20 @@ export const plans: Plan[] = [
 ]
 
 const SPOTS_TOTAL = 5
+const FOUNDING_PRICE_EUR = 99
+const SETUP_FEE_EUR = 349
 
 export const founding = {
   title: "Founding-aanbod",
-  monthlyPriceEur: 99,
+  monthlyPriceEur: FOUNDING_PRICE_EUR,
   spotsTotal: SPOTS_TOTAL,
-  // Aantal bezette founding-plekken. Bij een nieuwe founding-klant +1. Bij 5 verdwijnt het founding-aanbod van de site.
-  spotsTaken: 1,
+  // Aantal bezette founding-plekken: alleen betalende founding-klanten. Bij een nieuwe founding-klant +1.
+  // Bij 5 verdwijnt het founding-aanbod van de site.
+  spotsTaken: 0,
   points: [
     `Voor de eerste ${SPOTS_TOTAL} klanten`,
-    "Prijs 12 maanden gegarandeerd",
+    `${formatEuro(FOUNDING_PRICE_EUR)} per maand, 12 maanden vast. Eenmalig ${formatEuro(SETUP_FEE_EUR)} voor de inrichting.`,
     "Maandelijks opzegbaar",
-    "Opstartkosten (inrichting) kwijtgescholden",
   ],
 }
 
@@ -115,7 +117,7 @@ export const foundingOpen = foundingSpots().open
 
 export const setupFee = {
   title: "Opstartkosten",
-  amountEur: 349,
+  amountEur: SETUP_FEE_EUR,
   description:
     "Eenmalig, voor de inrichting: Rens bekijkt je mail en stelt categorieën, kennisbank en doorstuurregels in, zodat MailMind vanaf de eerste dag past bij jouw bedrijf.",
   /** Korte toevoeging achter het bedrag (prijzen-teaser, llms.txt, Markdown). */
@@ -224,7 +226,7 @@ export function pricingSummary(f: Founding = founding): string {
     )
     .join("; ")
   const offer = spots.open
-    ? ` ${f.title}: ${formatEuro(f.monthlyPriceEur)} per maand voor de eerste ${spots.total} klanten (nog ${spots.left} van de ${spots.total} plekken vrij), prijs 12 maanden gegarandeerd, maandelijks opzegbaar, opstartkosten (inrichting) kwijtgescholden.`
+    ? ` ${f.title}: ${formatEuro(f.monthlyPriceEur)} per maand voor de eerste ${spots.total} klanten (nog ${spots.left} van de ${spots.total} plekken vrij), prijs 12 maanden vast, maandelijks opzegbaar, plus eenmalig ${formatEuro(setupFee.amountEur)} voor de inrichting.`
     : ""
   return `${priced}.${offer} Opstartkosten eenmalig ${formatEuro(setupFee.amountEur)}, ${setupFee.covers}. ${pricingNotes.join(" ")}`
 }

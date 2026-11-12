@@ -79,7 +79,7 @@ export const homeJsonLd = {
               {
                 "@type": "Offer",
                 name: founding.title,
-                description: founding.points.join(". ") + ".",
+                description: founding.points.map((point) => point.replace(/\.$/, "")).join(". ") + ".",
                 price: founding.monthlyPriceEur,
                 priceCurrency: "EUR",
                 url: absoluteUrl("/prijzen"),

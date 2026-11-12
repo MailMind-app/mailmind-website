@@ -345,8 +345,8 @@ check(
   check(offenders.length === 0, 'content/product-demo.ts: "Live" only together with "Binnenkort"', offenders.join(" | "))
   const live = productDemo.modes.find((m) => m.id === "live")
   check(
-    live?.badge === "Binnenkort" && live.text.includes(getFeature("live-modus").when),
-    "demo: Live has the Binnenkort badge and the date from content/features.ts",
+    live?.badge === "Binnenkort" && live.text.startsWith("Binnenkort") && !getFeature("live-modus").when && !/\b20\d\d\b/.test(live.text),
+    "demo: Live has only the Binnenkort badge, no date",
   )
   const notExisting = productDemo.usesFeatures.filter((id) => getFeature(id).status !== "bestaat")
   check(notExisting.length === 0, "demo only shows features with status bestaat", notExisting.join(", "))
@@ -506,6 +506,18 @@ check(
       check(!/founding/i.test(text) && taken + free === 0, `${page}: no founding offer (all spots taken)`)
     }
     check(!/nog maar/i.test(text), `${page}: no "nog maar" urgency`)
+  }
+
+  // The founding card on /prijzen names both the monthly price and the one-off setup fee.
+  if (founding.spotsTaken < founding.spotsTotal) {
+    const html = (await get("/prijzen")).body
+    const card = html.match(/<div[^>]*data-founding-offer=""[\s\S]*?<\/ul>/)?.[0] ?? ""
+    const text = visibleText(card)
+    check(
+      text.includes(`€${founding.monthlyPriceEur}`) && text.includes(`€${setupFee.amountEur}`),
+      `/prijzen founding card names €${founding.monthlyPriceEur} and €${setupFee.amountEur}`,
+      text,
+    )
   }
 
   // Every text outside the components, loaded with spotsTaken overridden (no second build needed).
@@ -679,6 +691,12 @@ check(
     ["jullie antwoorden zelf vanuit je eigen mailprogramma", /jullie antwoorden zelf vanuit je eigen mailprogramma/i],
     ["variant: antwoord(t) zelf vanuit het/je eigen mailprogramma", /antwoord\w* (nog )?zelf vanuit (je|het) eigen mailprogramma/i],
     ["zolang de overeenkomst loopt", /zolang de overeenkomst loopt/i],
+    // Besluiten 10-11: concept bij opzeggingen na doorsturen, founding betaalt de opstartkosten, Live zonder datum.
+    ["schrijft hier geen antwoord", /schrijft hier geen antwoord/i],
+    ["kwijtgescholden", /kwijtgescholden/i],
+    ["geen opstartkosten", /geen opstartkosten/i],
+    ["gratis inrichting", /gratis inrichting/i],
+    ["begin 2027", /begin 2027/i],
   ]
 
   // Everything a visitor, crawler or LLM can get: full HTML (incl. the RSC payload), llms.txt, Markdown versions,

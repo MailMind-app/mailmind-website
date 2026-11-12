@@ -9,7 +9,7 @@ export type Feature = {
   title: string
   description: string
   status: FeatureStatus
-  /** Alleen bij "binnenkort": wanneer, bijvoorbeeld "begin 2027". */
+  /** Alleen bij "binnenkort", optioneel: wanneer, bijvoorbeeld "Q1 2027". Zonder when alleen de badge "Binnenkort". */
   when?: string
 }
 
@@ -97,7 +97,6 @@ export const features: Feature[] = [
     description:
       "MailMind verstuurt zelf antwoorden op mailtypes die aantoonbaar goed gaan. Per categorie aan te zetten, met noodstop.",
     status: "binnenkort",
-    when: "begin 2027",
   },
   {
     id: "2fa",
@@ -145,7 +144,7 @@ export function getFeature(id: string): Feature {
 export const existingFeatures = features.filter((f) => f.status === "bestaat")
 export const roadmap = features.filter((f) => f.status === "binnenkort")
 
-/** Tekstvorm voor platte uitvoer (llms.txt, Markdown): "Live-modus (binnenkort, begin 2027)". */
+/** Tekstvorm voor platte uitvoer (llms.txt, Markdown): "Live-modus (binnenkort)" of "Tweestapsverificatie (binnenkort, Q1 2027)". */
 export function featureLabel(feature: Feature): string {
   return feature.status === "binnenkort"
     ? `${feature.title} (binnenkort${feature.when ? `, ${feature.when}` : ""})`

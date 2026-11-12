@@ -1,15 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["fra1"],
-  "headers": [
-    {
-      "source": "/",
-      "headers": [
-        {
-          "key": "Vary",
-          "value": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept"
-        }
-      ]
-    }
-  ]
+  "regions": ["fra1"]
 }

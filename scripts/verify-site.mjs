@@ -1,3 +1,6 @@
+// Nooit testen tegen de live site met een nagemaakte Googlebot-user-agent of met herhaalde polling.
+// Dat heeft op 9-11-2026 een Vercel Security Checkpoint (403) veroorzaakt. Test alleen lokaal op poort 3000.
+
 // Checks a running build against the content files.
 // Usage: pnpm build && pnpm start   (in another terminal)
 //        pnpm verify                [BASE_URL=http://localhost:3000]
@@ -455,12 +458,10 @@ check(
 }
 
 // ── Markdown variant never reaches an HTML visitor: Markdown first, then Googlebot on the same URL ──
-// Run against production with BASE_URL=https://mailmind.nl to test the CDN cache as well.
 {
   const GOOGLEBOT_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
   const GOOGLEBOT_UA =
     "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Chrome/131.0.0.0 Safari/537.36"
-  const isLive = !/localhost|127\.0\.0\.1/.test(BASE)
   for (const [path, canonical] of [["/", `${SITE}/`], ["/prijzen", `${SITE}/prijzen`]]) {
     for (let round = 1; round <= 3; round++) {
       const label = `${path} round ${round}`
@@ -478,8 +479,6 @@ check(
       check(!/<meta name="robots" content="[^"]*noindex/.test(bot.body), `${label}: Googlebot gets no noindex meta`)
       const found = [...bot.body.matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1])
       check(found.length === 1 && found[0] === canonical, `${label}: Googlebot gets canonical ${canonical}`, found.join(", ") || "none")
-      // Next.js's own server replaces Vary on app pages, so this can only hold behind the CDN.
-      if (isLive && path === "/") check(/\bAccept\b/.test(bot.headers.get("vary") ?? ""), `${label}: HTML has Vary: Accept`, bot.headers.get("vary"))
     }
   }
 }

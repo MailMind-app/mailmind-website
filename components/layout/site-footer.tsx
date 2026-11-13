@@ -14,7 +14,7 @@ export function SiteFooter() {
             <Logo />
             <p className="mt-4 text-sm leading-relaxed text-muted">{site.shortDescription}</p>
             <p className="mt-4 hidden text-sm leading-relaxed text-subtle sm:block">
-              Opslag in de EU (Hetzner, Helsinki). AI-verwerking via de OpenAI API.
+              Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS.
             </p>
           </div>
 

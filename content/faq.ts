@@ -32,7 +32,7 @@ export const faq: FaqItem[] = [
   {
     question: "Waar wordt mijn data opgeslagen?",
     answer:
-      "Het dashboard en de database draaien bij Hetzner in Helsinki (EU). Voor het indelen van mail en het schrijven van concepten gaat de inhoud via de OpenAI API, buiten de EU. OpenAI gebruikt API-data niet voor training.",
+      "Je mail wordt opgeslagen op servers in Helsinki (Finland). Voor het sorteren en de concepten verwerkt OpenAI de tekst; dat kan in de Verenigde Staten gebeuren, op basis van standaardcontractbepalingen. OpenAI gebruikt deze gegevens niet om modellen te trainen.",
     pages: ["home"],
   },
   {

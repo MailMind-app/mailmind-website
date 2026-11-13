@@ -9,7 +9,7 @@ export type Feature = {
   title: string
   description: string
   status: FeatureStatus
-  /** Alleen bij "binnenkort", optioneel: wanneer, bijvoorbeeld "Q1 2027". Zonder when alleen de badge "Binnenkort". */
+  /** Niet gebruiken: roadmap-functies tonen alleen de badge "Binnenkort", zonder datum of kwartaal (verify faalt erop). */
   when?: string
 }
 
@@ -103,35 +103,30 @@ export const features: Feature[] = [
     title: "Tweestapsverificatie",
     description: "Een extra beveiligingsstap bij het inloggen op het dashboard.",
     status: "binnenkort",
-    when: "Q1 2027",
   },
   {
     id: "nieuwe-mail",
     title: "Nieuwe mail opstellen en extern doorsturen",
     description: "Vanuit MailMind een nieuwe mail beginnen of een mail doorsturen naar iemand buiten je team.",
     status: "binnenkort",
-    when: "Q1 2027",
   },
   {
     id: "vaste-behandelaar",
     title: "Vaste behandelaar per categorie",
     description: "Mail in een categorie gaat direct naar de vaste medewerker, zonder tussenkomst van de manager.",
     status: "binnenkort",
-    when: "2027",
   },
   {
     id: "self-service",
     title: "Zelf aanmelden, wachtwoord-reset en mobiel dashboard",
     description: "Zelf een account aanmaken, je wachtwoord herstellen en het dashboard op je telefoon gebruiken.",
     status: "binnenkort",
-    when: "2027",
   },
   {
     id: "clubsoftware",
     title: "Koppelingen met clubsoftware",
     description: "Handelingen uitvoeren in je clubsoftware vanuit MailMind.",
     status: "binnenkort",
-    when: "later in 2027",
   },
 ]
 
@@ -144,7 +139,7 @@ export function getFeature(id: string): Feature {
 export const existingFeatures = features.filter((f) => f.status === "bestaat")
 export const roadmap = features.filter((f) => f.status === "binnenkort")
 
-/** Tekstvorm voor platte uitvoer (llms.txt, Markdown): "Live-modus (binnenkort)" of "Tweestapsverificatie (binnenkort, Q1 2027)". */
+/** Tekstvorm voor platte uitvoer (llms.txt, Markdown): "Live-modus (binnenkort)". */
 export function featureLabel(feature: Feature): string {
   return feature.status === "binnenkort"
     ? `${feature.title} (binnenkort${feature.when ? `, ${feature.when}` : ""})`

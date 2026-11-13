@@ -222,7 +222,7 @@ export function pricingSummary(f: Founding = founding): string {
   const spots = foundingSpots(f)
   const priced = plans
     .map((p) =>
-      p.monthlyPriceEur === null ? `${p.name}: ${p.description.toLowerCase()}` : `${p.name} ${formatEuro(p.monthlyPriceEur)} per maand (${p.volume})`,
+      p.monthlyPriceEur === null ? `${p.name}: ${p.description.replace(/\.$/, "").toLowerCase()}` : `${p.name} ${formatEuro(p.monthlyPriceEur)} per maand (${p.volume})`,
     )
     .join("; ")
   const offer = spots.open

@@ -697,6 +697,12 @@ check(
     ["geen opstartkosten", /geen opstartkosten/i],
     ["gratis inrichting", /gratis inrichting/i],
     ["begin 2027", /begin 2027/i],
+    // Besluiten 12-11: geen EU-only-claim (OpenAI kan in de VS verwerken), roadmap zonder datums.
+    ["verwerkt in de EU", /verwerkt in de EU/i],
+    ["blijft in de EU", /blijft in de EU/i],
+    ["alleen in Europa", /alleen in Europa/i],
+    ["alleen in de EU", /alleen in de EU/i],
+    ["kwartaal met jaartal (Q1 2027)", /\bQ[1-4] 20\d\d\b/],
   ]
 
   // Everything a visitor, crawler or LLM can get: full HTML (incl. the RSC payload), llms.txt, Markdown versions,
@@ -717,6 +723,45 @@ check(
 
   check(visibleText((await get("/hoe-het-werkt")).body).includes("inrichtingsfase"), '/hoe-het-werkt mentions "inrichtingsfase"')
 
+  // Setup: Rens sets MailMind up, the customer supplies the facts and checks them.
+  const SETUP = "Rens richt MailMind in: categorieën, kennisbank en doorstuurregels. Jij levert je tijden, prijzen en vaste afspraken aan en controleert of het klopt."
+  for (const page of ["/hoe-het-werkt", "/sportscholen"]) {
+    check(visibleText((await get(page)).body).includes(SETUP), `${page}: who does what during the setup`)
+  }
+
+  // Roadmap: features with status "binnenkort" carry no year or quarter, only the badge.
+  const DATE = /\bQ[1-4]\b|\b20\d\d\b|\bbegin 20|\bkwartaal\b/i
+  for (const f of roadmap) {
+    check(!f.when && !DATE.test(`${f.title} ${f.description}`), `roadmap "${f.id}": no year or quarter`, f.when ?? f.description)
+  }
+  for (const [label, text] of sources.filter(([l]) => l === "llms.txt" || l.startsWith("Markdown"))) {
+    const dated = text.split("\n").filter((line) => /\(binnenkort/i.test(line) && DATE.test(line))
+    check(dated.length === 0, `${label}: "binnenkort" lines without a date`, dated.join(" | "))
+  }
+  {
+    const dated = sources
+      .filter(([l]) => l.endsWith("(HTML)"))
+      .filter(([, html]) => /Binnenkort\s*(·|&middot;|<!-- -->\s*·)/.test(html))
+      .map(([l]) => l)
+    check(dated.length === 0, 'HTML: the "Binnenkort" badge carries no date', dated.join(", "))
+  }
+
+  // No double period in visible text, llms.txt, Markdown or JSON-LD (an ellipsis "..." is fine).
+  {
+    const DOUBLE = /(?<!\.)\.\.(?!\.)/
+    const texts = sources
+      .filter(([l]) => !l.startsWith("content/"))
+      .flatMap(([label, body]) =>
+        label.endsWith("(HTML)")
+          ? [[label, visibleText(body)], ...jsonLdBlocks(body).map((b) => [`${label} JSON-LD`, b])]
+          : [[label, body]],
+      )
+    const hits = texts
+      .filter(([, text]) => DOUBLE.test(text))
+      .map(([label, text]) => `${label}: …${text.slice(Math.max(0, text.search(DOUBLE) - 30), text.search(DOUBLE) + 5)}`)
+    check(hits.length === 0, 'nowhere a double period ".."', hits.join(" | "))
+  }
+
   for (const page of ["/veiligheid", "/privacy"]) {
     const html = (await get(page)).body
     const text = visibleText(html)
@@ -725,6 +770,19 @@ check(
       check(headings.includes(title), `${page} has the heading "${title}"`, headings.join(" | "))
     }
     check(text.includes(INSIGHT), `${page} has the sentence about insight during the setup`)
+    check(text.includes("Verenigde Staten"), `${page} names "Verenigde Staten"`)
+    // Hetzner stays in the subprocessor list under the service group; only the short texts drop the name.
+    {
+      const service = visibleText(html.match(/data-subprocessor-group="dienst"[\s\S]*?<\/table>/)?.[0] ?? "")
+      check(service.includes("Hetzner Online GmbH"), `${page}: "Hetzner Online GmbH" under "Voor de MailMind-dienst (je mail)"`)
+      check(service.includes("Servers in het datacenter in Helsinki, Finland."), `${page}: Hetzner's role names the datacenter in Helsinki`)
+    }
+    if (page === "/privacy") {
+      check(
+        text.includes("Na het einde van de overeenkomst kies je binnen 30 dagen of je je gegevens terugkrijgt of dat we ze wissen. Daarna wissen we alles."),
+        "/privacy: retention after the agreement matches the verwerkersovereenkomst",
+      )
+    }
     // Each subprocessor sits under its own group heading.
     for (const sp of subprocessors) {
       const block = html.match(new RegExp(`data-subprocessor-group="${sp.group}"[\\s\\S]*?</table>`))?.[0] ?? ""

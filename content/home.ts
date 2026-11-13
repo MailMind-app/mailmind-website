@@ -10,7 +10,7 @@ export const hero = {
     "MailMind sorteert je zakelijke mail, stuurt door naar de juiste collega en schrijft conceptantwoorden. Er gaat geen antwoord de deur uit zonder jouw klik.",
   primaryCta: { label: "Demo aanvragen", href: "/demo" },
   secondaryCta: { label: "Zo werkt het", href: "#zo-werkt-het" },
-  notes: ["Werkt met je eigen mailbox", "Opslag in de EU"],
+  notes: ["Werkt met je eigen mailbox.", "Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS."],
   // Verzonnen voorbeeld; geen bestaande sportschool, naam, lestijd of prijs.
   demo: {
     exampleLabel: "Voorbeeld: sportschool",
@@ -107,7 +107,7 @@ export const steps = {
     },
     {
       title: "Samen de kennisbank vullen",
-      text: "Rooster, prijzen, openingstijden en de categorieën die bij jouw bedrijf passen. Dat richten we bij de start samen in.",
+      text: "Rens richt MailMind in: categorieën, kennisbank en doorstuurregels. Jij levert je tijden, prijzen en vaste afspraken aan en controleert of het klopt.",
     },
     {
       title: "Jij keurt goed, MailMind leert",
@@ -146,8 +146,7 @@ export const control = {
   ],
   modesTitle: "Drie modi",
   modesLink: { label: "Meer over de modi", href: "/hoe-het-werkt#modi" },
-  security:
-    "Opslag in de EU, bij Hetzner in Helsinki. AI-verwerking via de OpenAI API; API-data wordt niet gebruikt voor training.",
+  security: "Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS.",
   securityLink: { label: "Meer over veiligheid", href: "/veiligheid" },
 }
 

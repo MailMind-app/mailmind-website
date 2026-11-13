@@ -103,7 +103,7 @@ export const routes: Route[] = [
     path: "/veiligheid",
     title: "Veiligheid en privacy",
     description:
-      "Een mens keurt elk concept goed, elke beslissing staat in het beslislog. Opslag bij Hetzner in Helsinki (EU), AI-verwerking via de OpenAI API.",
+      "Een mens keurt elk concept goed, elke beslissing staat in het beslislog. Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS.",
     lastModified: "2026-11-12",
     priority: 0.8,
   },
@@ -118,7 +118,7 @@ export const routes: Route[] = [
     path: "/over",
     title: "Over MailMind",
     description: "Wat MailMind doet, voor wie het is en hoe we werken.",
-    lastModified: "2026-11-01",
+    lastModified: "2026-11-12",
     priority: 0.6,
   },
   {
@@ -132,7 +132,7 @@ export const routes: Route[] = [
     path: "/privacy",
     title: "Privacyverklaring",
     description:
-      "Hoe MailMind met persoonsgegevens omgaat: opslag in de EU, AI-verwerking via OpenAI, subverwerkers en je rechten.",
+      "Hoe MailMind met persoonsgegevens omgaat, welke subverwerkers er zijn en wat je rechten zijn. Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS.",
     lastModified: "2026-11-12",
     priority: 0.4,
   },

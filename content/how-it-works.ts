@@ -20,7 +20,7 @@ export const howItWorks = {
       },
       {
         title: "Samen de kennisbank vullen",
-        text: "Bij de start richten we MailMind samen in: je rooster, prijzen en openingstijden, en de categorieën die bij jouw bedrijf passen. Ook zakelijke mail van leveranciers, bonden en fondsen krijgt een eigen plek.",
+        text: "Rens richt MailMind in: categorieën, kennisbank en doorstuurregels. Jij levert je tijden, prijzen en vaste afspraken aan en controleert of het klopt.",
         features: ["categorieen", "concepten"],
       },
       {

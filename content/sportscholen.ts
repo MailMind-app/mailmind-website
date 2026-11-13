@@ -49,7 +49,7 @@ export const sportscholen = {
       },
       {
         title: "Kennisbank en inrichting",
-        text: "Samen vullen we je kennisbank met rooster, prijzen en openingstijden en richten we de categorieën in.",
+        text: "Rens richt MailMind in: categorieën, kennisbank en doorstuurregels. Jij levert je tijden, prijzen en vaste afspraken aan en controleert of het klopt.",
       },
       {
         title: "Start in Training",

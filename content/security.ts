@@ -31,10 +31,10 @@ export const security = {
     eyebrow: "Data",
     title: "Waar je data *staat.*",
     points: [
-      { title: "Opslag in de EU", text: "Het dashboard en de database draaien bij Hetzner in Helsinki (Finland)." },
+      { title: "Opslag in de EU", text: "Je mail wordt opgeslagen op servers in Helsinki (Finland)." },
       {
         title: "AI-verwerking via de OpenAI API",
-        text: "Voor het indelen van mail en het schrijven van concepten gaat de inhoud via de OpenAI API, buiten de EU. OpenAI gebruikt API-data niet voor training.",
+        text: "Voor het sorteren en de concepten verwerkt OpenAI de tekst; dat kan in de Verenigde Staten gebeuren, op basis van standaardcontractbepalingen. OpenAI gebruikt deze gegevens niet om modellen te trainen.",
       },
       { title: "Geen eigen AI-model", text: "MailMind leert van de antwoorden die je goedkeurt, niet door een model op jouw mail te trainen." },
       { title: "Mailbox via IMAP", text: "MailMind koppelt met je bestaande mailbox via IMAP." },

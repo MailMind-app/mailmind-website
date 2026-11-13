@@ -79,7 +79,7 @@ export const aboutPage = {
       title: "Hoe we werken",
       paragraphs: [
         "Een mens beoordeelt elk concept. Bij elke mail staat in het beslislog waarom MailMind iets besloot. Opzeggingen, betalingen en klachten gaan altijd naar een mens.",
-        "Je data staat in de EU, bij Hetzner in Helsinki. Voor de AI-verwerking gebruikt MailMind de OpenAI API; die data wordt niet gebruikt voor training.",
+        "Je mail wordt opgeslagen op servers in Helsinki (Finland). Voor het sorteren en de concepten verwerkt OpenAI de tekst; dat kan in de Verenigde Staten gebeuren, op basis van standaardcontractbepalingen. OpenAI gebruikt deze gegevens niet om modellen te trainen.",
         "Je hebt direct contact met mij: rens@mailmind.nl.",
       ],
     },
@@ -129,22 +129,22 @@ export const privacyPage = {
         "WhatsApp. Je kunt ook via WhatsApp contact met ons opnemen. Dat is optioneel en valt onder de voorwaarden en het privacybeleid van WhatsApp (Meta). Berichten die we via WhatsApp ontvangen, bewaren we net als vragen tot 12 maanden na het laatste contact.",
         "Opslag in je browser. De hulpknop onthoudt tijdens je bezoek of Rens al is verschenen en of je hem hebt weggeklikt, zodat hij je niet steeds opnieuw stoort. Dat staat in de sessie-opslag van je browser en verdwijnt als je het tabblad sluit. Het is functioneel: geen cookie, het wordt niet naar ons verstuurd en we volgen je er niet mee.",
         "Mail aan ons. Mail aan rens@mailmind.nl komt binnen in onze zakelijke mailbox bij Microsoft 365.",
-        "De MailMind-dienst. Voor klanten verwerkt MailMind de mail in de gekoppelde mailboxen: opslaan in de EU, indelen en concepten maken. Er gaat geen antwoord de deur uit zonder klik van een mens. In Semi-Live krijgt de afzender direct een automatische ontvangstbevestiging.",
+        "De MailMind-dienst. Voor klanten verwerkt MailMind de mail in de gekoppelde mailboxen: opslaan, indelen en concepten maken. Er gaat geen antwoord de deur uit zonder klik van een mens. In Semi-Live krijgt de afzender direct een automatische ontvangstbevestiging.",
         "Tijdens de inrichting bekijk ik (Rens) je mail. Dat is nodig om categorieën, kennisbank en doorstuurregels goed in te stellen. Dit is vastgelegd in de verwerkersovereenkomst.",
       ],
     },
     {
       title: "Waar gegevens staan",
       paragraphs: [
-        "Maildata wordt opgeslagen in de database van MailMind bij Hetzner in Helsinki (EU). Het dashboard draait op dezelfde infrastructuur.",
-        "Voor het indelen van mail en het schrijven van concepten stuurt MailMind de inhoud via de API naar OpenAI. Die verwerking vindt buiten de EU plaats. OpenAI gebruikt API-data niet voor training.",
+        "Je mail wordt opgeslagen op servers in Helsinki (Finland). Het dashboard draait op dezelfde infrastructuur.",
+        "Voor het sorteren en de concepten verwerkt OpenAI de tekst; dat kan in de Verenigde Staten gebeuren, op basis van standaardcontractbepalingen. OpenAI gebruikt deze gegevens niet om modellen te trainen.",
       ],
     },
     {
       title: "Hoe lang we gegevens bewaren",
       paragraphs: [
         "Demo-aanvragen, vragen via het vraagformulier, WhatsApp-berichten en mail aan MailMind bewaren we tot 12 maanden na het laatste contact.",
-        "Mail die klanten via MailMind laten verwerken, verwijderen we binnen 30 dagen na het einde van de overeenkomst.",
+        "Na het einde van de overeenkomst kies je binnen 30 dagen of je je gegevens terugkrijgt of dat we ze wissen. Daarna wissen we alles.",
       ],
     },
     {

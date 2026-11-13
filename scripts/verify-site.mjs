@@ -599,11 +599,14 @@ check(
 {
   const KVK = "42213617"
   const ADDRESS = "Akelei 33, 4007 TC Tiel"
-  const CONTROLLER = `MailMind, handelsnaam van R. van Arkelen (eenmanszaak), ${ADDRESS}, KvK ${KVK}, rens@mailmind.nl`
+  const VAT = "NL005589616B57"
+  const CONTROLLER = `MailMind, handelsnaam van R. van Arkelen (eenmanszaak), ${ADDRESS}, KvK ${KVK}, btw-id ${VAT}, rens@mailmind.nl`
   check(company.kvk === KVK, `content/site.ts: KvK-nummer is ${KVK}`, company.kvk)
+  check(company.vatId === VAT, `content/site.ts: btw-id is ${VAT}`, company.vatId)
+  check(/^NL\d{9}B\d{2}$/.test(company.vatId), "content/site.ts: btw-id is NL + 9 digits + B + 2 digits", company.vatId)
   check(companyAddressLine === ADDRESS, `content/site.ts: adres is ${ADDRESS}`, companyAddressLine)
   check(companyLegalNote === "handelsnaam van R. van Arkelen (eenmanszaak)", "content/site.ts: handelsnaam van R. van Arkelen (eenmanszaak)")
-  check(companyLine.startsWith(`MailMind · KvK ${KVK} · ${ADDRESS}`), "content/site.ts: company line", companyLine)
+  check(companyLine === `MailMind · KvK ${KVK} · btw ${VAT} · ${ADDRESS}`, "content/site.ts: company line", companyLine)
   if (!company.vatId) check(!/btw/i.test(companyLine) && !/btw/i.test(companySummary), "no btw-id in the company line while vatId is empty")
 
   const footerOf = (html) => html.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? ""
@@ -617,6 +620,7 @@ check(
     const footer = visibleText(footerOf(html))
     check(footer.includes(companyLine), `${page}: footer shows "${companyLine}"`, footer.slice(-120))
     check(footer.includes(`KvK ${KVK}`), `${page}: footer has KvK ${KVK}`)
+    check(footer.includes(`btw ${VAT}`), `${page}: footer has btw ${VAT}`)
     if (!company.vatId) {
       check(!/btw/i.test(footer), `${page}: footer has no btw while vatId is empty`)
       check(!VAT_LABEL.test(text), `${page}: no btw-id label while vatId is empty`, text.match(VAT_LABEL)?.[0])
@@ -636,12 +640,14 @@ check(
       check(text.includes(value), `/contact: company details show "${value}"`, text)
     }
     if (!company.vatId) check(!/btw/i.test(text), "/contact: no btw row while vatId is empty")
+    check(/<dt[^>]*>Btw-id<\/dt>\s*<dd[^>]*>NL005589616B57<\/dd>/.test(block), `/contact: company details show "Btw-id: ${VAT}"`)
   }
 
   // /privacy: controller with the full company details, "Laatst bijgewerkt" matches the sitemap date.
   {
     const text = visibleText((await get("/privacy")).body)
-    check(text.includes(`Verantwoordelijk voor de verwerking: ${CONTROLLER}.`), "/privacy: controller with KvK and address", CONTROLLER)
+    check(text.includes(`Verantwoordelijk voor de verwerking: ${CONTROLLER}.`), "/privacy: controller with KvK, btw-id and address", CONTROLLER)
+    check(text.includes(VAT), `/privacy: company details include ${VAT}`)
     const months = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"]
     const [y, m, d] = routes.find((r) => r.path === "/privacy").lastModified.split("-").map(Number)
     const date = `${d} ${months[m - 1]} ${y}`
@@ -666,6 +672,7 @@ check(
     const id = org.identifier ?? {}
     check(id["@type"] === "PropertyValue" && id.propertyID === "KvK" && id.value === KVK, `JSON-LD: identifier KvK ${KVK}`, JSON.stringify(id))
     if (!company.vatId) check(!("vatID" in org) && !/vatID|btw/i.test(block), "JSON-LD: no vatID while vatId is empty")
+    check(org.vatID === VAT, `JSON-LD: Organization vatID is ${VAT}`, org.vatID)
   }
 
   // llms.txt and the Markdown versions carry the same short line.
@@ -676,10 +683,18 @@ check(
     for (const [label, body] of [["llms.txt", llms], ["Markdown /", md], ["Markdown 404", md404]]) {
       check(body.includes(companySummary), `${label}: company details`, companySummary)
       check(body.includes(`KvK ${KVK}`) && body.includes(ADDRESS), `${label}: KvK ${KVK} and ${ADDRESS}`)
+      check(body.includes(`btw-id ${VAT}`), `${label}: btw-id ${VAT}`)
       if (!company.vatId) check(!VAT_LABEL.test(body), `${label}: no btw-id label while vatId is empty`)
     }
   }
   check(site.email === "rens@mailmind.nl", "content/site.ts: e-mail is rens@mailmind.nl")
+}
+
+// ── Homepage: the security line (lock + "Meer over veiligheid") says mail is not used for training ──
+{
+  const html = (await get("/")).body
+  const line = html.match(/<p[^>]*>(?:(?!<\/p>)[\s\S])*?<\/p>\s*<a[^>]*href="\/veiligheid"[^>]*>(?:(?!<\/a>)[\s\S])*?Meer over veiligheid/)?.[0] ?? ""
+  check(visibleText(line).includes("niet gebruikt om AI te trainen"), 'homepage security line: "niet gebruikt om AI te trainen"', visibleText(line))
 }
 
 // ── Verwerkersovereenkomst: Training als inrichtingsfase, inzage tijdens de inrichting, subverwerkers gesplitst ──

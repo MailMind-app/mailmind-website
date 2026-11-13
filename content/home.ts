@@ -146,7 +146,7 @@ export const control = {
   ],
   modesTitle: "Drie modi",
   modesLink: { label: "Meer over de modi", href: "/hoe-het-werkt#modi" },
-  security: "Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS.",
+  security: "Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS. Je mail wordt niet gebruikt om AI te trainen.",
   securityLink: { label: "Meer over veiligheid", href: "/veiligheid" },
 }
 

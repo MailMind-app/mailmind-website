@@ -19,13 +19,13 @@ export const site = {
 
 // Bedrijfsgegevens uit de KvK-inschrijving. Gebruikt door de footer, /contact, de
 // privacyverklaring, de JSON-LD, llms.txt en de Markdown-versies.
-// Een leeg veld (zoals vatId) wordt nergens getoond, ook niet als label.
+// Een leeg veld wordt nergens getoond, ook niet als label.
 export const company = {
   tradeName: "MailMind",
   owner: "R. van Arkelen",
   legalForm: "eenmanszaak",
   kvk: "42213617",
-  vatId: "",
+  vatId: "NL005589616B57",
   address: {
     street: "Akelei 33",
     postalCode: "4007 TC",
@@ -41,20 +41,21 @@ export const companyLegalNote = `handelsnaam van ${company.owner} (${company.leg
 export const companyDescription = `${company.tradeName} is een ${companyLegalNote}`
 /** "Akelei 33, 4007 TC Tiel" */
 export const companyAddressLine = `${company.address.street}, ${company.address.postalCode} ${company.address.city}`
-/** Short parts for one-line use: ["MailMind", "KvK 42213617", "Akelei 33, 4007 TC Tiel", ("Btw-id …")]. */
+/** Short parts for one-line use: ["MailMind", "KvK 42213617", "btw NL005589616B57", "Akelei 33, 4007 TC Tiel"]. */
 export const companyLineParts = [
   company.tradeName,
   company.kvk && `KvK ${company.kvk}`,
+  company.vatId && `btw ${company.vatId}`,
   companyAddressLine,
-  company.vatId && `Btw-id ${company.vatId}`,
 ].filter(Boolean) as string[]
-/** "MailMind · KvK 42213617 · Akelei 33, 4007 TC Tiel" */
+/** "MailMind · KvK 42213617 · btw NL005589616B57 · Akelei 33, 4007 TC Tiel" */
 export const companyLine = companyLineParts.join(" · ")
-/** For llms.txt and Markdown: "MailMind is een handelsnaam van …, Akelei 33, 4007 TC Tiel, KvK 42213617." */
-export const companySummary =
-  [companyDescription, companyAddressLine, company.kvk && `KvK ${company.kvk}`, company.vatId && `btw-id ${company.vatId}`]
-    .filter(Boolean)
-    .join(", ") + "."
+/** "KvK 42213617, btw-id NL005589616B57" */
+export const companyRegistration = [company.kvk && `KvK ${company.kvk}`, company.vatId && `btw-id ${company.vatId}`]
+  .filter(Boolean)
+  .join(", ")
+/** For llms.txt and Markdown: "MailMind is een handelsnaam van …, Akelei 33, 4007 TC Tiel, KvK 42213617, btw-id NL005589616B57." */
+export const companySummary = [companyDescription, companyAddressLine, companyRegistration].filter(Boolean).join(", ") + "."
 
 export type Route = {
   path: string

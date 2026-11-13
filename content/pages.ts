@@ -2,7 +2,7 @@
 // *Woorden tussen sterretjes* krijgen het accentverloop.
 
 import { founding, foundingOpen } from "./pricing"
-import { company, companyAddressLine, companyLegalNote, site } from "./site"
+import { company, companyAddressLine, companyLegalNote, companyRegistration, site } from "./site"
 
 export const pricingPage = {
   hero: {
@@ -116,7 +116,7 @@ export const privacyPage = {
       title: "Wie we zijn",
       paragraphs: [
         "MailMind levert een AI-e-mailassistent voor Nederlandse sportscholen en MKB-bedrijven. In deze verklaring lees je welke persoonsgegevens MailMind verwerkt, waar die worden opgeslagen en welke partijen daarbij betrokken zijn.",
-        `Verantwoordelijk voor de verwerking: ${company.tradeName}, ${companyLegalNote}, ${companyAddressLine}, KvK ${company.kvk}, ${site.email}.`,
+        `Verantwoordelijk voor de verwerking: ${company.tradeName}, ${companyLegalNote}, ${companyAddressLine}, ${companyRegistration}, ${site.email}.`,
         "Voor bezoekers van deze website en voor demo-aanvragen bepaalt MailMind zelf waarvoor en hoe gegevens worden verwerkt. Voor de mail die klanten via MailMind laten verwerken, verwerkt MailMind gegevens in opdracht van die klant.",
       ],
     },

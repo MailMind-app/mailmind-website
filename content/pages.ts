@@ -50,6 +50,8 @@ export const demoPage = {
 }
 
 export const aboutPage = {
+  /** De socials staan direct onder deze sectie. */
+  socialsAfter: "Wie erachter zit",
   hero: {
     eyebrow: "Over MailMind",
     title: "Mailwerk dat *klopt.*",
@@ -123,7 +125,10 @@ export const privacyPage = {
     {
       title: "Welke gegevens we verwerken",
       paragraphs: [
-        "Websitebezoek. Vercel host deze website en verwerkt de technische gegevens die nodig zijn om pagina's te tonen. Deze website gebruikt geen analytische of advertentiecookies.",
+        {
+          id: "cookies",
+          text: "Websitebezoek. Vercel host deze website en verwerkt de technische gegevens die nodig zijn om pagina's te tonen. Deze website gebruikt geen analytische of advertentiecookies.",
+        },
         "Websitestatistieken: we gebruiken Vercel Web Analytics om te zien hoe vaak pagina's bezocht worden. Dit werkt zonder cookies en zonder dat we je kunnen herkennen; we zien alleen totalen (pagina, land, apparaattype, verwijzende site).",
         "Demo-aanvragen en vragen. Bij een demo-aanvraag ontvangen we je bedrijfsnaam, e-mailadres, het gekozen mailvolume en je bericht. Stel je een vraag via het vraagformulier van de hulpknop, dan ontvangen we je naam, je e-mailadres, de inhoud van je vraag en de pagina waarop je hem stelde. Aanvragen en vragen worden via Resend (EU) bezorgd in onze zakelijke mailbox bij Microsoft 365. We gebruiken deze gegevens alleen om op je aanvraag of vraag te reageren.",
         "WhatsApp. Je kunt ook via WhatsApp contact met ons opnemen. Dat is optioneel en valt onder de voorwaarden en het privacybeleid van WhatsApp (Meta). Berichten die we via WhatsApp ontvangen, bewaren we net als vragen tot 12 maanden na het laatste contact.",

@@ -23,6 +23,7 @@ import {
   companySummary,
   routes,
   site,
+  socials,
   subprocessors,
 } from "../content/site.ts"
 
@@ -804,6 +805,100 @@ check(
       check(visibleText(block).includes(sp.name), `${page}: ${sp.name} is listed under ${sp.group}`)
     }
   }
+}
+
+// ── Footer and socials: links from content/site.ts, no platform scripts, cookie anchor, sameAs ──
+{
+  const PLATFORM = /<(script|iframe)\b[^>]*\bsrc="[^"]*(linkedin\.com|instagram\.com|facebook\.com|facebook\.net|tiktok\.com)/i
+  const attr = (tag, name) => tag.match(new RegExp(`\\s${name}="([^"]*)"`))?.[1]
+  const escapeHtml = (s) => s.replace(/&/g, "&amp;")
+  check(socials.length >= 5, "content/site.ts: five socials (LinkedIn, Instagram, Facebook, TikTok, WhatsApp)", socials.map((s) => s.id).join(", "))
+  check(
+    socials.find((s) => s.id === "whatsapp")?.url === `https://wa.me/${helper.whatsapp.replace(/\D/g, "")}`,
+    "content/site.ts: WhatsApp uses the number of the helper",
+  )
+  for (const page of [...PAGES, "/bestaat-niet"]) {
+    const html = (await get(page)).body
+    const footer = html.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? ""
+    for (const s of socials) {
+      check(footer.includes(`href="${escapeHtml(s.url)}"`), `${page}: footer links to ${s.name}`, s.url)
+    }
+    const socialLinks = [...withoutScripts(html).matchAll(/<a\b[^>]*>/g)]
+      .map((m) => m[0])
+      .filter((tag) => socials.some((s) => attr(tag, "href") === escapeHtml(s.url)))
+    for (const tag of socialLinks) {
+      const href = attr(tag, "href")
+      check(attr(tag, "rel") === "noopener noreferrer", `${page}: ${href} has rel="noopener noreferrer"`, tag)
+      check(attr(tag, "target") === "_blank", `${page}: ${href} opens in a new tab`, tag)
+      const iconOnly = attr(tag, "data-social") !== undefined
+      if (iconOnly) check(Boolean(attr(tag, "aria-label")), `${page}: icon button ${href} has an aria-label`, tag)
+    }
+    check(!PLATFORM.test(html), `${page}: no <script> or <iframe> from LinkedIn, Instagram, Facebook or TikTok`, html.match(PLATFORM)?.[0])
+    const line = visibleText(html.match(/<p[^>]*data-company-line=""[\s\S]*?<\/p>/)?.[0] ?? "")
+    check(
+      line.startsWith(`© ${new Date().getFullYear()} ${companyLine}`) && line.endsWith("· Geen trackingcookies"),
+      `${page}: footer bottom line with © and "Geen trackingcookies"`,
+      line,
+    )
+    check(/<a[^>]*href="\/privacy#cookies"[^>]*>Geen trackingcookies<\/a>/.test(footer), `${page}: "Geen trackingcookies" links to /privacy#cookies`)
+  }
+  // Icon buttons: one per social, each with its own aria-label, on every page footer and on /over and /contact.
+  for (const page of ["/", "/over", "/contact"]) {
+    const html = (await get(page)).body
+    const lists = html.match(/data-social-links=""/g)?.length ?? 0
+    check(lists === (page === "/" ? 1 : 2), `${page}: social icon row ${page === "/" ? "in the footer" : "in the footer and on the page"}`, String(lists))
+    for (const s of socials) {
+      check(html.includes(`aria-label="${s.label}"`), `${page}: aria-label "${s.label}"`)
+    }
+  }
+  {
+    const html = (await get("/over")).body
+    const section = html.match(/<section[^>]*aria-labelledby="wie-erachter-zit"[\s\S]*?<\/section>/)?.[0] ?? ""
+    check(section.includes('data-social-links=""'), '/over: socials under "Wie erachter zit"')
+  }
+  check(/\sid="cookies"/.test((await get("/privacy")).body), '/privacy has an element with id="cookies"')
+
+  const block = jsonLdBlocks((await get("/")).body)[0] ?? "{}"
+  const org = (JSON.parse(block)["@graph"] ?? []).find((n) => n["@type"] === "Organization") ?? {}
+  const sameAs = org.sameAs ?? []
+  for (const s of socials.filter((s) => s.profile)) check(sameAs.includes(s.url), `JSON-LD sameAs: ${s.name}`, JSON.stringify(sameAs))
+  check(!sameAs.some((u) => u.includes("wa.me")), "JSON-LD sameAs: no WhatsApp", JSON.stringify(sameAs))
+  check(sameAs.length === 4, "JSON-LD sameAs: the four platforms", JSON.stringify(sameAs))
+
+  const llms = (await get("/llms.txt")).body
+  const md = (await get("/", "text/markdown")).body
+  const md404 = (await get("/bestaat-niet", "text/markdown")).body
+  for (const [label, body] of [["llms.txt", llms], ["Markdown /", md], ["Markdown 404", md404]]) {
+    for (const s of socials) check(body.includes(s.url), `${label}: names ${s.name}`, s.url)
+  }
+}
+
+// ── Footer: no horizontal scroll at 320, 360 and 390 px (Chrome; PW_CHANNEL=msedge for Edge) ──
+{
+  const { chromium } = await import("playwright-core")
+  const browser = await chromium.launch({ channel: process.env.PW_CHANNEL ?? "chrome", headless: true })
+  for (const width of [320, 360, 390]) {
+    const page = await browser.newPage({ viewport: { width, height: 800 } })
+    for (const path of ["/", "/over", "/contact", "/privacy"]) {
+      await page.goto(`${BASE}${path}`, { waitUntil: "load" })
+      const r = await page.evaluate(() => {
+        const footer = document.querySelector("footer")
+        const inner = window.innerWidth
+        const wide = [...footer.querySelectorAll("*")]
+          .filter((el) => el.getBoundingClientRect().right > inner + 0.5)
+          .slice(0, 3)
+          .map((el) => `<${el.tagName.toLowerCase()}> ${(el.textContent ?? "").trim().slice(0, 30)}`)
+        return { inner, scroll: document.documentElement.scrollWidth, footer: footer.scrollWidth - footer.clientWidth, wide }
+      })
+      check(
+        r.scroll <= r.inner && r.footer <= 0 && r.wide.length === 0,
+        `${width}px ${path}: footer has no horizontal scroll`,
+        `scrollWidth ${r.scroll} > ${r.inner}; ${r.wide.join(" | ")}`,
+      )
+    }
+    await page.close()
+  }
+  await browser.close()
 }
 
 console.log(failures ? `\n${failures} check(s) failed` : "\nAll checks passed")

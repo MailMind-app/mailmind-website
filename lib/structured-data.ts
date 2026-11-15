@@ -1,6 +1,6 @@
 import { faqFor } from "@/content/faq"
 import { founding, foundingOpen, plans } from "@/content/pricing"
-import { company, site } from "@/content/site"
+import { company, site, socialProfiles } from "@/content/site"
 import { absoluteUrl } from "@/lib/site"
 import { toPlainText } from "@/lib/text"
 
@@ -44,6 +44,7 @@ export const homeJsonLd = {
         availableLanguage: ["nl", "en"],
       },
       ...companyFields,
+      ...(socialProfiles.length ? { sameAs: socialProfiles } : {}),
     },
     {
       "@type": "SoftwareApplication",

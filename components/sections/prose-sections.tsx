@@ -1,9 +1,20 @@
 import type { ReactNode } from "react"
 
-export type ProseSection = { title: string; paragraphs: string[] }
+/** A paragraph is plain text, or { id, text } when other pages link to it (e.g. /privacy#cookies). */
+export type ProseParagraph = string | { id: string; text: string }
+export type ProseSection = { title: string; paragraphs: ProseParagraph[] }
 
 /** Plain text page body (over, privacy): h2 + paragraphs per section. */
-export function ProseSections({ sections, children }: { sections: ProseSection[]; children?: ReactNode }) {
+export function ProseSections({
+  sections,
+  children,
+  after = {},
+}: {
+  sections: ProseSection[]
+  children?: ReactNode
+  /** Extra content directly below a section, keyed by its title. */
+  after?: Record<string, ReactNode>
+}) {
   return (
     <div className="section-y">
       <div className="container-site">
@@ -14,10 +25,17 @@ export function ProseSections({ sections, children }: { sections: ProseSection[]
                 {section.title}
               </h2>
               <div className="mt-5 space-y-4 text-[17px]">
-                {section.paragraphs.map((p) => (
-                  <p key={p}>{p}</p>
-                ))}
+                {section.paragraphs.map((p) =>
+                  typeof p === "string" ? (
+                    <p key={p}>{p}</p>
+                  ) : (
+                    <p key={p.id} id={p.id}>
+                      {p.text}
+                    </p>
+                  ),
+                )}
               </div>
+              {after[section.title]}
             </section>
           ))}
           {children}

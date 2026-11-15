@@ -1,6 +1,7 @@
 // Algemene gegevens van MailMind. Teksten en gegevens aanpassen kan hier,
 // zonder iets aan de layout te veranderen.
 
+import { helper } from "./helper"
 import { formatEuro, founding, foundingOpen } from "./pricing"
 
 export const site = {
@@ -146,7 +147,32 @@ export const mainNav = [
   { href: "/veiligheid", label: "Veiligheid" },
 ]
 
-export const footerNav = [
+// Socials: één regel per kanaal; weghalen of toevoegen kan hier. Footer, /over, /contact,
+// llms.txt en de Markdown-versies lezen deze lijst. `profile: true` komt als sameAs in de JSON-LD.
+// WhatsApp gebruikt het nummer van de hulpknop (content/helper.ts) en verdwijnt als dat leeg is.
+export type Social = { id: string; name: string; url: string; label: string; profile: boolean }
+
+const whatsappDigits = helper.whatsapp.replace(/\D/g, "")
+
+export const socials: Social[] = [
+  { id: "linkedin", name: "LinkedIn", url: "https://www.linkedin.com/company/mailmind-nl/", label: "MailMind op LinkedIn", profile: true },
+  { id: "instagram", name: "Instagram", url: "https://www.instagram.com/mailmind/", label: "MailMind op Instagram", profile: true },
+  { id: "facebook", name: "Facebook", url: "https://www.facebook.com/profile.php?id=61595258214786", label: "MailMind op Facebook", profile: true },
+  { id: "tiktok", name: "TikTok", url: "https://www.tiktok.com/@mailmind", label: "MailMind op TikTok", profile: true },
+  ...(whatsappDigits
+    ? [{ id: "whatsapp", name: "WhatsApp", url: `https://wa.me/${whatsappDigits}`, label: "App Rens via WhatsApp", profile: false }]
+    : []),
+]
+
+/** Platform-URL's voor sameAs in de JSON-LD (zonder WhatsApp). */
+export const socialProfiles = socials.filter((s) => s.profile).map((s) => s.url)
+/** For llms.txt and Markdown: "LinkedIn (https://…), Instagram (https://…), …" */
+export const socialSummary = socials.map((s) => `${s.name} (${s.url})`).join(", ")
+
+export type FooterLink = { href: string; label: string; plain?: boolean }
+
+// `plain`: gewone link, geen client-side navigatie (/login is een redirect naar het dashboard).
+export const footerNav: { title: string; links: FooterLink[] }[] = [
   {
     title: "Product",
     links: [
@@ -154,24 +180,28 @@ export const footerNav = [
       { href: "/sportscholen", label: "Sportscholen" },
       { href: "/prijzen", label: "Prijzen" },
       { href: "/veiligheid", label: "Veiligheid" },
+      { href: "/demo", label: "Demo aanvragen" },
     ],
   },
   {
-    title: "MailMind",
+    title: "Bedrijf",
     links: [
       { href: "/over", label: "Over" },
       { href: "/contact", label: "Contact" },
-      { href: "/demo", label: "Demo aanvragen" },
-      { href: "/privacy", label: "Privacy" },
-    ],
-  },
-  {
-    title: "Account",
-    links: [
-      { href: site.dashboardLoginUrl, label: "Inloggen", external: true },
+      { href: "/privacy", label: "Privacy & AVG" },
+      { href: "/login", label: "Inloggen", plain: true },
     ],
   },
 ]
+
+export const footerContact = {
+  title: "Contact",
+  whatsapp: socials.find((s) => s.id === "whatsapp"),
+  responseTime: helper.responseTime,
+}
+
+/** Laatste deel van de onderste footerregel, met link naar het cookiedeel van /privacy. */
+export const footerCookies = { label: "Geen trackingcookies", href: "/privacy#cookies" }
 
 export type SubprocessorGroup = "dienst" | "website"
 export type Subprocessor = { name: string; role: string; location: string; group: SubprocessorGroup }

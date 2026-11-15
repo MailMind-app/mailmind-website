@@ -2,6 +2,7 @@ import { ArrowRight, Mail, Monitor } from "lucide-react"
 import { ButtonLink } from "@/components/primitives/button-link"
 import { PageHero } from "@/components/primitives/page-hero"
 import { CompanyDetails } from "@/components/sections/company-details"
+import { SocialLinks } from "@/components/sections/social-links"
 import { contactPage as c } from "@/content/pages"
 import { site } from "@/content/site"
 import { metadataFor } from "@/lib/site"
@@ -26,6 +27,7 @@ export default function ContactPage() {
                 {site.email}
                 <ArrowRight className="size-4" aria-hidden="true" />
               </a>
+              <SocialLinks className="mt-5" />
             </div>
             <div className="flex flex-col rounded-lg border border-accent-line bg-accent-soft p-6 sm:p-8">
               <Monitor className="size-6 text-accent-text" aria-hidden="true" />

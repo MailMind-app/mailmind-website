@@ -969,6 +969,43 @@ check(
   }
 }
 
+// ── Homepage hero: animated example (final state in the HTML), no envelope, new notes ──
+{
+  const html = (await get("/")).body
+  const hero = html.match(/<section[^>]*data-hero=""[\s\S]*?<\/section>/)?.[0] ?? ""
+  const demo = hero.match(/<div[^>]*data-hero-demo=""[^>]*>/)?.[0] ?? ""
+  const heroText = visibleText(hero)
+  check(heroText.includes("dan zet ik je op de lijst"), 'hero: the full draft is in the HTML ("dan zet ik je op de lijst")')
+  check(heroText.includes("Hoi Lotte, leuk dat je mee wilt doen! Zaterdag om 10:00 is er een groepsles"), "hero: the draft starts as written in content/home.ts")
+  check(heroText.includes("Verstuurd ✓ na jouw klik"), 'hero: "Verstuurd ✓ na jouw klik" in the HTML')
+  check(heroText.includes("Ontvangstbevestiging verstuurd") && heroText.includes("Bron: Rooster · kennisbank"), "hero: receipt line and draft source")
+  check(!/\b(Goedkeuren|Verbeteren|Afwijzen)\b/.test(heroText), "hero: only the Versturen button, no old actions")
+  check(/role="img"/.test(demo), 'hero example has role="img"', demo)
+  check(
+    demo.includes(
+      'aria-label="Voorbeeld: een proefles-mail krijgt direct een ontvangstbevestiging en een conceptantwoord uit de kennisbank. Het antwoord gaat pas weg na jouw klik."',
+    ),
+    "hero example has the aria-label",
+    demo,
+  )
+  check(!/data-anim/.test(demo), "hero example: the server renders the final state (no data-anim)")
+  const inner = hero.slice(hero.indexOf(demo))
+  check(/^<div[^>]*data-hero-demo=""[^>]*><div aria-hidden="true">/.test(inner), "hero example: its contents are aria-hidden")
+  check(!/<(button|a)\b|tabindex=/i.test(inner.slice(0, inner.indexOf("</section>"))), "hero example: no focusable button, link or cursor")
+  // The old envelope outline and its travelling light are gone; the dot grid stays.
+  check(!/M112 72 H528/.test(hero) && !/stroke-dasharray|sweep/.test(hero), "hero: no envelope outline or light")
+  check(/<div[^>]*data-signal-field=""[^>]*><\/div>/.test(hero), "hero: dot grid without an SVG inside")
+  check(!/<svg[^>]*viewBox="0 0 640 520"/.test(hero), "hero: no envelope SVG")
+  // Notes under the buttons.
+  const notes = visibleText(hero.match(/<ul[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? "")
+  check(notes.includes("Werkt met je eigen mailbox"), 'hero notes: "Werkt met je eigen mailbox"', notes)
+  check(notes.includes("Opzeggingen en betalingen gaan altijd naar een mens"), 'hero notes: "Opzeggingen en betalingen gaan altijd naar een mens"', notes)
+  // Storage and AI facts stay on the homepage, at the security line with the lock.
+  const text = visibleText(html)
+  check(text.includes("Helsinki"), 'homepage still mentions "Helsinki"')
+  check(text.includes("niet gebruikt om AI te trainen"), 'homepage still says "niet gebruikt om AI te trainen"')
+}
+
 // ── Footer: no horizontal scroll at 320, 360 and 390 px (Chrome; PW_CHANNEL=msedge for Edge) ──
 {
   const { chromium } = await import("playwright-core")
@@ -992,7 +1029,58 @@ check(
         `scrollWidth ${r.scroll} > ${r.inner}; ${r.wide.join(" | ")}`,
       )
       if (path === "/over") check(r.scroll <= r.inner, `${width}px /over: page has no horizontal scroll`, `scrollWidth ${r.scroll} > ${r.inner}`)
+      if (path === "/") {
+        const hero = await page.evaluate(() => {
+          const el = document.querySelector("[data-hero]")
+          return { right: Math.max(...[...el.querySelectorAll("*")].map((n) => n.getBoundingClientRect().right)), inner: window.innerWidth }
+        })
+        check(r.scroll <= r.inner, `${width}px /: page has no horizontal scroll`, `scrollWidth ${r.scroll} > ${r.inner}`)
+        check(hero.right <= hero.inner + 0.5, `${width}px /: nothing in the hero sticks out`, `${hero.right} > ${hero.inner}`)
+      }
     }
+    await page.close()
+  }
+
+  // Hero example: with reduced motion the final state is shown at once and nothing is animated.
+  {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await page.goto(`${BASE}/`, { waitUntil: "load" })
+    await page.waitForTimeout(1500)
+    const s = await page.evaluate(() => {
+      const demo = document.querySelector("[data-hero-demo]")
+      const op = (sel) => [...demo.querySelectorAll(sel)].map((n) => Number(getComputedStyle(n).opacity))
+      const byText = (text) => [...demo.querySelectorAll("span")].find((n) => n.textContent === text)
+      return {
+        anim: demo.hasAttribute("data-anim"),
+        words: op("p span span").filter((o) => o !== 1).length,
+        done: Number(getComputedStyle(byText("Verstuurd ✓ na jouw klik")).opacity),
+        idle: Number(getComputedStyle(byText("Versturen")).opacity),
+      }
+    })
+    check(!s.anim, "hero example, reduced motion: the animation does not start")
+    check(s.words === 0, "hero example, reduced motion: the whole draft is visible", `${s.words} words hidden`)
+    check(s.done === 1 && s.idle === 0, 'hero example, reduced motion: the button shows "Verstuurd ✓ na jouw klik"', JSON.stringify(s))
+    await page.close()
+  }
+
+  // Hero example with motion: it starts after load, and its height never changes during the loop (CLS 0).
+  {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+    await page.goto(`${BASE}/`, { waitUntil: "load" })
+    const heights = new Set()
+    let started = false
+    for (let t = 0; t < 10000; t += 500) {
+      const r = await page.evaluate(() => {
+        const demo = document.querySelector("[data-hero-demo]")
+        return { h: Math.round(demo.getBoundingClientRect().height), anim: demo.hasAttribute("data-anim") }
+      })
+      heights.add(r.h)
+      started ||= r.anim
+      await page.waitForTimeout(500)
+    }
+    check(started, "hero example: the animation runs after load")
+    check(heights.size === 1, "hero example: its height stays the same during the whole loop", [...heights].join(", "))
     await page.close()
   }
   await browser.close()

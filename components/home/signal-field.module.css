@@ -9,65 +9,8 @@
   mask-image: radial-gradient(ellipse 70% 80% at 72% 50%, black 30%, transparent 80%);
 }
 
-.envelope {
-  position: absolute;
-  top: 50%;
-  left: 74%;
-  width: min(960px, 175vw);
-  height: auto;
-  transform: translate(-50%, -50%);
-  overflow: visible;
-}
-
-/* Dotted outline: zero-length dashes with round caps render as dots. */
-.dots {
-  fill: none;
-  stroke: var(--accent-text);
-  stroke-width: 3.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 0 13;
-  opacity: 0.3;
-}
-
-/* A run of 16 brighter dots on the same positions as .dots, then a gap for the rest of the
-   envelope (2184 = 168 dots × 13, the outline's length). Moving the pattern in steps of exactly
-   one dot keeps them on top of the static dots, and only the path repaints, about 19× a second. */
-.bright {
-  opacity: 0.95;
-  stroke-dasharray: 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 13 0 1989;
-  stroke-dashoffset: 2184;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bright {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .bright {
-    animation: sweep 9s steps(168, end) infinite;
-  }
-}
-
-/* A soft light travels along the envelope outline. */
-@keyframes sweep {
-  from {
-    stroke-dashoffset: 2184;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
 @media (max-width: 1023px) {
   .field {
     mask-image: radial-gradient(ellipse 90% 50% at 50% 74%, black 25%, transparent 80%);
-  }
-
-  .envelope {
-    top: 75%;
-    left: 50%;
   }
 }

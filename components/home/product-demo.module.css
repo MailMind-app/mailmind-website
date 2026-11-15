@@ -1,8 +1,7 @@
 /*
- * Hero product view, built in HTML/CSS. One 14s loop:
- * mail arrives → category label → draft is written → cursor clicks
- * "Goedkeuren" → "Goedgekeurd door jou". Default styles are the final state,
- * so with prefers-reduced-motion the view is simply static.
+ * Hero example, built in HTML/CSS. The default styles are the final state (server render, no JavaScript,
+ * reduced motion). ProductDemo sets [data-anim] and then one data attribute per step; the transitions below
+ * animate only opacity and transform, so the layout never moves (CLS 0).
  */
 
 .window {
@@ -171,151 +170,61 @@
   color: var(--fg);
 }
 
-.writing {
-  display: grid;
-  margin-top: 0.5rem;
-}
-
-.writing > * {
-  grid-area: 1 / 1;
-}
-
 .draftText {
+  margin-top: 0.5rem;
   font-size: 0.875rem;
   line-height: 1.55;
   color: var(--fg);
 }
 
-.skeleton {
-  display: grid;
-  align-content: start;
-  gap: 0.5rem;
-  padding-top: 0.3rem;
-  opacity: 0;
-}
-
-.skeleton span {
-  height: 0.55rem;
-  border-radius: 999px;
-  background: var(--line-strong);
-}
-
-.skeleton span:nth-child(1) {
-  width: 92%;
-}
-
-.skeleton span:nth-child(2) {
-  width: 78%;
-}
-
-.skeleton span:nth-child(3) {
-  width: 54%;
-}
-
 .actions {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
   margin-top: 0.875rem;
 }
 
-.action {
-  display: inline-flex;
-  align-items: center;
-  height: 2rem;
-  padding: 0 0.75rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
+/* Two stacked layers: the button takes the width of the longer one, so nothing shifts when it changes. */
+.send {
+  display: inline-grid;
   font-size: 0.8125rem;
-  color: var(--muted);
+  font-weight: 500;
 }
 
-.approveWrap {
-  position: relative;
-}
-
-/* The button underneath keeps its idle look; the approved look is this layer on top, so only its
-   opacity animates (animating colours and box-shadow keeps the main thread busy every frame). */
-.approve {
-  position: relative;
-}
-
-.approve::after {
-  content: attr(data-label);
-  position: absolute;
-  inset: -1px;
+.send > * {
+  grid-area: 1 / 1;
   display: inline-flex;
   align-items: center;
-  padding: 0 0.75rem;
-  border: 1px solid var(--accent);
+  justify-content: center;
+  height: 2rem;
+  padding: 0 0.875rem;
+  border: 1px solid transparent;
   border-radius: 999px;
+  white-space: nowrap;
+}
+
+.sendIdle {
+  border-color: var(--accent);
   background: var(--accent);
   color: white;
-  box-shadow: 0 0 0 4px var(--accent-soft);
+  opacity: 0;
+}
+
+.sendDone {
+  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+  background: var(--success-soft);
+  color: var(--success);
 }
 
 .cursor {
   position: absolute;
-  top: 55%;
-  left: 60%;
+  top: 1rem;
+  left: 4.5rem;
   width: 22px;
   height: 22px;
   color: var(--fg);
   opacity: 0;
   filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.6));
-}
-
-.status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
-  border-radius: var(--radius-md);
-  background: var(--success-soft);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--success);
-}
-
-/* ── Animation (only without reduced motion) ── */
-@media (prefers-reduced-motion: no-preference) {
-  .mail {
-    animation: mailIn 14s infinite both;
-  }
-
-  .chips,
-  .receipt {
-    animation: chipsIn 14s infinite both;
-  }
-
-  .draft {
-    animation: draftIn 14s infinite both;
-  }
-
-  .skeleton {
-    animation: skeleton 14s infinite both;
-  }
-
-  .draftText {
-    animation: textIn 14s infinite both;
-  }
-
-  .actions {
-    animation: actionsIn 14s infinite both;
-  }
-
-  .approve::after {
-    animation: approve 14s infinite both;
-  }
-
-  .cursor {
-    animation: cursor 14s infinite both;
-  }
-
-  .status {
-    animation: statusIn 14s infinite both;
-  }
+  pointer-events: none;
 }
 
 @media (min-width: 640px) {
@@ -344,146 +253,99 @@
   }
 }
 
-@keyframes mailIn {
-  0% {
+/* ── Animation: only while ProductDemo runs it ([data-anim]); never with reduced motion ── */
+@media (prefers-reduced-motion: no-preference) {
+  .window[data-anim] :is(.mail, .chips, .receipt, .draft, .word, .send, .sendIdle, .sendDone, .cursor) {
+    transition:
+      opacity 400ms ease,
+      transform 400ms ease;
+  }
+
+  /* Start state */
+  .window[data-anim] .mail {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .window[data-anim] :is(.chips, .receipt) {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .window[data-anim] .draft {
     opacity: 0;
     transform: translateY(8px);
   }
-  5%,
-  93% {
+
+  .window[data-anim] .word {
+    opacity: 0;
+  }
+
+  .window[data-anim] .send {
+    opacity: 0;
+  }
+
+  .window[data-anim] .sendIdle {
+    opacity: 1;
+  }
+
+  .window[data-anim] .sendDone {
+    opacity: 0;
+  }
+
+  .window[data-anim] .cursor {
+    opacity: 0;
+    transform: translate(72px, 44px);
+  }
+
+  /* Steps */
+  .window[data-anim][data-mail] .mail,
+  .window[data-anim][data-labels] .chips,
+  .window[data-anim][data-receipt] .receipt,
+  .window[data-anim][data-draft] .draft {
     opacity: 1;
     transform: none;
   }
-  100% {
-    opacity: 0;
-  }
-}
 
-@keyframes chipsIn {
-  0%,
-  12% {
-    opacity: 0;
-    transform: scale(0.96);
+  /* Each word switches on at once (no half-transparent text in between): reads as typing, and a contrast
+     check can never catch a word mid-fade. */
+  .window[data-anim][data-draft] .word {
+    opacity: 1;
+    transition: opacity 0s linear calc(var(--i) * var(--word-step));
   }
-  16%,
-  93% {
+
+  .window[data-anim][data-button] .send {
+    opacity: 1;
+  }
+
+  .window[data-anim][data-cursor] .cursor {
     opacity: 1;
     transform: none;
+    transition:
+      opacity 200ms ease,
+      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  100% {
-    opacity: 0;
-  }
-}
 
-@keyframes draftIn {
-  0%,
-  22% {
-    opacity: 0;
-    transform: translateY(8px);
+  .window[data-anim][data-press] .send {
+    transform: scale(0.95);
+    transition: transform 120ms ease;
   }
-  26%,
-  93% {
-    opacity: 1;
-    transform: none;
-  }
-  100% {
-    opacity: 0;
-  }
-}
 
-@keyframes skeleton {
-  0%,
-  25% {
-    opacity: 0;
+  .window[data-anim][data-press] .cursor {
+    transform: scale(0.85);
+    transition: transform 120ms ease;
   }
-  27%,
-  37% {
-    opacity: 1;
-  }
-  41%,
-  100% {
-    opacity: 0;
-  }
-}
 
-@keyframes textIn {
-  0%,
-  37% {
+  .window[data-anim][data-sent] .sendIdle {
     opacity: 0;
   }
-  43%,
-  93% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
 
-@keyframes actionsIn {
-  0%,
-  42% {
-    opacity: 0;
-  }
-  46%,
-  93% {
+  .window[data-anim][data-sent] .sendDone {
     opacity: 1;
   }
-  100% {
-    opacity: 0;
-  }
-}
 
-@keyframes approve {
-  0%,
-  63% {
+  .window[data-anim][data-sent] .cursor {
     opacity: 0;
-  }
-  66%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes cursor {
-  0%,
-  48% {
-    opacity: 0;
-    transform: translate(150px, 70px);
-  }
-  52% {
-    opacity: 1;
-    transform: translate(150px, 70px);
-  }
-  62% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
-  64% {
-    transform: translate(0, 0) scale(0.85);
-  }
-  66% {
-    transform: translate(0, 0) scale(1);
-  }
-  76%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0);
-  }
-}
-
-@keyframes statusIn {
-  0%,
-  68% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  72%,
-  93% {
-    opacity: 1;
-    transform: none;
-  }
-  100% {
-    opacity: 0;
+    transition: opacity 300ms ease 500ms;
   }
 }

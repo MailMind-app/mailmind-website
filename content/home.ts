@@ -10,7 +10,7 @@ export const hero = {
     "MailMind sorteert je zakelijke mail, stuurt door naar de juiste collega en schrijft conceptantwoorden. Er gaat geen antwoord de deur uit zonder jouw klik.",
   primaryCta: { label: "Demo aanvragen", href: "/demo" },
   secondaryCta: { label: "Zo werkt het", href: "#zo-werkt-het" },
-  notes: ["Werkt met je eigen mailbox.", "Opslag in de EU (Helsinki). AI-verwerking via OpenAI, mogelijk in de VS."],
+  notes: ["Werkt met je eigen mailbox", "Opzeggingen en betalingen gaan altijd naar een mens"],
   // Verzonnen voorbeeld; geen bestaande sportschool, naam, lestijd of prijs.
   demo: {
     exampleLabel: "Voorbeeld: sportschool",
@@ -25,8 +25,12 @@ export const hero = {
     receipt: "Ontvangstbevestiging verstuurd",
     source: "Rooster · kennisbank",
     draft:
-      "Hoi Lotte, leuk dat je wilt komen proeftrainen! Zaterdagochtend zijn er twee groepslessen waar je bij kunt aansluiten. Laat je weten welke je kiest? Dan zetten we je erbij.",
-    approved: "Goedgekeurd · antwoord verstuurd",
+      "Hoi Lotte, leuk dat je mee wilt doen! Zaterdag om 10:00 is er een groepsles en je eerste les is gratis. Laat even weten of je komt, dan zet ik je op de lijst.",
+    send: "Versturen",
+    sent: "Verstuurd ✓ na jouw klik",
+    // Tekst voor schermlezers: het voorbeeld zelf is decoratief.
+    ariaLabel:
+      "Voorbeeld: een proefles-mail krijgt direct een ontvangstbevestiging en een conceptantwoord uit de kennisbank. Het antwoord gaat pas weg na jouw klik.",
   },
 }
 

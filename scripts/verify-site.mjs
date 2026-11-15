@@ -896,11 +896,29 @@ check(
   check(Boolean(caption), "/over: the caption follows the quote directly")
   check(/rens-face/.test(face) && face.includes(`alt="${ALT}"`), `/over: round photo after the quote with alt "${ALT}"`, face)
   check(/\brounded-full\b/.test(face) && /\bsize-14\b/.test(face), "/over: the photo is round, 56 px", face)
+  check(/\swidth="56"/.test(face) && /\sheight="56"/.test(face) && /\bobject-cover\b/.test(face), "/over: the photo is 56×56, object-fit cover", face)
+  // Fixed 1x/2x/3x files straight from the original: no next/image optimizer, so no second compression.
+  const FACE_SET = { "1x": "/over/rens-face-56.webp", "2x": "/over/rens-face-112.webp", "3x": "/over/rens-face-168.webp" }
+  const srcset = face.match(/\ssrcSet="([^"]*)"/i)?.[1] ?? ""
+  for (const [density, path] of Object.entries(FACE_SET)) {
+    check(srcset.includes(`${path} ${density}`), `/over: photo srcset has ${density} (${path})`, srcset)
+    const res = await fetch(BASE + path)
+    const bytes = Buffer.from(await res.arrayBuffer())
+    const width = bytes.readUInt16LE(26) & 0x3fff
+    const height = bytes.readUInt16LE(28) & 0x3fff
+    const size = Number(path.match(/-(\d+)\.webp$/)[1])
+    check(res.status === 200 && width === size && height === size, `${path} exists and is ${size}×${size}`, `status ${res.status}, ${width}×${height}`)
+  }
+  check(face.includes(`src="${FACE_SET["1x"]}"`) && !/_next\/image/.test(face), "/over: photo is served as is, not through the image optimizer", face)
   check(visibleText(caption).includes("Rens van Arkelen Oprichter MailMind"), '/over: "Rens van Arkelen" and "Oprichter MailMind" beside the photo', visibleText(caption))
   check(!/%2Frens\.[^&"]*webp/.test(html), "/over: the large 4:5 photo is gone")
   const overDir = new URL("../public/over/", import.meta.url)
   const files = await readdir(overDir)
-  check(files.includes("rens-face.webp") && !files.includes("rens.webp"), "public/over: only rens-face.webp (the large photo is unused)", files.join(", "))
+  check(
+    [...files].sort().join(",") === "rens-face-112.webp,rens-face-168.webp,rens-face-56.webp",
+    "public/over: only the three face files (nothing unused)",
+    files.join(", "),
+  )
   check(!files.some((f) => f.endsWith(".png")), "public/over: no original PNG", files.join(", "))
   for (const file of files) {
     const bytes = await readFile(new URL(file, overDir))
@@ -914,8 +932,6 @@ check(
     const metaChunks = chunks.filter((c) => ["EXIF", "XMP ", "ICCP"].includes(c))
     check(isWebp && metaChunks.length === 0 && !bytes.includes(Buffer.from("Exif\0\0")), `public/over/${file}: WebP without EXIF or other metadata`, chunks.join(", "))
   }
-  const faceSize = (await readFile(new URL("rens-face.webp", overDir))).readUInt16LE(26) & 0x3fff
-  check(faceSize === 400, "public/over/rens-face.webp is 400 px wide", String(faceSize))
 
   // Three cards and the contact block.
   for (const title of ["Altijd een mens aan het roer", "Ik richt het zelf voor je in", "Je praat altijd met mij"]) {

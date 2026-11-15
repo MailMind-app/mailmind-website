@@ -1,5 +1,4 @@
 import { ArrowRight, MessageCircle, Settings2, UserCheck } from "lucide-react"
-import Image from "next/image"
 import { buttonClasses } from "@/components/primitives/button-link"
 import { PageHero } from "@/components/primitives/page-hero"
 import { CtaBand } from "@/components/sections/cta-band"
@@ -7,7 +6,11 @@ import { SocialLinks } from "@/components/sections/social-links"
 import { aboutPage as c } from "@/content/pages"
 import { site, whatsapp } from "@/content/site"
 import { metadataFor } from "@/lib/site"
-import face from "@/public/over/rens-face.webp"
+
+const face = {
+  src: "/over/rens-face-56.webp",
+  srcSet: "/over/rens-face-56.webp 1x, /over/rens-face-112.webp 2x, /over/rens-face-168.webp 3x",
+}
 
 export const metadata = metadataFor("/over")
 
@@ -27,11 +30,18 @@ export default function AboutPage() {
               </p>
             </blockquote>
             <figcaption className="mt-7 flex items-center gap-3.5">
-              <Image
-                src={face}
+              {/* Vaste 1x/2x/3x-bestanden uit scripts/build-over-photo.py; geen next/image, zodat er niet opnieuw
+                  gecomprimeerd of geschaald wordt. De rand is een ring, zodat het beeld precies 56×56 blijft. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={face.src}
+                srcSet={face.srcSet}
                 alt={c.photoAlt}
-                sizes="56px"
-                className="size-14 shrink-0 rounded-full border border-white/10 object-cover"
+                width={56}
+                height={56}
+                loading="lazy"
+                decoding="async"
+                className="size-14 shrink-0 rounded-full object-cover ring-1 ring-white/10"
               />
               <span>
                 <span className="block font-bold text-fg">{c.quote.name}</span>

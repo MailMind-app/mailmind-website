@@ -5,16 +5,7 @@ export type ProseParagraph = string | { id: string; text: string }
 export type ProseSection = { title: string; paragraphs: ProseParagraph[] }
 
 /** Plain text page body (over, privacy): h2 + paragraphs per section. */
-export function ProseSections({
-  sections,
-  children,
-  after = {},
-}: {
-  sections: ProseSection[]
-  children?: ReactNode
-  /** Extra content directly below a section, keyed by its title. */
-  after?: Record<string, ReactNode>
-}) {
+export function ProseSections({ sections, children }: { sections: ProseSection[]; children?: ReactNode }) {
   return (
     <div className="section-y">
       <div className="container-site">
@@ -35,7 +26,6 @@ export function ProseSections({
                   ),
                 )}
               </div>
-              {after[section.title]}
             </section>
           ))}
           {children}

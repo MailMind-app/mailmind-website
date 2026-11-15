@@ -27,6 +27,7 @@ export const company = {
   legalForm: "eenmanszaak",
   kvk: "42213617",
   vatId: "NL005589616B57",
+  founder: { name: "Rens van Arkelen", jobTitle: "Oprichter" },
   address: {
     street: "Akelei 33",
     postalCode: "4007 TC",
@@ -61,6 +62,8 @@ export const companySummary = [companyDescription, companyAddressLine, companyRe
 export type Route = {
   path: string
   title: string
+  /** Optional: full <title> and og:title instead of "<title> | MailMind". */
+  documentTitle?: string
   description: string
   lastModified: string
   priority: number
@@ -119,8 +122,10 @@ export const routes: Route[] = [
   {
     path: "/over",
     title: "Over MailMind",
-    description: "Wat MailMind doet, voor wie het is en hoe we werken.",
-    lastModified: "2026-11-12",
+    documentTitle: "Over MailMind | Rens van Arkelen",
+    description:
+      "MailMind is opgericht door Rens van Arkelen. Je inbox gesorteerd en je antwoorden klaar, met altijd een mens aan het roer.",
+    lastModified: "2026-11-15",
     priority: 0.6,
   },
   {
@@ -194,9 +199,15 @@ export const footerNav: { title: string; links: FooterLink[] }[] = [
   },
 ]
 
+/** WhatsApp-link uit de socials (nummer van de hulpknop), of undefined als dat nummer leeg is. */
+export const whatsapp = socials.find((s) => s.id === "whatsapp")
+
+/** Onder het logo in de footer. */
+export const footerTagline = "Je inbox gesorteerd. Je antwoorden klaar. Jij beslist."
+
 export const footerContact = {
   title: "Contact",
-  whatsapp: socials.find((s) => s.id === "whatsapp"),
+  whatsapp,
   responseTime: helper.responseTime,
 }
 

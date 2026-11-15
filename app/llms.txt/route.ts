@@ -1,6 +1,7 @@
 import { existingFeatures, featureLabel, roadmap } from "@/content/features"
+import { aboutPage } from "@/content/pages"
 import { pricingSummary } from "@/content/pricing"
-import { companySummary, routes, site, socialSummary, subprocessorGroups, subprocessors } from "@/content/site"
+import { companySummary, routes, site, socialSummary, subprocessorGroups, subprocessors, whatsapp } from "@/content/site"
 import { absoluteUrl, textVersionHeaders } from "@/lib/site"
 
 // llms.txt, generated at build time from the content files.
@@ -10,6 +11,7 @@ function body() {
   const pages = routes.map((r) => `- [${r.title}](${absoluteUrl(r.path)}): ${r.description}`).join("\n")
   const now = existingFeatures.map((f) => `- ${f.title}: ${f.description}`).join("\n")
   const soon = roadmap.map((f) => `- ${featureLabel(f)}: ${f.description}`).join("\n")
+  const aboutCards = aboutPage.cards.map((card) => `- ${card.title}: ${card.text}`).join("\n")
   const data = subprocessorGroups
     .map(
       (g) =>
@@ -42,6 +44,16 @@ ${pricingSummary()}
 ## Data en subverwerkers
 
 ${data}
+
+## Over MailMind
+
+${aboutPage.hero.intro}
+
+> “${aboutPage.quote.text}” — ${aboutPage.quote.name}, ${aboutPage.quote.role}
+
+${aboutCards}
+
+${aboutPage.contact.title} Mail ${site.email}${whatsapp ? ` of app via WhatsApp (${whatsapp.url})` : ""}. ${aboutPage.contact.responseTime}.
 
 ## Pagina's
 

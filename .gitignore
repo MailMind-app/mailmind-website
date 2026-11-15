@@ -14,3 +14,6 @@ tsconfig.tsbuildinfo
 
 # Design review screenshots (local only)
 design-review/
+
+# Originele foto voor /over (alleen lokaal; de WebP-versies staan in public/over/)
+design-assets/over/

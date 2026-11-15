@@ -1,6 +1,7 @@
 // Teksten voor /prijzen, /demo, /over, /contact, /privacy, /bedankt en de 404-pagina.
 // *Woorden tussen sterretjes* krijgen het accentverloop.
 
+import { helper } from "./helper"
 import { founding, foundingOpen } from "./pricing"
 import { company, companyAddressLine, companyLegalNote, companyRegistration, site } from "./site"
 
@@ -49,43 +50,42 @@ export const demoPage = {
   },
 }
 
+// /over: verhaal, citaat met foto, drie kaarten en een contactblok.
 export const aboutPage = {
-  /** De socials staan direct onder deze sectie. */
-  socialsAfter: "Wie erachter zit",
   hero: {
-    eyebrow: "Over MailMind",
-    title: "Mailwerk dat *klopt.*",
-    intro: "MailMind helpt Nederlandse sportscholen en MKB-bedrijven met hun inbox, terwijl een mens het laatste woord houdt.",
+    eyebrow: "Over",
+    title: "Over *MailMind*",
+    intro:
+      "Klantvragen, opzeggingen, facturen: bij kleine bedrijven gaat elke dag tijd naar dezelfde mails. Tijd die je liever aan je klanten besteedt. MailMind zet die mail voor je klaar, en jij beslist wat ermee gebeurt.",
   },
-  sections: [
+  photoAlt: "Rens van Arkelen, oprichter van MailMind",
+  quote: {
+    text: "Het idee kwam op een avond, vlak voor het slapengaan. Zoveel bedrijven verliezen elke dag tijd aan dezelfde mails. Ik pakte mijn telefoon, schreef op wat het moest kunnen, en ben gaan bouwen. Daarna heb ik het maandenlang getest bij een echte sportschool.",
+    name: "Rens van Arkelen",
+    role: "Oprichter MailMind",
+  },
+  cards: [
     {
-      title: "Wat MailMind doet",
-      paragraphs: [
-        "MailMind leest de mail in je bestaande mailbox, deelt hem in je eigen categorieën in, stuurt na een klik van de manager door naar de juiste collega en schrijft conceptantwoorden uit je kennisbank.",
-        "Het is geen chatbot en geen autoresponder. Er gaat geen antwoord de deur uit zonder klik van een mens.",
-      ],
+      id: "mens",
+      title: "Altijd een mens aan het roer",
+      text: "Er gaat geen antwoord de deur uit zonder jouw klik. Opzeggingen en betalingen gaan altijd eerst naar een mens.",
     },
     {
-      title: "Voor wie",
-      paragraphs: [
-        "MailMind is gestart bij sportscholen, waar elke dag vragen over proeflessen, roosters, openingstijden en abonnementen binnenkomen. De categorieën en de kennisbank stel je per bedrijf in, dus MailMind past ook bij andere MKB-bedrijven met veel terugkerende mail.",
-      ],
+      id: "inrichten",
+      title: "Ik richt het zelf voor je in",
+      text: "Geen handleiding van veertig pagina's. Ik kijk mee naar jouw mail en zet categorieën, kennisbank en doorstuurregels voor je klaar.",
     },
     {
-      title: "Wie erachter zit",
-      paragraphs: [
-        "MailMind is opgericht door Rens van Arkelen. Ik bouw MailMind samen met een Nederlandse sportschool die het dagelijks gebruikt. Daar zag ik hoeveel tijd er gaat zitten in steeds dezelfde mail: proeflessen, roosters, opzeggingen. MailMind neemt dat voorwerk over, zonder dat er een antwoord de deur uit gaat dat niet klopt.",
-      ],
-    },
-    {
-      title: "Hoe we werken",
-      paragraphs: [
-        "Een mens beoordeelt elk concept. Bij elke mail staat in het beslislog waarom MailMind iets besloot. Opzeggingen, betalingen en klachten gaan altijd naar een mens.",
-        "Je mail wordt opgeslagen op servers in Helsinki (Finland). Voor het sorteren en de concepten verwerkt OpenAI de tekst; dat kan in de Verenigde Staten gebeuren, op basis van standaardcontractbepalingen. OpenAI gebruikt deze gegevens niet om modellen te trainen.",
-        "Je hebt direct contact met mij: rens@mailmind.nl.",
-      ],
+      id: "contact",
+      title: "Je praat altijd met mij",
+      text: "Geen chatbot en geen callcenter. Je mailt of appt direct met mij, en je krijgt binnen 2 werkdagen antwoord.",
     },
   ],
+  contact: {
+    title: "Vragen? Je praat direct met mij.",
+    whatsappLabel: "App Rens",
+    responseTime: helper.responseTime,
+  },
 }
 
 export const contactPage = {

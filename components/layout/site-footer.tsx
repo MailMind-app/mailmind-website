@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { Fragment } from "react"
 import { SocialLinks } from "@/components/sections/social-links"
-import { companyLineParts, footerContact, footerCookies, footerNav, site } from "@/content/site"
+import { companyLineParts, footerContact, footerCookies, footerNav, footerTagline, site } from "@/content/site"
+import { Logo } from "./logo"
 
 const linkClass = "text-sm text-muted transition-colors hover:text-fg"
 
@@ -13,7 +14,12 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-line bg-panel">
       <div className="container-site pt-12 pb-[calc(3rem+env(safe-area-inset-bottom))] sm:pt-16 sm:pb-[calc(4rem+env(safe-area-inset-bottom))]">
-        <div className="grid gap-10 md:grid-cols-3 md:gap-12">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)] md:gap-12">
+          <div data-footer-brand="">
+            <Logo />
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{footerTagline}</p>
+          </div>
+
           {footerNav.map((group) => (
             <nav key={group.title} aria-label={group.title}>
               <p className="eyebrow">{group.title}</p>

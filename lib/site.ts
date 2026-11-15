@@ -20,14 +20,14 @@ export function metadataFor(path: string): Metadata {
   const route = routes.find((r) => r.path === path)
   if (!route) throw new Error(`Route ontbreekt in content/site.ts: ${path}`)
   const isHome = path === "/"
-  const fullTitle = isHome ? site.title : `${route.title} | ${site.name}`
+  const fullTitle = isHome ? site.title : (route.documentTitle ?? `${route.title} | ${site.name}`)
   const canonical = absoluteUrl(path)
   const image = absoluteUrl(OG_IMAGE.url)
   return {
     // Resolved against a metadataBase, Next.js drops the slash of a root URL ("https://mailmind.nl").
     // Every URL here is absolute, so the homepage can do without one and keep "https://mailmind.nl/".
     ...(isHome && { metadataBase: null }),
-    title: isHome ? { absolute: site.title } : route.title,
+    title: isHome || route.documentTitle ? { absolute: fullTitle } : route.title,
     description: route.description,
     alternates: { canonical },
     openGraph: {

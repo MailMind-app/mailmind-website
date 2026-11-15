@@ -851,11 +851,6 @@ check(
       check(html.includes(`aria-label="${s.label}"`), `${page}: aria-label "${s.label}"`)
     }
   }
-  {
-    const html = (await get("/over")).body
-    const section = html.match(/<section[^>]*aria-labelledby="wie-erachter-zit"[\s\S]*?<\/section>/)?.[0] ?? ""
-    check(section.includes('data-social-links=""'), '/over: socials under "Wie erachter zit"')
-  }
   check(/\sid="cookies"/.test((await get("/privacy")).body), '/privacy has an element with id="cookies"')
 
   const block = jsonLdBlocks((await get("/")).body)[0] ?? "{}"
@@ -870,6 +865,89 @@ check(
   const md404 = (await get("/bestaat-niet", "text/markdown")).body
   for (const [label, body] of [["llms.txt", llms], ["Markdown /", md], ["Markdown 404", md404]]) {
     for (const s of socials) check(body.includes(s.url), `${label}: names ${s.name}`, s.url)
+  }
+}
+
+// ── /over: story, quote with photo, three cards, contact block; logo in the footer; founder ──
+{
+  const html = (await get("/over")).body
+  const text = visibleText(html)
+  const ALT = "Rens van Arkelen, oprichter van MailMind"
+  check(/<title>Over MailMind \| Rens van Arkelen<\/title>/.test(html), '/over: title "Over MailMind | Rens van Arkelen"')
+  check(
+    meta(html, "name", "description") ===
+      "MailMind is opgericht door Rens van Arkelen. Je inbox gesorteerd en je antwoorden klaar, met altijd een mens aan het roer.",
+    "/over: meta description",
+    meta(html, "name", "description"),
+  )
+  check(/<h1[^>]*>Over <span class="accent-text">MailMind<\/span><\/h1>/.test(html), '/over: h1 "Over MailMind" with MailMind in the accent gradient')
+  check(text.includes("vlak voor het slapengaan"), "/over: the quote")
+  check(text.includes("“Het idee kwam op een avond") && text.includes("echte sportschool.”"), "/over: quote has typographic quotation marks")
+  check(text.includes("Oprichter MailMind"), '/over: "Oprichter MailMind"')
+  check(!/Wie erachter zit/i.test(text), '/over: no heading "Wie erachter zit" any more')
+
+  // Photos: alt text, eager only for the large one, small files without metadata.
+  const imgs = [...html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0])
+  const big = imgs.find((tag) => /%2Frens\.[^&"]*webp/.test(tag) && !/rens-face/.test(tag))
+  const small = imgs.find((tag) => /rens-face/.test(tag))
+  check(Boolean(big) && big.includes(`alt="${ALT}"`), `/over: large photo has alt "${ALT}"`, big)
+  check(Boolean(big) && !/loading="lazy"/.test(big) && /fetchPriority="high"|fetchpriority="high"/.test(big), "/over: large photo loads eagerly (above the fold)", big)
+  check(Boolean(small) && /loading="lazy"/.test(small), "/over: face photo is lazy-loaded", small)
+  check(Boolean(big) && /\ssizes="[^"]+"/.test(big), "/over: large photo has sizes", big)
+  const overDir = new URL("../public/over/", import.meta.url)
+  const files = await readdir(overDir)
+  check(files.includes("rens.webp") && files.includes("rens-face.webp"), "public/over: rens.webp and rens-face.webp", files.join(", "))
+  check(!files.some((f) => f.endsWith(".png")), "public/over: no original PNG", files.join(", "))
+  for (const file of files) {
+    const bytes = await readFile(new URL(file, overDir))
+    const isWebp = bytes.subarray(0, 4).toString("latin1") === "RIFF" && bytes.subarray(8, 12).toString("latin1") === "WEBP"
+    const chunks = []
+    for (let i = 12; isWebp && i + 8 <= bytes.length; ) {
+      const size = bytes.readUInt32LE(i + 4)
+      chunks.push(bytes.subarray(i, i + 4).toString("latin1"))
+      i += 8 + size + (size & 1)
+    }
+    const metaChunks = chunks.filter((c) => ["EXIF", "XMP ", "ICCP"].includes(c))
+    check(isWebp && metaChunks.length === 0 && !bytes.includes(Buffer.from("Exif\0\0")), `public/over/${file}: WebP without EXIF or other metadata`, chunks.join(", "))
+  }
+  const bigBytes = (await readFile(new URL("rens.webp", overDir))).length
+  check(bigBytes < 250 * 1024, "public/over/rens.webp is under 250 KB", `${(bigBytes / 1024).toFixed(1)} KB`)
+  const faceSize = (await readFile(new URL("rens-face.webp", overDir))).readUInt16LE(26) & 0x3fff
+  check(faceSize === 400, "public/over/rens-face.webp is 400 px wide", String(faceSize))
+
+  // Three cards and the contact block.
+  for (const title of ["Altijd een mens aan het roer", "Ik richt het zelf voor je in", "Je praat altijd met mij"]) {
+    check(/<h2[^>]*>/.test(html) && html.includes(`>${title}</h2>`), `/over: card "${title}"`)
+  }
+  const contact = html.match(/<section[^>]*data-over-contact=""[\s\S]*?<\/section>/)?.[0] ?? ""
+  const wa = socials.find((s) => s.id === "whatsapp")
+  check(contact.includes("Vragen? Je praat direct met mij."), "/over: contact block heading")
+  check(Boolean(wa) && new RegExp(`<a[^>]*href="${wa.url}"[^>]*>App Rens`).test(contact), '/over: contact block "App Rens" links to WhatsApp')
+  check(contact.includes('href="mailto:rens@mailmind.nl"'), "/over: contact block links to rens@mailmind.nl")
+  check(contact.includes('data-social-links=""'), "/over: contact block has the social icons")
+  check(visibleText(contact).includes(helper.responseTime), `/over: contact block says "${helper.responseTime}"`)
+  check(/rens-face/.test(contact), "/over: contact block has the face photo")
+
+  // Organization JSON-LD: founder.
+  const org = (JSON.parse(jsonLdBlocks((await get("/")).body)[0] ?? "{}")["@graph"] ?? []).find((n) => n["@type"] === "Organization") ?? {}
+  check(
+    org.founder?.["@type"] === "Person" && org.founder?.name === "Rens van Arkelen" && org.founder?.jobTitle === "Oprichter",
+    'JSON-LD: Organization founder is the Person "Rens van Arkelen", Oprichter',
+    JSON.stringify(org.founder),
+  )
+
+  // llms.txt carries the new /over texts.
+  const llms = (await get("/llms.txt")).body
+  for (const phrase of ["vlak voor het slapengaan", "Altijd een mens aan het roer", "Ik richt het zelf voor je in", "Je praat altijd met mij"]) {
+    check(llms.includes(phrase), `llms.txt: /over text "${phrase}"`)
+  }
+
+  // Footer: logo linking to the homepage and the tagline, on every page.
+  for (const page of [...PAGES, "/bestaat-niet"]) {
+    const footer = (await get(page)).body.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? ""
+    const brand = footer.match(/<div[^>]*data-footer-brand=""[\s\S]*?<\/p>/)?.[0] ?? ""
+    check(/<a[^>]*href="\/"[^>]*>[\s\S]*?mailmind-logo/.test(brand), `${page}: footer logo links to /`)
+    check(visibleText(brand).includes("Je inbox gesorteerd. Je antwoorden klaar. Jij beslist."), `${page}: footer tagline under the logo`)
   }
 }
 
@@ -895,6 +973,7 @@ check(
         `${width}px ${path}: footer has no horizontal scroll`,
         `scrollWidth ${r.scroll} > ${r.inner}; ${r.wide.join(" | ")}`,
       )
+      if (path === "/over") check(r.scroll <= r.inner, `${width}px /over: page has no horizontal scroll`, `scrollWidth ${r.scroll} > ${r.inner}`)
     }
     await page.close()
   }

@@ -45,6 +45,7 @@ export const homeJsonLd = {
       },
       ...companyFields,
       ...(socialProfiles.length ? { sameAs: socialProfiles } : {}),
+      founder: { "@type": "Person", name: company.founder.name, jobTitle: company.founder.jobTitle },
     },
     {
       "@type": "SoftwareApplication",

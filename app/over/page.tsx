@@ -8,7 +8,6 @@ import { aboutPage as c } from "@/content/pages"
 import { site, whatsapp } from "@/content/site"
 import { metadataFor } from "@/lib/site"
 import face from "@/public/over/rens-face.webp"
-import photo from "@/public/over/rens.webp"
 
 export const metadata = metadataFor("/over")
 
@@ -21,26 +20,24 @@ export default function AboutPage() {
 
       <section className="section-y" aria-label="Het verhaal van MailMind">
         <div className="container-site">
-          <figure className="grid items-center gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-14" data-over-quote="">
-            <Image
-              src={photo}
-              alt={c.photoAlt}
-              sizes="(min-width: 1024px) 448px, (min-width: 768px) 40vw, calc(100vw - 32px)"
-              loading="eager"
-              fetchPriority="high"
-              className="aspect-[4/5] w-full max-w-md rounded-[20px] border border-line object-cover"
-            />
-            <div>
-              <blockquote>
-                <p className="text-[1.625rem] leading-snug font-semibold tracking-[-0.02em] text-fg sm:text-[2rem]">
-                  “{c.quote.text}”
-                </p>
-              </blockquote>
-              <figcaption className="mt-6">
+          <figure className="max-w-[860px]" data-over-quote="">
+            <blockquote>
+              <p className="text-[1.4375rem] leading-snug font-semibold tracking-[-0.02em] text-fg sm:text-[2rem]">
+                “{c.quote.text}”
+              </p>
+            </blockquote>
+            <figcaption className="mt-7 flex items-center gap-3.5">
+              <Image
+                src={face}
+                alt={c.photoAlt}
+                sizes="56px"
+                className="size-14 shrink-0 rounded-full border border-white/10 object-cover"
+              />
+              <span>
                 <span className="block font-bold text-fg">{c.quote.name}</span>
                 <span className="block text-muted">{c.quote.role}</span>
-              </figcaption>
-            </div>
+              </span>
+            </figcaption>
           </figure>
         </div>
       </section>
@@ -65,19 +62,16 @@ export default function AboutPage() {
           <section
             aria-labelledby="over-contact-title"
             data-over-contact=""
-            className="panel mt-4 flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:gap-8 sm:p-8"
+            className="panel mt-4 flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10"
           >
-            <Image
-              src={face}
-              alt={c.photoAlt}
-              sizes="96px"
-              className="size-24 shrink-0 rounded-full border border-line object-cover"
-            />
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0">
               <h2 id="over-contact-title" className="text-xl tracking-[-0.02em] sm:text-2xl">
                 {c.contact.title}
               </h2>
-              <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <p className="mt-2 text-sm text-subtle">{c.contact.responseTime}</p>
+            </div>
+            <div className="flex flex-col gap-5 lg:items-end">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
                 {whatsapp && (
                   <a
                     href={whatsapp.url}
@@ -93,8 +87,7 @@ export default function AboutPage() {
                   {site.email}
                 </a>
               </div>
-              <SocialLinks className="mt-5" />
-              <p className="mt-4 text-sm text-subtle">{c.contact.responseTime}</p>
+              <SocialLinks />
             </div>
           </section>
         </div>

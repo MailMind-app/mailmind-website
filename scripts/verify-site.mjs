@@ -886,17 +886,21 @@ check(
   check(text.includes("Oprichter MailMind"), '/over: "Oprichter MailMind"')
   check(!/Wie erachter zit/i.test(text), '/over: no heading "Wie erachter zit" any more')
 
-  // Photos: alt text, eager only for the large one, small files without metadata.
-  const imgs = [...html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0])
-  const big = imgs.find((tag) => /%2Frens\.[^&"]*webp/.test(tag) && !/rens-face/.test(tag))
-  const small = imgs.find((tag) => /rens-face/.test(tag))
-  check(Boolean(big) && big.includes(`alt="${ALT}"`), `/over: large photo has alt "${ALT}"`, big)
-  check(Boolean(big) && !/loading="lazy"/.test(big) && /fetchPriority="high"|fetchpriority="high"/.test(big), "/over: large photo loads eagerly (above the fold)", big)
-  check(Boolean(small) && /loading="lazy"/.test(small), "/over: face photo is lazy-loaded", small)
-  check(Boolean(big) && /\ssizes="[^"]+"/.test(big), "/over: large photo has sizes", big)
+  // Exactly one photo of Rens: the small round one directly after the quote, with name and role beside it.
+  const main = withoutScripts(html.match(/<main[\s\S]*?<\/main>/)?.[0] ?? html)
+  const photos = [...main.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]).filter((tag) => /rens/i.test(tag) || tag.includes(`alt="${ALT}"`))
+  check(photos.length === 1, "/over: exactly one photo of Rens", String(photos.length))
+  const figure = main.match(/<figure[^>]*data-over-quote=""[\s\S]*?<\/figure>/)?.[0] ?? ""
+  const caption = figure.match(/<\/blockquote>\s*<figcaption[\s\S]*?<\/figcaption>/)?.[0] ?? ""
+  const face = caption.match(/<img\b[^>]*>/)?.[0] ?? ""
+  check(Boolean(caption), "/over: the caption follows the quote directly")
+  check(/rens-face/.test(face) && face.includes(`alt="${ALT}"`), `/over: round photo after the quote with alt "${ALT}"`, face)
+  check(/\brounded-full\b/.test(face) && /\bsize-14\b/.test(face), "/over: the photo is round, 56 px", face)
+  check(visibleText(caption).includes("Rens van Arkelen Oprichter MailMind"), '/over: "Rens van Arkelen" and "Oprichter MailMind" beside the photo', visibleText(caption))
+  check(!/%2Frens\.[^&"]*webp/.test(html), "/over: the large 4:5 photo is gone")
   const overDir = new URL("../public/over/", import.meta.url)
   const files = await readdir(overDir)
-  check(files.includes("rens.webp") && files.includes("rens-face.webp"), "public/over: rens.webp and rens-face.webp", files.join(", "))
+  check(files.includes("rens-face.webp") && !files.includes("rens.webp"), "public/over: only rens-face.webp (the large photo is unused)", files.join(", "))
   check(!files.some((f) => f.endsWith(".png")), "public/over: no original PNG", files.join(", "))
   for (const file of files) {
     const bytes = await readFile(new URL(file, overDir))
@@ -910,8 +914,6 @@ check(
     const metaChunks = chunks.filter((c) => ["EXIF", "XMP ", "ICCP"].includes(c))
     check(isWebp && metaChunks.length === 0 && !bytes.includes(Buffer.from("Exif\0\0")), `public/over/${file}: WebP without EXIF or other metadata`, chunks.join(", "))
   }
-  const bigBytes = (await readFile(new URL("rens.webp", overDir))).length
-  check(bigBytes < 250 * 1024, "public/over/rens.webp is under 250 KB", `${(bigBytes / 1024).toFixed(1)} KB`)
   const faceSize = (await readFile(new URL("rens-face.webp", overDir))).readUInt16LE(26) & 0x3fff
   check(faceSize === 400, "public/over/rens-face.webp is 400 px wide", String(faceSize))
 
@@ -926,7 +928,7 @@ check(
   check(contact.includes('href="mailto:rens@mailmind.nl"'), "/over: contact block links to rens@mailmind.nl")
   check(contact.includes('data-social-links=""'), "/over: contact block has the social icons")
   check(visibleText(contact).includes(helper.responseTime), `/over: contact block says "${helper.responseTime}"`)
-  check(/rens-face/.test(contact), "/over: contact block has the face photo")
+  check(!/<img\b/.test(contact), "/over: contact block has no image")
 
   // Organization JSON-LD: founder.
   const org = (JSON.parse(jsonLdBlocks((await get("/")).body)[0] ?? "{}")["@graph"] ?? []).find((n) => n["@type"] === "Organization") ?? {}
